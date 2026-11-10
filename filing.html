@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>File a Complaint | LuponResolve</title>
 
-  <!-- Supabase JS Library -->
+  <!-- Supabase CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
@@ -345,7 +345,6 @@
   </div>
 
   <script>
-    // Konektado sa parehas nga database ug publishable key sa portal
     const supabaseUrl = 'https://ivphxduuzemdmkjdgeqy.supabase.co';
     const supabaseKey = 'sb_publishable_Eh44ol3xJHhoxPNOS6Tueg_SzHFTi5u';
     const db = window.supabase.createClient(supabaseUrl, supabaseKey);
@@ -357,10 +356,8 @@
       submitBtn.disabled = true;
       submitBtn.innerText = 'Submitting to database...';
 
-      // Nagahimo og unique Docket No. (e.g. KP-2026-4821)
       const trackingNo = 'KP-' + new Date().getFullYear() + '-' + Math.floor(1000 + Math.random() * 9000);
 
-      // Ang column names parehas sa schema sa 'cases' table
       const payload = {
         docket: trackingNo,
         complainant: document.getElementById('complainantName').value.trim(),
@@ -374,7 +371,6 @@
         hearing_date: null
       };
 
-      // Isulat diretso sa Supabase 'cases' table
       const { data, error } = await db.from('cases').insert([payload]);
 
       if (error) {
@@ -382,11 +378,9 @@
         submitBtn.disabled = false;
         submitBtn.innerText = 'Submit Complaint';
       } else {
-        // Ipakita ang docket number sa pop-up modal
         document.getElementById('modalDocket').innerText = trackingNo;
         document.getElementById('successModal').style.display = 'flex';
 
-        // 3 segundos nga countdown dayon auto-redirect pabalik sa home page
         let timeLeft = 3;
         const countdownEl = document.getElementById('countdown');
         const timer = setInterval(() => {

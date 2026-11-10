@@ -96,7 +96,6 @@
       margin: 0 auto;
     }
 
-    /* Tracker Input Box */
     .tracker-box {
       background: var(--card-bg);
       border: 1px solid var(--border);
@@ -137,7 +136,6 @@
       background: var(--primary);
     }
 
-    /* Case Status Card Result */
     #statusResult {
       display: none;
       max-width: 580px;
@@ -159,7 +157,6 @@
       font-size: 0.85rem;
     }
 
-    /* Card Navigation */
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -249,16 +246,13 @@
       <p>Streamlined complaint filing, mediation scheduling, and record-keeping under Katarungang Pambarangay.</p>
     </section>
 
-    <!-- Case Status Search Box -->
     <div class="tracker-box">
       <input type="text" id="trackInput" placeholder="Enter Docket / Tracking No. (e.g., KP-2026-1024)" />
       <button type="button" id="trackBtn">Track</button>
     </div>
 
-    <!-- Live Case Search Results -->
     <div id="statusResult"></div>
 
-    <!-- Navigation Cards -->
     <div class="grid">
       <div class="card">
         <div>
@@ -291,7 +285,6 @@
   </footer>
 
   <script>
-    // Konektado sa parehas nga database ug publishable key sa filing.html ug portal.html
     const supabaseUrl = 'https://ivphxduuzemdmkjdgeqy.supabase.co';
     const supabaseKey = 'sb_publishable_Eh44ol3xJHhoxPNOS6Tueg_SzHFTi5u';
     const db = window.supabase.createClient(supabaseUrl, supabaseKey);
@@ -308,7 +301,6 @@
       resultBox.style.display = 'block';
       resultBox.innerHTML = '<p style="color:var(--muted); text-align:center;">Searching case records from database...</p>';
 
-      // Pangitaon sa Supabase cases table ang docket number
       const { data, error } = await db
         .from('cases')
         .select('*')
@@ -334,7 +326,6 @@
       }
     });
 
-    // Pindot og Enter key sa tracker input
     document.getElementById('trackInput').addEventListener('keypress', function(e) {
       if (e.key === 'Enter') {
         document.getElementById('trackBtn').click();

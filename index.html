@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LuponResolve | Barangay Dispute Resolution System</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
       --primary: #1e3a8a;
@@ -231,38 +233,54 @@
       </div>
     </div>
   </main>
-
-  <footer>
+          
+  <footer> 
     <p>&copy; 2026 LuponResolve. Compliant with RA 7160 (Local Government Code) & RA 10173 (Data Privacy Act).</p>
   </footer>
-<script>
-    document.getElementById('trackBtn').addEventListener('click', function() {
-      const input = document.getElementById('trackInput').value.trim().toUpperCase();
+<!-- Load Supabase Library -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Case Search Query Logic -->
+  <script>
+    const supabaseUrl = 'https://ivphxduuzemdmkjdgeqy.supabase.co';
+const supabaseKey = 'sb_publishable_Eh44ol3xJHhoxPNOS6Tueg_SzHFT...'; // <-- paste the full copied key here
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+    document.getElementById('trackBtn').addEventListener('click', async function() {
+      const input = document.getElementById('trackInput').value.trim();
       const resultBox = document.getElementById('statusResult');
 
       if (!input) {
-        alert('Please enter a valid docket number.');
+        alert('Please enter a docket tracking number.');
         return;
       }
 
-      const existingCases = JSON.parse(localStorage.getItem('luponCases')) || [];
-      const foundCase = existingCases.find(c => c.docket.toUpperCase() === input);
-
       resultBox.style.display = 'block';
+      resultBox.innerHTML = '<p style="color:var(--muted);">Searching records...</p>';
 
-      if (foundCase) {
+      // Fetch case from Supabase
+      const { data, error } = await supabase
+        .from('cases')
+        .select('*')
+        .ilike('docket', input)
+        .maybeSingle();
+
+      if (error) {
+        resultBox.innerHTML = `<p style="color:red;">Error fetching record: ${error.message}</p>`;
+        return;
+      }
+
+      if (data) {
         resultBox.innerHTML = `
-          <h3 style="color:var(--primary); margin-bottom:0.5rem;">Case Found: ${foundCase.docket}</h3>
-          <p><strong>Status:</strong> <span style="background:#dbeafe; color:#1e40af; padding:2px 8px; border-radius:4px; font-weight:600;">${foundCase.status}</span></p>
-          <p><strong>Complainant:</strong> ${foundCase.complainant}</p>
-          <p><strong>Respondent:</strong> ${foundCase.respondent}</p>
-          <p><strong>Filing Date:</strong> ${foundCase.filedOn}</p>
+          <h3 style="color:var(--primary); margin-bottom:0.5rem;">Case Found: ${data.docket}</h3>
+          <p><strong>Status:</strong> <span style="background:#dbeafe; color:#1e40af; padding:2px 8px; border-radius:4px; font-weight:600;">${data.status}</span></p>
+          <p><strong>Complainant:</strong> ${data.complainant}</p>
+          <p><strong>Respondent:</strong> ${data.respondent}</p>
+          <p><strong>Dispute Type:</strong> <span style="text-transform: capitalize;">${data.dispute_type}</span></p>
+          <p><strong>Hearing Schedule:</strong> ${data.hearing_date ? new Date(data.hearing_date).toLocaleDateString() : '<em>Not yet scheduled</em>'}</p>
         `;
       } else {
-        resultBox.innerHTML = `
-          <p style="color:#dc2626; font-weight:600;">No record found for docket number "${input}".</p>
-          <p style="font-size:0.85rem; color:var(--muted); margin-top:0.25rem;">Please check the format and try again.</p>
-        `;
+        resultBox.innerHTML = `<p style="color:#dc2626; font-weight:600;">No record found for docket "${input}".</p>`;
       }
     });
   </script>

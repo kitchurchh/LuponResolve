@@ -4,16 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>File a Complaint | LuponResolve</title>
-  
+
   <style>
     :root {
       --primary: #1e3a8a;
       --accent: #2563eb;
+      --accent-hover: #1d4ed8;
       --bg: #f8fafc;
       --card-bg: #ffffff;
       --text: #0f172a;
       --muted: #64748b;
-      --border: #cbd5e1;
+      --border: #e2e8f0;
     }
 
     * {
@@ -27,54 +28,86 @@
       background-color: var(--bg);
       color: var(--text);
       line-height: 1.6;
-      padding: 2rem 1rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
 
-    .container {
-      max-width: 720px;
-      margin: 0 auto;
+    header {
       background: var(--card-bg);
-      border-radius: 12px;
-      padding: 2.5rem;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-      border: 1px solid #e2e8f0;
+      border-bottom: 1px solid var(--border);
+      padding: 1.1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    .back-link {
-      display: inline-block;
-      margin-bottom: 1.5rem;
-      color: var(--accent);
+    .brand {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--primary);
       text-decoration: none;
-      font-weight: 500;
-      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
-    h1 {
-      font-size: 1.75rem;
+    nav a {
+      margin-left: 1.5rem;
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    nav a:hover {
+      color: var(--primary);
+    }
+
+    main {
+      flex: 1;
+      max-width: 760px;
+      margin: 3.5rem auto 4rem;
+      padding: 0 1.5rem;
+      width: 100%;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .page-header h1 {
+      font-size: 2.25rem;
       color: var(--primary);
       margin-bottom: 0.5rem;
     }
 
-    p.subtitle {
+    .page-header p {
       color: var(--muted);
-      margin-bottom: 2rem;
-      font-size: 0.95rem;
+      font-size: 1.05rem;
     }
 
-    fieldset {
-      border: none;
-      margin-bottom: 2rem;
-      padding: 0;
+    .form-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2.5rem;
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04);
     }
 
-    legend {
-      font-size: 1.1rem;
+    .section-title {
+      font-size: 1.05rem;
       font-weight: 700;
       color: var(--primary);
-      margin-bottom: 1rem;
-      border-bottom: 2px solid #f1f5f9;
-      padding-bottom: 0.4rem;
-      width: 100%;
+      margin: 1.75rem 0 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-title:first-of-type {
+      margin-top: 0;
     }
 
     .form-group {
@@ -85,6 +118,7 @@
       display: block;
       font-size: 0.9rem;
       font-weight: 600;
+      color: var(--text);
       margin-bottom: 0.4rem;
     }
 
@@ -94,12 +128,14 @@
     select,
     textarea {
       width: 100%;
-      padding: 0.75rem;
+      padding: 0.8rem 1rem;
       border: 1px solid var(--border);
-      border-radius: 6px;
+      border-radius: 8px;
       font-size: 0.95rem;
       outline: none;
-      background: #fff;
+      background: #ffffff;
+      color: var(--text);
+      transition: border-color 0.2s;
     }
 
     input:focus,
@@ -114,44 +150,60 @@
       gap: 1rem;
     }
 
-    @media (max-width: 600px) {
-      .grid-2 {
-        grid-template-columns: 1fr;
-      }
+    @media (max-width: 640px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      .form-card { padding: 1.5rem; }
     }
 
-    .consent-box {
+    .consent-card {
       background: #eff6ff;
       border: 1px solid #bfdbfe;
-      border-radius: 8px;
-      padding: 1rem;
-      margin-bottom: 1.5rem;
-      font-size: 0.85rem;
-      color: #1e3a8a;
+      border-radius: 10px;
+      padding: 1.2rem;
+      margin: 1.75rem 0;
       display: flex;
       gap: 0.75rem;
       align-items: flex-start;
     }
 
-    .consent-box input {
+    .consent-card input {
       margin-top: 0.25rem;
+      cursor: pointer;
     }
 
-    button[type="submit"] {
+    .consent-card label {
+      font-size: 0.85rem;
+      color: #1e3a8a;
+      font-weight: 500;
+      line-height: 1.5;
+      cursor: pointer;
+    }
+
+    .btn-submit {
       width: 100%;
       background: var(--accent);
-      color: #fff;
+      color: #ffffff;
       border: none;
-      padding: 0.85rem;
-      border-radius: 6px;
+      padding: 0.9rem 1.5rem;
+      border-radius: 8px;
       font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
       transition: background 0.2s;
     }
 
-    button[type="submit"]:hover {
-      background: var(--primary);
+    .btn-submit:hover {
+      background: var(--accent-hover);
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--muted);
+      background: var(--card-bg);
+      margin-top: auto;
     }
   </style>
 
@@ -160,53 +212,56 @@
 </head>
 <body>
 
-  <div class="container">
-    <a href="index.html" class="back-link">&larr; Back to Home</a>
-    <h1>Barangay Incident & Dispute Filing</h1>
-    <p class="subtitle">Enter the required details for mediation under Katarungang Pambarangay.</p>
+  <header>
+    <a href="index.html" class="brand">⚖️ LuponResolve</a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="portal.html">Official Portal</a>
+    </nav>
+  </header>
 
-    <form id="complaintForm">
-      <!-- Complainant Details -->
-      <fieldset>
-        <legend>1. Complainant Information (Nangreklamo)</legend>
+  <main>
+    <div class="page-header">
+      <h1>File a Dispute Complaint</h1>
+      <p>Katarungang Pambarangay Incident Intake Form</p>
+    </div>
+
+    <div class="form-card">
+      <form id="complaintForm">
+        
+        <div class="section-title">1. Complainant Information (Nangreklamo)</div>
         <div class="form-group">
           <label for="complainantName">Full Name</label>
-          <input type="text" id="complainantName" required placeholder="Juan Dela Cruz" />
+          <input type="text" id="complainantName" placeholder="e.g., Juan Dela Cruz" required />
         </div>
         <div class="grid-2">
           <div class="form-group">
             <label for="complainantContact">Contact Number</label>
-            <input type="tel" id="complainantContact" required placeholder="09xxxxxxxxx" />
+            <input type="tel" id="complainantContact" placeholder="09xxxxxxxxx" required />
           </div>
           <div class="form-group">
-            <label for="complainantPurok">Purok / Sitio Address</label>
-            <input type="text" id="complainantPurok" required placeholder="Purok 3" />
+            <label for="complainantPurok">Purok / Sitio</label>
+            <input type="text" id="complainantPurok" placeholder="e.g., Purok 3" required />
           </div>
         </div>
-      </fieldset>
 
-      <!-- Respondent Details -->
-      <fieldset>
-        <legend>2. Respondent Information (Gireklamo)</legend>
+        <div class="section-title">2. Respondent Information (Gireklamo)</div>
         <div class="form-group">
           <label for="respondentName">Full Name</label>
-          <input type="text" id="respondentName" required placeholder="Full name of person being reported" />
+          <input type="text" id="respondentName" placeholder="Full name of person being reported" required />
         </div>
         <div class="form-group">
           <label for="respondentPurok">Known Purok / Address</label>
-          <input type="text" id="respondentPurok" required placeholder="Purok or exact location" />
+          <input type="text" id="respondentPurok" placeholder="Purok or exact location" required />
         </div>
-      </fieldset>
 
-      <!-- Incident Details -->
-      <fieldset>
-        <legend>3. Nature of Complaint</legend>
+        <div class="section-title">3. Nature of Complaint</div>
         <div class="grid-2">
           <div class="form-group">
             <label for="disputeType">Dispute Type</label>
             <select id="disputeType" required>
               <option value="" disabled selected>Select category</option>
-              <option value="boundary">Boundary / Property Dispute</option>
+              <option value="boundary">Boundary / Land Dispute</option>
               <option value="debt">Unpaid Debt / Financial Obligation</option>
               <option value="altercation">Physical / Verbal Altercation</option>
               <option value="disturbance">Public Disturbance / Noise</option>
@@ -218,28 +273,31 @@
             <input type="date" id="incidentDate" required />
           </div>
         </div>
+
         <div class="form-group">
           <label for="incidentNarrative">Statement of Facts / Summary</label>
-          <textarea id="incidentNarrative" rows="4" required placeholder="Describe what happened clearly..."></textarea>
+          <textarea id="incidentNarrative" rows="4" placeholder="Briefly describe what happened..." required></textarea>
         </div>
-      </fieldset>
 
-      <!-- Privacy Consent -->
-      <div class="consent-box">
-        <input type="checkbox" id="privacyConsent" required />
-        <label for="privacyConsent">
-          I confirm that the information provided is accurate and grant consent to process this data strictly for Katarungang Pambarangay proceedings pursuant to RA 10173 (Data Privacy Act).
-        </label>
-      </div>
+        <div class="consent-card">
+          <input type="checkbox" id="privacyConsent" required />
+          <label for="privacyConsent">
+            I confirm that the information provided is accurate and grant consent to process this data strictly for Katarungang Pambarangay conciliation proceedings pursuant to RA 10173 (Data Privacy Act).
+          </label>
+        </div>
 
-      <button type="submit" id="submitBtn">Submit Complaint</button>
-    </form>
-  </div>
+        <button type="submit" class="btn-submit" id="submitBtn">Submit Complaint</button>
+      </form>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 LuponResolve. Compliant with RA 7160 & RA 10173 (Data Privacy Act).</p>
+  </footer>
 
   <script>
-    // Supabase Connection
     const supabaseUrl = 'https://ivphxduuzemdmkjdgeqy.supabase.co';
-    const supabaseKey = 'sb_publishable_Eh44ol3xJHhoxPNOS6Tueg_SzHFT...'; // <--- ibutang ang imong publishable key
+    const supabaseKey = 'sb_publishable_Eh44ol3xJHhoxPNOS6Tueg_SzHFT...'; // <--- Paste imong publishable key diri
     const db = window.supabase.createClient(supabaseUrl, supabaseKey);
 
     document.getElementById('complaintForm').addEventListener('submit', async function(e) {
@@ -271,7 +329,7 @@
         submitBtn.disabled = false;
         submitBtn.innerText = 'Submit Complaint';
       } else {
-        alert('Complaint recorded successfully!\n\nTracking Docket: ' + trackingNo);
+        alert('Complaint recorded successfully!\n\nTracking Docket Number: ' + trackingNo);
         window.location.href = 'index.html';
       }
     });

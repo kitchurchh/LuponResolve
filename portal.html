@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Official Portal | LuponResolve</title>
-  
+
   <style>
     :root {
       --primary: #1e3a8a;
       --accent: #2563eb;
+      --accent-hover: #1d4ed8;
       --bg: #f8fafc;
       --card-bg: #ffffff;
       --text: #0f172a;
       --muted: #64748b;
-      --border: #cbd5e1;
+      --border: #e2e8f0;
+      --danger: #ef4444;
     }
 
     * {
@@ -27,36 +29,78 @@
       background-color: var(--bg);
       color: var(--text);
       line-height: 1.6;
-      padding: 2rem 1rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
 
-    .container {
-      max-width: 1050px;
-      margin: 0 auto;
+    header {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 1.1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    .back-link {
-      display: inline-block;
-      margin-bottom: 1.5rem;
-      color: var(--accent);
+    .brand {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--primary);
       text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    nav a {
+      margin-left: 1.5rem;
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 0.95rem;
       font-weight: 500;
-      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+
+    nav a:hover {
+      color: var(--primary);
+    }
+
+    main {
+      flex: 1;
+      max-width: 1050px;
+      margin: 3.5rem auto 4rem;
+      padding: 0 1.5rem;
+      width: 100%;
     }
 
     /* Login Card */
-    .login-box {
-      max-width: 400px;
-      margin: 4rem auto;
+    .login-card {
+      max-width: 420px;
+      margin: 2rem auto;
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: 16px;
       padding: 2.5rem;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04);
+      text-align: center;
+    }
+
+    .login-card h2 {
+      font-size: 1.75rem;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .login-card p {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 2rem;
     }
 
     .form-group {
-      margin-bottom: 1.25rem;
+      text-align: left;
+      margin-bottom: 1.5rem;
     }
 
     label {
@@ -68,11 +112,15 @@
 
     input[type="password"] {
       width: 100%;
-      padding: 0.75rem;
+      padding: 0.8rem 1rem;
       border: 1px solid var(--border);
-      border-radius: 6px;
+      border-radius: 8px;
       font-size: 0.95rem;
       outline: none;
+    }
+
+    input:focus {
+      border-color: var(--accent);
     }
 
     .btn {
@@ -80,38 +128,72 @@
       background: var(--accent);
       color: #fff;
       border: none;
-      padding: 0.8rem;
-      border-radius: 6px;
+      padding: 0.85rem;
+      border-radius: 8px;
       font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
+      transition: background 0.2s;
     }
 
     .btn:hover {
-      background: var(--primary);
+      background: var(--accent-hover);
     }
 
-    /* Dashboard */
-    .dashboard {
+    /* Dashboard Layout */
+    .dashboard-card {
       display: none;
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 2rem;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      border-radius: 16px;
+      padding: 2.5rem;
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04);
     }
 
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .dashboard-header h1 {
+      font-size: 1.75rem;
+      color: var(--primary);
+    }
+
+    .btn-logout {
+      background: none;
+      border: 1px solid var(--danger);
+      color: var(--danger);
+      padding: 0.4rem 1rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-logout:hover {
+      background: #fef2f2;
+    }
+
+    /* Table */
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 1rem;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
     }
 
     th, td {
-      padding: 0.75rem 0.5rem;
+      padding: 1rem 0.75rem;
       text-align: left;
       border-bottom: 1px solid #f1f5f9;
+      vertical-align: middle;
     }
 
     th {
@@ -120,12 +202,31 @@
       font-weight: 600;
     }
 
-    /* ITAGO ANG PRINTABLE SUMMONS SA SCREEN */
+    select.status-select, input.hearing-input {
+      padding: 0.4rem 0.6rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.85rem;
+      outline: none;
+      background: #fff;
+    }
+
+    .action-btn {
+      background: none;
+      border: none;
+      color: var(--accent);
+      cursor: pointer;
+      font-weight: 600;
+      text-decoration: underline;
+      font-size: 0.85rem;
+      margin-right: 0.5rem;
+    }
+
+    /* Printable KP Summons */
     #printableSummons {
       display: none;
     }
 
-    /* MOGAWAS RA KUNG I-PRINT */
     @media print {
       body * {
         visibility: hidden;
@@ -144,6 +245,16 @@
         color: black;
       }
     }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--muted);
+      background: var(--card-bg);
+      margin-top: auto;
+    }
   </style>
 
   <!-- Supabase CDN -->
@@ -151,33 +262,39 @@
 </head>
 <body>
 
-  <div class="container">
-    <a href="index.html" class="back-link">&larr; Back to Home</a>
+  <header>
+    <a href="index.html" class="brand">⚖️ LuponResolve</a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="filing.html">File Complaint</a>
+    </nav>
+  </header>
 
-    <!-- Login View -->
-    <div id="loginView" class="login-box">
-      <h2 style="color:var(--primary); margin-bottom:0.5rem;">Official Login</h2>
-      <p style="color:var(--muted); font-size:0.9rem; margin-bottom:1.5rem;">Lupon Secretary Authorization</p>
+  <main>
+    <!-- Login Screen -->
+    <div id="loginView" class="login-card">
+      <h2>Official Login</h2>
+      <p>Lupon Secretary & Mediation Registry</p>
       <form id="loginForm">
         <div class="form-group">
-          <label>Passcode PIN</label>
-          <input type="password" id="pinCode" placeholder="Default PIN: 1234" required>
+          <label for="pinCode">Enter Passcode PIN</label>
+          <input type="password" id="pinCode" placeholder="Default PIN: 1234" required />
         </div>
         <button type="submit" class="btn">Log In</button>
       </form>
     </div>
 
-    <!-- Dashboard View -->
-    <div id="dashboardView" class="dashboard">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; border-bottom:1px solid #f1f5f9; padding-bottom:1rem;">
+    <!-- Official Dashboard Screen -->
+    <div id="dashboardView" class="dashboard-card">
+      <div class="dashboard-header">
         <div>
-          <h1 style="color:var(--primary); font-size:1.5rem;">Lupon Mediation Docket</h1>
-          <p style="color:var(--muted); font-size:0.85rem;">Barangay Sumilihon Registry</p>
+          <h1>Dispute Docket Management</h1>
+          <p style="color:var(--muted); font-size:0.9rem;">Barangay Sumilihon Mediation Registry</p>
         </div>
-        <button id="logoutBtn" style="background:none; border:1px solid #ef4444; color:#ef4444; padding:0.4rem 0.8rem; border-radius:6px; cursor:pointer;">Log Out</button>
+        <button id="logoutBtn" class="btn-logout">Log Out</button>
       </div>
 
-      <div style="overflow-x:auto;">
+      <div style="overflow-x: auto;">
         <table>
           <thead>
             <tr>
@@ -195,9 +312,9 @@
         </table>
       </div>
     </div>
-  </div>
+  </main>
 
-  <!-- Print Layout (Hidden on normal screen) -->
+  <!-- Printable KP Form No. 7 -->
   <div id="printableSummons">
     <div style="text-align: center; margin-bottom: 2rem;">
       <p style="font-size: 0.9rem; text-transform: uppercase;">Republic of the Philippines<br>City of Butuan<br><strong>Barangay Sumilihon</strong></p>
@@ -220,11 +337,11 @@
     </div>
 
     <p style="line-height: 1.8; margin-bottom: 2rem;">
-      You are hereby summoned to appear personally before me on the date specified below at the Barangay Hall for mediation:
+      You are hereby summoned to appear personally before me on the date specified below at the Barangay Hall for conciliation and mediation proceedings:
     </p>
 
     <div style="border: 2px dashed #000; padding: 1rem; text-align: center; font-size: 1.2rem; font-weight: bold; margin-bottom: 2rem;">
-      Schedule: <span id="printHearingDate">NOT ASSIGNED</span>
+      Hearing Schedule: <span id="printHearingDate">NOT ASSIGNED</span>
     </div>
 
     <div style="display: flex; justify-content: space-between; margin-top: 4rem;">
@@ -233,11 +350,13 @@
     </div>
   </div>
 
-  <!-- JavaScript Logic -->
+  <footer>
+    <p>&copy; 2026 LuponResolve. Compliant with RA 7160 & RA 10173 (Data Privacy Act).</p>
+  </footer>
+
   <script>
-    // Supabase Setup
     const supabaseUrl = 'https://ivphxduuzemdmkjdgeqy.supabase.co';
-    const supabaseKey = 'sb_publishable_Eh44ol3xJHhoxPNOS6Tueg_SzHFT...'; // <--- paste your full publishable key here
+    const supabaseKey = 'sb_publishable_Eh44ol3xJHhoxPNOS6Tueg_SzHFT...'; // <--- Paste imong publishable key diri
     const db = window.supabase.createClient(supabaseUrl, supabaseKey);
 
     const correctPin = "1234";
@@ -267,7 +386,7 @@
     });
 
     async function fetchCases() {
-      caseTableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:1.5rem;">Loading records...</td></tr>`;
+      caseTableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:2rem; color:var(--muted);">Loading records from Supabase...</td></tr>`;
 
       const { data, error } = await db
         .from('cases')
@@ -275,7 +394,7 @@
         .order('id', { ascending: false });
 
       if (error) {
-        caseTableBody.innerHTML = `<tr><td colspan="8" style="color:red; text-align:center;">Error: ${error.message}</td></tr>`;
+        caseTableBody.innerHTML = `<tr><td colspan="8" style="color:var(--danger); text-align:center; padding:2rem;">Error: ${error.message}</td></tr>`;
         return;
       }
 
@@ -286,7 +405,7 @@
     function renderTable(cases) {
       caseTableBody.innerHTML = '';
       if (!cases || cases.length === 0) {
-        caseTableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--muted); padding:2rem;">No complaints found.</td></tr>`;
+        caseTableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--muted); padding:2rem;">No registered complaints found.</td></tr>`;
         return;
       }
 
@@ -299,7 +418,7 @@
           <td>${item.respondent}</td>
           <td style="text-transform: capitalize;">${item.dispute_type}</td>
           <td>
-            <select onchange="updateStatus(${item.id}, this.value)" style="padding:0.25rem; border-radius:4px; font-size:0.8rem;">
+            <select class="status-select" onchange="updateStatus(${item.id}, this.value)">
               <option value="Under Review" ${item.status === 'Under Review' ? 'selected' : ''}>Under Review</option>
               <option value="Mediation Scheduled" ${item.status === 'Mediation Scheduled' ? 'selected' : ''}>Mediation Scheduled</option>
               <option value="Amicably Settled" ${item.status === 'Amicably Settled' ? 'selected' : ''}>Amicably Settled</option>
@@ -307,11 +426,11 @@
             </select>
           </td>
           <td>
-            <input type="date" value="${item.hearing_date || ''}" onchange="updateHearing(${item.id}, this.value)" style="padding:0.2rem; font-size:0.8rem;" />
+            <input type="date" class="hearing-input" value="${item.hearing_date || ''}" onchange="updateHearing(${item.id}, this.value)" />
           </td>
           <td>
-            <button onclick="viewDetails(${index})" style="background:none; border:none; color:var(--accent); cursor:pointer; text-decoration:underline; font-size:0.8rem; margin-right:5px;">Facts</button>
-            <button onclick="printSummons(${index})" style="background:none; border:none; color:var(--accent); cursor:pointer; text-decoration:underline; font-size:0.8rem;">Summons</button>
+            <button class="action-btn" onclick="viewDetails(${index})">Facts</button>
+            <button class="action-btn" onclick="printSummons(${index})">Summons</button>
           </td>
         `;
         caseTableBody.appendChild(row);
@@ -329,7 +448,7 @@
 
     window.viewDetails = function(index) {
       const c = cachedCases[index];
-      alert(`Docket: ${c.docket}\nDate: ${c.incident_date}\n\nFacts:\n${c.narrative}`);
+      alert(`Docket: ${c.docket}\nIncident Date: ${c.incident_date}\n\nFacts:\n${c.narrative}`);
     };
 
     window.printSummons = function(index) {

@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LuponResolve | Barangay Dispute Resolution System</title>
   
   <style>
     :root {
       --primary: #1e3a8a;
-      --primary-hover: #172554;
       --accent: #2563eb;
+      --accent-hover: #1d4ed8;
       --bg: #f8fafc;
       --card-bg: #ffffff;
       --text: #0f172a;
@@ -28,23 +28,23 @@
       background-color: var(--bg);
       color: var(--text);
       line-height: 1.6;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      min-height: 100vh;
     }
 
     /* Navbar */
     header {
       background: var(--card-bg);
       border-bottom: 1px solid var(--border);
-      padding: 1rem 2rem;
+      padding: 1.1rem 2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
     .brand {
-      font-size: 1.35rem;
+      font-size: 1.3rem;
       font-weight: 700;
       color: var(--primary);
       text-decoration: none;
@@ -69,8 +69,8 @@
     /* Main Container */
     main {
       flex: 1;
-      max-width: 1000px;
-      margin: 3rem auto;
+      max-width: 900px;
+      margin: 3.5rem auto 4rem;
       padding: 0 1.5rem;
       width: 100%;
     }
@@ -81,38 +81,38 @@
     }
 
     .hero h1 {
-      font-size: 2.25rem;
+      font-size: 2.5rem;
       color: var(--primary);
       margin-bottom: 0.75rem;
+      letter-spacing: -0.02em;
     }
 
     .hero p {
       color: var(--muted);
       font-size: 1.1rem;
-      max-width: 600px;
-      margin: 0 auto;
     }
 
-    /* Tracker Input */
+    /* Search Tracker */
     .tracker-box {
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.5rem;
+      border-radius: 16px;
+      padding: 1.25rem;
       display: flex;
       gap: 0.75rem;
-      max-width: 550px;
+      max-width: 580px;
       margin: 0 auto 1.5rem;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04);
     }
 
     .tracker-box input {
       flex: 1;
-      padding: 0.75rem 1rem;
+      padding: 0.8rem 1rem;
       border: 1px solid var(--border);
       border-radius: 8px;
       font-size: 0.95rem;
       outline: none;
+      color: var(--text);
     }
 
     .tracker-box input:focus {
@@ -123,7 +123,7 @@
       background: var(--accent);
       color: #fff;
       border: none;
-      padding: 0.75rem 1.25rem;
+      padding: 0.8rem 1.5rem;
       border-radius: 8px;
       font-weight: 600;
       cursor: pointer;
@@ -131,22 +131,22 @@
     }
 
     .tracker-box button:hover {
-      background: var(--primary);
+      background: var(--accent-hover);
     }
 
     /* Result Box */
     #statusResult {
       display: none;
-      max-width: 550px;
+      max-width: 580px;
       margin: 0 auto 3rem;
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 10px;
+      border-radius: 16px;
       padding: 1.5rem;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04);
     }
 
-    /* Portal Cards */
+    /* Portal Grid */
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -156,56 +156,59 @@
     .card {
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 2rem;
+      border-radius: 16px;
+      padding: 2.25rem;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04);
       transition: transform 0.2s, box-shadow 0.2s;
     }
 
     .card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -4px rgba(0, 0, 0, 0.08);
     }
 
     .card h2 {
-      font-size: 1.25rem;
-      margin-bottom: 0.5rem;
+      font-size: 1.35rem;
+      margin-bottom: 0.75rem;
       color: var(--primary);
     }
 
     .card p {
       color: var(--muted);
       font-size: 0.95rem;
-      margin-bottom: 1.5rem;
+      margin-bottom: 2rem;
     }
 
     .card-btn {
-      display: inline-block;
+      display: block;
       text-align: center;
-      padding: 0.65rem 1rem;
-      border-radius: 6px;
+      padding: 0.8rem 1.25rem;
+      border-radius: 8px;
       font-weight: 600;
       text-decoration: none;
-      font-size: 0.9rem;
-      border: 1px solid var(--accent);
-      color: var(--accent);
+      font-size: 0.95rem;
       transition: all 0.2s;
     }
 
     .card-btn.primary {
       background: var(--accent);
-      color: white;
+      color: #fff;
     }
 
     .card-btn.primary:hover {
-      background: var(--primary);
-      border-color: var(--primary);
+      background: var(--accent-hover);
     }
 
-    .card-btn:hover {
+    .card-btn.secondary {
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+    }
+
+    .card-btn.secondary:hover {
       background: #eff6ff;
     }
 
@@ -216,7 +219,7 @@
       font-size: 0.85rem;
       color: var(--muted);
       background: var(--card-bg);
-      margin-top: 3rem;
+      margin-top: auto;
     }
   </style>
 
@@ -245,10 +248,10 @@
       <button type="button" id="trackBtn">Track</button>
     </div>
 
-    <!-- Case Result Display -->
+    <!-- Case Status Result Card -->
     <div id="statusResult"></div>
 
-    <!-- Action Cards -->
+    <!-- Portals -->
     <div class="grid">
       <div class="card">
         <div>
@@ -263,7 +266,7 @@
           <h2>Barangay Portal</h2>
           <p>Restricted access for Lupon Secretary to manage mediation hearings and docket notices.</p>
         </div>
-        <a href="portal.html" class="card-btn">Official Login</a>
+        <a href="portal.html" class="card-btn secondary">Official Login</a>
       </div>
     </div>
   </main>
@@ -273,9 +276,8 @@
   </footer>
 
   <script>
-    // Supabase Connection
     const supabaseUrl = 'https://ivphxduuzemdmkjdgeqy.supabase.co';
-    const supabaseKey = 'sb_publishable_Eh44ol3xJHhoxPNOS6Tueg_SzHFT...'; // <--- ibutang ang imong publishable key
+    const supabaseKey = 'sb_publishable_Eh44ol3xJHhoxPNOS6Tueg_SzHFT...'; // <--- Paste imong publishable key diri
     const db = window.supabase.createClient(supabaseUrl, supabaseKey);
 
     document.getElementById('trackBtn').addEventListener('click', async function() {
@@ -297,21 +299,23 @@
         .maybeSingle();
 
       if (error) {
-        resultBox.innerHTML = `<p style="color:red; font-weight:600;">Error: ${error.message}</p>`;
+        resultBox.innerHTML = `<p style="color:#ef4444; font-weight:600;">Error: ${error.message}</p>`;
         return;
       }
 
       if (data) {
         resultBox.innerHTML = `
           <h3 style="color:var(--primary); margin-bottom:0.75rem;">Case Found: ${data.docket}</h3>
-          <p style="margin-bottom:0.4rem;"><strong>Status:</strong> <span style="background:#dbeafe; color:#1e40af; padding:3px 8px; border-radius:4px; font-weight:600;">${data.status}</span></p>
+          <p style="margin-bottom:0.4rem;"><strong>Status:</strong> <span style="background:#dbeafe; color:#1e40af; padding:3px 10px; border-radius:6px; font-weight:600;">${data.status}</span></p>
           <p style="margin-bottom:0.4rem;"><strong>Complainant:</strong> ${data.complainant}</p>
           <p style="margin-bottom:0.4rem;"><strong>Respondent:</strong> ${data.respondent}</p>
           <p style="margin-bottom:0.4rem; text-transform: capitalize;"><strong>Dispute:</strong> ${data.dispute_type}</p>
           <p style="margin-bottom:0.4rem;"><strong>Hearing Schedule:</strong> ${data.hearing_date ? new Date(data.hearing_date).toLocaleDateString() : '<em>Not yet scheduled</em>'}</p>
         `;
       } else {
-        resultBox.innerHTML = `<p style="color:#dc2626; font-weight:600;">No record found for docket "${input}".</p>`;
+        resultBox.innerHTML = `<p style="color:#ef4444; font-weight:600;">No record found for docket "${input}".</p>`;
       }
     });
   </script>
+</body>
+</html>

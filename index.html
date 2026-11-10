@@ -41,10 +41,11 @@
     header {
       background: var(--card-bg);
       border-bottom: 1px solid var(--border);
-      padding: 1rem 2rem;
+      padding: 0.85rem 2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      position: relative;
     }
 
     .brand {
@@ -60,7 +61,7 @@
     nav {
       display: flex;
       align-items: center;
-      gap: 1.25rem;
+      gap: 1.5rem;
     }
 
     nav a {
@@ -75,27 +76,131 @@
       color: var(--primary);
     }
 
-    .user-tag {
-      font-size: 0.85rem;
-      color: var(--primary);
-      font-weight: 600;
-      background: #eff6ff;
-      padding: 0.35rem 0.75rem;
-      border-radius: 20px;
+    /* User Profile Menu Trigger */
+    .profile-dropdown-wrapper {
+      position: relative;
     }
 
-    .logout-btn {
-      background: none;
-      border: 1px solid var(--danger);
-      color: var(--danger);
-      padding: 0.35rem 0.75rem;
-      border-radius: 6px;
-      font-size: 0.85rem;
-      font-weight: 600;
+    .profile-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      padding: 0.35rem 0.75rem 0.35rem 0.4rem;
+      border-radius: 30px;
       cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text);
+      transition: all 0.2s;
     }
 
-    .logout-btn:hover {
+    .profile-btn:hover {
+      background: #e2e8f0;
+    }
+
+    .avatar-circle {
+      width: 32px;
+      height: 32px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+    }
+
+    /* Dropdown Floating Card */
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: calc(100% + 0.6rem);
+      width: 250px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+      z-index: 50;
+      overflow: hidden;
+      animation: fadeIn 0.15s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .dropdown-header {
+      padding: 1rem;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dropdown-header .name {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .dropdown-header .email {
+      font-size: 0.8rem;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .dropdown-header .badge {
+      display: inline-block;
+      margin-top: 0.35rem;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .dropdown-items {
+      padding: 0.4rem 0;
+    }
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      width: 100%;
+      padding: 0.65rem 1rem;
+      background: none;
+      border: none;
+      text-align: left;
+      font-size: 0.88rem;
+      color: var(--text);
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+
+    .dropdown-item:hover {
+      background: #f1f5f9;
+    }
+
+    .dropdown-item.danger {
+      color: var(--danger);
+      border-top: 1px solid var(--border);
+      margin-top: 0.3rem;
+    }
+
+    .dropdown-item.danger:hover {
       background: #fef2f2;
     }
 
@@ -251,7 +356,7 @@
       background: #eff6ff;
     }
 
-    /* Guidelines Modal Styles */
+    /* Modal Styling */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -262,6 +367,16 @@
       justify-content: center;
       z-index: 1000;
       padding: 1.5rem;
+    }
+
+    .modal-card {
+      background: #ffffff;
+      border-radius: 16px;
+      max-width: 440px;
+      width: 100%;
+      padding: 2rem;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+      animation: popIn 0.2s ease-out;
     }
 
     .guidelines-modal {
@@ -282,16 +397,11 @@
     }
 
     .modal-header {
-      padding: 1.5rem;
+      padding: 1.25rem 1.5rem;
       border-bottom: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
       align-items: center;
-    }
-
-    .modal-header h2 {
-      font-size: 1.3rem;
-      color: var(--primary);
     }
 
     .modal-close {
@@ -300,49 +410,31 @@
       font-size: 1.5rem;
       color: var(--muted);
       cursor: pointer;
-      padding: 0 0.5rem;
     }
 
-    .modal-close:hover {
-      color: var(--text);
+    .form-group {
+      margin-bottom: 1.2rem;
+      text-align: left;
     }
 
-    .modal-body {
-      padding: 1.75rem;
-      overflow-y: auto;
-      font-size: 0.92rem;
-      color: var(--text);
-    }
-
-    .guide-section {
-      margin-bottom: 1.5rem;
-    }
-
-    .guide-section h3 {
-      font-size: 1rem;
-      color: var(--accent);
-      margin-bottom: 0.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-
-    .guide-section ul {
-      padding-left: 1.4rem;
-      color: var(--text);
-    }
-
-    .guide-section li {
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
       margin-bottom: 0.35rem;
     }
 
-    .modal-footer {
-      padding: 1rem 1.5rem;
-      border-top: 1px solid var(--border);
-      text-align: right;
-      background: #f8fafc;
-      border-bottom-left-radius: 16px;
-      border-bottom-right-radius: 16px;
+    .form-group input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .form-group input:focus {
+      border-color: var(--accent);
     }
 
     footer {
@@ -360,12 +452,37 @@
 
   <header>
     <a href="index.html" class="brand">⚖️ LuponResolve</a>
+    
     <nav>
-      <span class="user-tag" id="userGreeting">Checking session...</span>
       <a href="filing.html">File Complaint</a>
       <a href="portal.html" id="officerPortalLink" style="display: none;">Official Portal</a>
       <a href="#" id="navGuidelinesLink">Guidelines</a>
-      <button class="logout-btn" id="logoutBtn">Log Out</button>
+
+      <!-- Profile Avatar Button with Dropdown -->
+      <div class="profile-dropdown-wrapper">
+        <button class="profile-btn" id="profileDropdownBtn" type="button">
+          <div class="avatar-circle" id="userAvatar">U</div>
+          <span id="navUserName">Loading...</span>
+          <span style="font-size: 0.7rem; color: var(--muted);">▼</span>
+        </button>
+
+        <!-- The Floating Dropdown Card -->
+        <div class="dropdown-menu" id="dropdownMenu">
+          <div class="dropdown-header">
+            <div class="name" id="dropFullName">User Name</div>
+            <div class="email" id="dropEmail">user@email.com</div>
+            <div class="badge" id="dropRole">Resident</div>
+          </div>
+          <div class="dropdown-items">
+            <button class="dropdown-item" type="button" id="openSettingsBtn">
+              ⚙️ Account Settings & Password
+            </button>
+            <button class="dropdown-item danger" type="button" id="logoutBtn">
+              🚪 Log Out
+            </button>
+          </div>
+        </div>
+      </div>
     </nav>
   </header>
 
@@ -412,61 +529,86 @@
     </div>
   </main>
 
-  <!-- Guidelines Pop-up Modal -->
+  <!-- ACCOUNT SETTINGS & CHANGE PASSWORD MODAL -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <h2 style="color:var(--primary); font-size:1.25rem;">Account Settings</h2>
+        <button class="modal-close" id="closeSettingsBtn">&times;</button>
+      </div>
+      
+      <!-- User Info Details -->
+      <div style="background:#f8fafc; border:1px solid var(--border); border-radius:8px; padding:0.85rem; margin-bottom:1.5rem; font-size:0.88rem;">
+        <p style="margin-bottom:0.25rem;"><strong>Signed in as:</strong> <span id="settingsEmail">user@email.com</span></p>
+        <p style="margin-bottom:0.25rem;"><strong>Role:</strong> <span id="settingsRole" style="text-transform:capitalize;">Resident</span></p>
+        <p style="margin:0;"><strong>Location:</strong> <span id="settingsPurok">Barangay Sumilihon</span></p>
+      </div>
+
+      <h3 style="font-size:1rem; color:var(--primary); margin-bottom:0.75rem;">Change Password</h3>
+
+      <form id="changePasswordForm">
+        <div class="form-group">
+          <label for="newPassword">New Password</label>
+          <input type="password" id="newPassword" required minlength="6" placeholder="Enter new password" />
+        </div>
+        <div class="form-group">
+          <label for="confirmNewPassword">Confirm New Password</label>
+          <input type="password" id="confirmNewPassword" required minlength="6" placeholder="Re-type new password" />
+        </div>
+        <button type="submit" class="card-btn primary" id="savePwdBtn" style="width:100%; padding:0.75rem;">
+          Save New Password
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- GUIDELINES MODAL -->
   <div class="modal-overlay" id="guidelinesModal">
     <div class="guidelines-modal">
       <div class="modal-header">
-        <h2>⚖️ Katarungang Pambarangay Guidelines</h2>
+        <h2 style="font-size:1.3rem; color:var(--primary);">⚖️ Katarungang Pambarangay Guidelines</h2>
         <button class="modal-close" id="closeGuidelinesBtn">&times;</button>
       </div>
 
-      <div class="modal-body">
-        <div class="guide-section">
-          <h3>📌 Covered Cases Under Lupon Authority</h3>
-          <ul>
+      <div style="padding:1.5rem; overflow-y:auto; font-size:0.92rem;">
+        <div style="margin-bottom:1.5rem;">
+          <h3 style="font-size:1rem; color:var(--accent); margin-bottom:0.5rem;">📌 Covered Cases Under Lupon Authority</h3>
+          <ul style="padding-left:1.4rem;">
             <li>Boundary line disputes and property encroachments between neighbors.</li>
             <li>Unpaid personal loans, financial obligations, or minor collection claims.</li>
             <li>Community disturbances (excessive noise, unruly pets, neighborhood nuisance).</li>
             <li>Verbal altercations, slander, oral defamation, or slight physical injuries.</li>
-            <li>Civil disputes between individuals residing in the same city or municipality not classified as serious criminal offenses.</li>
+            <li>Civil disputes between individuals residing in the same city or municipality.</li>
           </ul>
         </div>
 
-        <div class="guide-section">
-          <h3>⛔ Cases Excluded from Barangay Conciliation</h3>
-          <ul>
+        <div style="margin-bottom:1.5rem;">
+          <h3 style="font-size:1rem; color:var(--accent); margin-bottom:0.5rem;">⛔ Cases Excluded from Barangay Conciliation</h3>
+          <ul style="padding-left:1.4rem;">
             <li>Offenses punishable by imprisonment exceeding one (1) year or fines over PHP 5,000.</li>
-            <li>Complaints involving public officers or government employees relating to the performance of official duties.</li>
-            <li>Disputes where one or both parties reside in different provinces or distant municipalities.</li>
-            <li>Disputes involving real property located outside the jurisdiction of the city or municipality.</li>
+            <li>Complaints involving public officers relating to official duties.</li>
+            <li>Disputes where parties reside in different provinces or distant municipalities.</li>
           </ul>
         </div>
 
-        <div class="guide-section">
-          <h3>🔄 The 3 Stages of Katarungang Pambarangay</h3>
-          <ul>
-            <li><strong>Stage 1 (Mediation by Punong Barangay):</strong> The Punong Barangay summons both parties within fifteen (15) days to achieve an amicable settlement.</li>
-            <li><strong>Stage 2 (Pangkat Conciliation):</strong> If mediation fails, a three-member panel (Pangkat Tagapagkasundo) is constituted to resolve the matter within another fifteen (15) days.</li>
-            <li><strong>Stage 3 (Settlement or Certificate to File Action):</strong> If agreed upon, an Amicable Settlement is signed with the force and effect of a final court judgment. If conciliation fails, a <em>Certificate to File Action (CFA)</em> is issued to allow formal court filing.</li>
+        <div style="margin-bottom:0;">
+          <h3 style="font-size:1rem; color:var(--accent); margin-bottom:0.5rem;">🔄 The 3 Stages of Conciliation</h3>
+          <ul style="padding-left:1.4rem;">
+            <li><strong>Stage 1 (Mediation by Punong Barangay):</strong> 15-day amicable settlement period.</li>
+            <li><strong>Stage 2 (Pangkat Conciliation):</strong> 3-member panel conciliation within 15 days.</li>
+            <li><strong>Stage 3 (Settlement or CFA):</strong> Formal settlement or Certificate to File Action in Court.</li>
           </ul>
-        </div>
-
-        <div class="guide-section" style="margin-bottom: 0;">
-          <h3>🔒 Data Privacy & Confidentiality (RA 10173)</h3>
-          <p style="color:var(--muted); font-size: 0.85rem;">
-            All personal information submitted through LuponResolve is handled with strict confidentiality under the Data Privacy Act of 2012 (RA 10173) and will be used solely for the official conciliation proceedings of Barangay Sumilihon.
-          </p>
         </div>
       </div>
 
-      <div class="modal-footer">
-        <button type="button" class="card-btn primary" id="closeGuidelinesFooterBtn" style="padding: 0.5rem 1.25rem;">Understood (Close)</button>
+      <div style="padding:1rem 1.5rem; border-top:1px solid var(--border); text-align:right; background:#f8fafc; border-bottom-left-radius:16px; border-bottom-right-radius:16px;">
+        <button type="button" class="card-btn primary" id="closeGuidelinesFooterBtn" style="padding:0.5rem 1.25rem;">Understood (Close)</button>
       </div>
     </div>
   </div>
 
   <footer>
-    <p>&copy; 2026 LuponResolve. Compliant with RA 7160 (Local Government Code) & RA 10173 (Data Privacy Act).</p>
+    <p>&copy; 2026 LuponResolve. Compliant with RA 7160 & RA 10173 (Data Privacy Act).</p>
   </footer>
 
   <script>
@@ -474,45 +616,122 @@
     const supabaseKey = 'sb_publishable_Eh44ol3xJHhoxPNOS6Tueg_SzHFTi5u';
     const db = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    // 1. Session Guard Check (Kini ang mopugos og balik sa auth.html kung wala pa naka-login)
+    let currentSessionUser = null;
+
+    // 1. Session Guard & Populate Profile Info
     async function checkAuthSession() {
       const { data: { session } } = await db.auth.getSession();
 
       if (!session) {
-        // Walay account o wala naka-login -> Diretso sa auth.html
         window.location.href = 'auth.html';
         return;
       }
 
-      // Naka-login -> kuhaon ang ngalan ug role gikan sa profiles table
+      currentSessionUser = session.user;
+
       const { data: profile } = await db
         .from('profiles')
-        .select('full_name, role')
+        .select('*')
         .eq('id', session.user.id)
         .maybeSingle();
 
-      const userGreeting = document.getElementById('userGreeting');
-      if (profile && profile.full_name) {
-        userGreeting.innerText = `👤 ${profile.full_name} (${profile.role})`;
-      } else {
-        userGreeting.innerText = `👤 ${session.user.email}`;
-      }
+      const fullName = profile?.full_name || session.user.email.split('@')[0];
+      const role = profile?.role || 'resident';
+      const purok = profile?.purok || 'Barangay Sumilihon';
 
-      // Ipakita ang Official Portal link kung opisyal siya
-      if (profile && profile.role === 'officer') {
+      // Update Nav Bar
+      document.getElementById('navUserName').innerText = fullName;
+      document.getElementById('userAvatar').innerText = fullName.charAt(0);
+
+      // Update Dropdown Header
+      document.getElementById('dropFullName').innerText = fullName;
+      document.getElementById('dropEmail').innerText = session.user.email;
+      document.getElementById('dropRole').innerText = role;
+
+      // Update Settings Modal
+      document.getElementById('settingsEmail').innerText = session.user.email;
+      document.getElementById('settingsRole').innerText = role;
+      document.getElementById('settingsPurok').innerText = purok;
+
+      // Show Officer Portal link if role is officer
+      if (role === 'officer') {
         document.getElementById('officerPortalLink').style.display = 'inline-block';
       }
     }
 
     checkAuthSession();
 
-    // Logout Functionality
+    // 2. Dropdown Toggle Behavior
+    const profileDropdownBtn = document.getElementById('profileDropdownBtn');
+    const dropdownMenu = document.getElementById('dropdownMenu');
+
+    profileDropdownBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isVisible = dropdownMenu.style.display === 'block';
+      dropdownMenu.style.display = isVisible ? 'none' : 'block';
+    });
+
+    // Close dropdown when clicking outside
+    window.addEventListener('click', (e) => {
+      if (!dropdownMenu.contains(e.target) && !profileDropdownBtn.contains(e.target)) {
+        dropdownMenu.style.display = 'none';
+      }
+    });
+
+    // 3. Settings & Change Password Modal
+    const settingsModal = document.getElementById('settingsModal');
+    const openSettingsBtn = document.getElementById('openSettingsBtn');
+    const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+    const changePasswordForm = document.getElementById('changePasswordForm');
+    const savePwdBtn = document.getElementById('savePwdBtn');
+
+    openSettingsBtn.addEventListener('click', () => {
+      dropdownMenu.style.display = 'none';
+      settingsModal.style.display = 'flex';
+    });
+
+    closeSettingsBtn.addEventListener('click', () => {
+      settingsModal.style.display = 'none';
+      changePasswordForm.reset();
+    });
+
+    changePasswordForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const newPwd = document.getElementById('newPassword').value;
+      const confirmPwd = document.getElementById('confirmNewPassword').value;
+
+      if (newPwd !== confirmPwd) {
+        alert('Passwords do not match. Please verify.');
+        return;
+      }
+
+      savePwdBtn.disabled = true;
+      savePwdBtn.innerText = 'Updating password...';
+
+      const { data, error } = await db.auth.updateUser({
+        password: newPwd
+      });
+
+      if (error) {
+        alert('Failed to update password: ' + error.message);
+        savePwdBtn.disabled = false;
+        savePwdBtn.innerText = 'Save New Password';
+      } else {
+        alert('Password successfully updated! Please use this password on your next login.');
+        settingsModal.style.display = 'none';
+        changePasswordForm.reset();
+        savePwdBtn.disabled = false;
+        savePwdBtn.innerText = 'Save New Password';
+      }
+    });
+
+    // 4. Logout Functionality
     document.getElementById('logoutBtn').addEventListener('click', async () => {
       await db.auth.signOut();
       window.location.href = 'auth.html';
     });
 
-    // Track Case Status Logic with Acceptance Banner
+    // 5. Track Case Status
     document.getElementById('trackBtn').addEventListener('click', async function() {
       const input = document.getElementById('trackInput').value.trim();
       const resultBox = document.getElementById('statusResult');
@@ -572,7 +791,7 @@
       }
     });
 
-    // Guidelines Modal Logic
+    // 6. Guidelines Modal Logic
     const guidelinesModal = document.getElementById('guidelinesModal');
     const openGuidelinesBtn = document.getElementById('openGuidelinesBtn');
     const navGuidelinesLink = document.getElementById('navGuidelinesLink');
@@ -594,8 +813,10 @@
     closeGuidelinesFooterBtn.addEventListener('click', closeModal);
 
     window.addEventListener('click', function(e) {
-      if (e.target === guidelinesModal) {
-        closeModal();
+      if (e.target === guidelinesModal) closeModal();
+      if (e.target === settingsModal) {
+        settingsModal.style.display = 'none';
+        changePasswordForm.reset();
       }
     });
   </script>

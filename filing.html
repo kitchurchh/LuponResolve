@@ -1,24 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LuponResolve | Barangay Dispute Resolution System</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>File a Complaint | LuponResolve</title>
 
-  <!-- Supabase CDN -->
+  <!-- Supabase JS Library -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     :root {
       --primary: #1e3a8a;
-      --primary-hover: #172554;
       --accent: #2563eb;
+      --accent-hover: #1d4ed8;
       --bg: #f8fafc;
       --card-bg: #ffffff;
       --text: #0f172a;
       --muted: #64748b;
-      --border: #e2e8f0;
-      --danger: #ef4444;
+      --border: #cbd5e1;
       --success: #16a34a;
     }
 
@@ -33,311 +32,371 @@
       background-color: var(--bg);
       color: var(--text);
       line-height: 1.6;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      min-height: 100vh;
+      padding: 2rem 1rem;
     }
 
-    header {
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
       background: var(--card-bg);
-      border-bottom: 1px solid var(--border);
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      border-radius: 12px;
+      padding: 2.5rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e2e8f0;
+      width: 100%;
+      flex: 1;
     }
 
-    .brand {
-      font-size: 1.35rem;
+    .back-link {
+      display: inline-block;
+      margin-bottom: 1.5rem;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    p.subtitle {
+      color: var(--muted);
+      margin-bottom: 2rem;
+      font-size: 0.95rem;
+    }
+
+    fieldset {
+      border: none;
+      margin-bottom: 2rem;
+      padding: 0;
+    }
+
+    legend {
+      font-size: 1.1rem;
       font-weight: 700;
       color: var(--primary);
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    nav a {
-      margin-left: 1.5rem;
-      text-decoration: none;
-      color: var(--muted);
-      font-size: 0.95rem;
-      font-weight: 500;
-      transition: color 0.2s;
-    }
-
-    nav a:hover {
-      color: var(--primary);
-    }
-
-    main {
-      flex: 1;
-      max-width: 1000px;
-      margin: 3rem auto;
-      padding: 0 1.5rem;
+      margin-bottom: 1rem;
+      border-bottom: 2px solid #f1f5f9;
+      padding-bottom: 0.4rem;
       width: 100%;
     }
 
-    .hero {
-      text-align: center;
-      margin-bottom: 2.5rem;
+    .form-group {
+      margin-bottom: 1.25rem;
     }
 
-    .hero h1 {
-      font-size: 2.25rem;
-      color: var(--primary);
-      margin-bottom: 0.75rem;
+    label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
     }
 
-    .hero p {
-      color: var(--muted);
-      font-size: 1.1rem;
-      max-width: 600px;
-      margin: 0 auto;
-    }
-
-    /* Tracker Input Box */
-    .tracker-box {
-      background: var(--card-bg);
+    input[type="text"],
+    input[type="tel"],
+    input[type="date"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 0.75rem;
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.25rem;
-      display: flex;
-      gap: 0.75rem;
-      max-width: 580px;
-      margin: 0 auto 1.5rem;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    }
-
-    .tracker-box input {
-      flex: 1;
-      padding: 0.75rem 1rem;
-      border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: 6px;
       font-size: 0.95rem;
       outline: none;
+      background: #fff;
     }
 
-    .tracker-box input:focus {
+    input:focus,
+    select:focus,
+    textarea:focus {
       border-color: var(--accent);
     }
 
-    .tracker-box button {
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+      .container {
+        padding: 1.5rem;
+      }
+    }
+
+    .consent-box {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.85rem;
+      color: #1e3a8a;
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+
+    .consent-box input {
+      margin-top: 0.25rem;
+      cursor: pointer;
+    }
+
+    .consent-box label {
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    button[type="submit"] {
+      width: 100%;
       background: var(--accent);
       color: #fff;
       border: none;
-      padding: 0.75rem 1.25rem;
-      border-radius: 8px;
+      padding: 0.85rem;
+      border-radius: 6px;
+      font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
       transition: background 0.2s;
     }
 
-    .tracker-box button:hover {
-      background: var(--primary);
+    button[type="submit"]:hover {
+      background: var(--accent-hover);
     }
 
-    /* Case Status Card Result */
-    #statusResult {
+    /* Modal Pop-up */
+    .modal-overlay {
       display: none;
-      max-width: 580px;
-      margin: 0 auto 3rem;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.5rem;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(4px);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 1rem;
     }
 
-    .status-badge {
-      display: inline-block;
-      background: #dbeafe;
-      color: #1e40af;
-      padding: 3px 10px;
-      border-radius: 6px;
-      font-weight: 600;
-      font-size: 0.85rem;
+    .modal-card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 2.5rem 2rem;
+      max-width: 440px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      animation: popIn 0.25s ease-out;
     }
 
-    /* Card Navigation */
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
+    @keyframes popIn {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
     }
 
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 2rem;
+    .check-icon {
+      width: 60px;
+      height: 60px;
+      background: #dcfce7;
+      color: var(--success);
+      border-radius: 50%;
       display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04);
-      transition: transform 0.2s, box-shadow 0.2s;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      margin: 0 auto 1.25rem;
     }
 
-    .card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
-    }
-
-    .card h2 {
-      font-size: 1.25rem;
-      margin-bottom: 0.5rem;
-      color: var(--primary);
-    }
-
-    .card p {
-      color: var(--muted);
-      font-size: 0.95rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .card-btn {
+    .docket-badge {
       display: inline-block;
-      text-align: center;
-      padding: 0.65rem 1rem;
-      border-radius: 6px;
-      font-weight: 600;
-      text-decoration: none;
-      font-size: 0.9rem;
-      border: 1px solid var(--accent);
-      color: var(--accent);
-      transition: all 0.2s;
+      background: #f1f5f9;
+      border: 1px dashed var(--accent);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin: 1rem 0;
     }
 
-    .card-btn.primary {
+    .btn-return {
+      width: 100%;
       background: var(--accent);
-      color: white;
+      color: #fff;
+      border: none;
+      padding: 0.8rem;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 0.5rem;
     }
 
-    .card-btn.primary:hover {
-      background: var(--primary);
-      border-color: var(--primary);
-    }
-
-    .card-btn:hover {
-      background: #eff6ff;
-    }
-
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 1.5rem;
-      text-align: center;
-      font-size: 0.85rem;
-      color: var(--muted);
-      background: var(--card-bg);
-      margin-top: auto;
+    .btn-return:hover {
+      background: var(--accent-hover);
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <a href="index.html" class="brand">⚖️ LuponResolve</a>
-    <nav>
-      <a href="filing.html">File Complaint</a>
-      <a href="portal.html">Official Portal</a>
-    </nav>
-  </header>
+  <div class="container">
+    <a href="index.html" class="back-link">&larr; Back to Home</a>
+    <h1>Barangay Incident & Dispute Filing</h1>
+    <p class="subtitle">Enter the required details for mediation under Katarungang Pambarangay.</p>
 
-  <main>
-    <section class="hero">
-      <h1>Barangay Dispute & Case Portal</h1>
-      <p>Streamlined complaint filing, mediation scheduling, and record-keeping under Katarungang Pambarangay.</p>
-    </section>
+    <form id="complaintForm">
+      <!-- Complainant Details -->
+      <fieldset>
+        <legend>1. Complainant Information (Nangreklamo)</legend>
+        <div class="form-group">
+          <label for="complainantName">Full Name</label>
+          <input type="text" id="complainantName" required placeholder="Juan Dela Cruz" />
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="complainantContact">Contact Number</label>
+            <input type="tel" id="complainantContact" required placeholder="09xxxxxxxxx" />
+          </div>
+          <div class="form-group">
+            <label for="complainantPurok">Purok / Sitio Address</label>
+            <input type="text" id="complainantPurok" required placeholder="Purok 3" />
+          </div>
+        </div>
+      </fieldset>
 
-    <!-- Case Status Search Box -->
-    <div class="tracker-box">
-      <input type="text" id="trackInput" placeholder="Enter Docket / Tracking No. (e.g., KP-2026-1024)" />
-      <button type="button" id="trackBtn">Track</button>
+      <!-- Respondent Details -->
+      <fieldset>
+        <legend>2. Respondent Information (Gireklamo)</legend>
+        <div class="form-group">
+          <label for="respondentName">Full Name</label>
+          <input type="text" id="respondentName" required placeholder="Full name of person being reported" />
+        </div>
+        <div class="form-group">
+          <label for="respondentPurok">Known Purok / Address</label>
+          <input type="text" id="respondentPurok" required placeholder="Purok or exact location" />
+        </div>
+      </fieldset>
+
+      <!-- Incident Details -->
+      <fieldset>
+        <legend>3. Nature of Complaint</legend>
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="disputeType">Dispute Type</label>
+            <select id="disputeType" required>
+              <option value="" disabled selected>Select category</option>
+              <option value="boundary">Boundary / Property Dispute</option>
+              <option value="debt">Unpaid Debt / Financial Obligation</option>
+              <option value="altercation">Physical / Verbal Altercation</option>
+              <option value="disturbance">Public Disturbance / Noise</option>
+              <option value="other">Other Civil Dispute</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="incidentDate">Date of Incident</label>
+            <input type="date" id="incidentDate" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="incidentNarrative">Statement of Facts / Summary</label>
+          <textarea id="incidentNarrative" rows="4" required placeholder="Describe what happened clearly..."></textarea>
+        </div>
+      </fieldset>
+
+      <!-- Privacy Consent -->
+      <div class="consent-box">
+        <input type="checkbox" id="privacyConsent" required />
+        <label for="privacyConsent">
+          I confirm that the information provided is accurate and grant consent to process this data strictly for Katarungang Pambarangay proceedings pursuant to RA 10173 (Data Privacy Act).
+        </label>
+      </div>
+
+      <button type="submit" id="submitBtn">Submit Complaint</button>
+    </form>
+  </div>
+
+  <!-- Thank You Modal -->
+  <div class="modal-overlay" id="successModal">
+    <div class="modal-card">
+      <div class="check-icon">✓</div>
+      <h2 style="color:var(--primary); margin-bottom:0.5rem;">Thank You for Filing!</h2>
+      <p style="color:var(--muted); font-size:0.95rem;">Your complaint has been successfully recorded into the Lupon registry.</p>
+      
+      <p style="font-size:0.85rem; margin-top:1.25rem; color:var(--text); font-weight:600;">Your Tracking Docket:</p>
+      <div class="docket-badge" id="modalDocket">KP-2026-0000</div>
+      
+      <p style="font-size:0.85rem; color:var(--muted); margin-bottom:1.5rem;">
+        Take a screenshot or record this number to track your case status.
+      </p>
+
+      <button type="button" class="btn-return" onclick="window.location.href='index.html'">
+        Return to Home (<span id="countdown">3</span>s)
+      </button>
     </div>
-
-    <!-- Live Case Search Results -->
-    <div id="statusResult"></div>
-
-    <!-- Navigation Cards -->
-    <div class="grid">
-      <div class="card">
-        <div>
-          <h2>File a Complaint</h2>
-          <p>Submit an incident report or civil claim for Katarungang Pambarangay mediation review.</p>
-        </div>
-        <a href="filing.html" class="card-btn primary">Start Filing</a>
-      </div>
-
-      <div class="card">
-        <div>
-          <h2>Barangay Portal</h2>
-          <p>Restricted access for the Punong Barangay and Lupon Secretary to manage hearings and summons.</p>
-        </div>
-        <a href="portal.html" class="card-btn">Official Login</a>
-      </div>
-
-      <div class="card">
-        <div>
-          <h2>KP Conciliation Flow</h2>
-          <p>Review standard stages: Barangay Captain mediation, Pangkat constitution, and settlement execution.</p>
-        </div>
-        <a href="filing.html" class="card-btn">View Guidelines</a>
-      </div>
-    </div>
-  </main>
-
-  <footer>
-    <p>&copy; 2026 LuponResolve. Compliant with RA 7160 (Local Government Code) & RA 10173 (Data Privacy Act).</p>
-  </footer>
+  </div>
 
   <script>
-    // Konektado sa parehas nga database ug publishable key sa filing.html ug portal.html
+    // Konektado sa parehas nga database ug publishable key sa portal
     const supabaseUrl = 'https://ivphxduuzemdmkjdgeqy.supabase.co';
     const supabaseKey = 'sb_publishable_Eh44ol3xJHhoxPNOS6Tueg_SzHFTi5u';
     const db = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    document.getElementById('trackBtn').addEventListener('click', async function() {
-      const input = document.getElementById('trackInput').value.trim();
-      const resultBox = document.getElementById('statusResult');
+    document.getElementById('complaintForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
 
-      if (!input) {
-        alert('Please enter a docket tracking number.');
-        return;
-      }
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Submitting to database...';
 
-      resultBox.style.display = 'block';
-      resultBox.innerHTML = '<p style="color:var(--muted); text-align:center;">Searching case records from database...</p>';
+      // Nagahimo og unique Docket No. (e.g. KP-2026-4821)
+      const trackingNo = 'KP-' + new Date().getFullYear() + '-' + Math.floor(1000 + Math.random() * 9000);
 
-      // Pangitaon sa Supabase cases table ang docket number
-      const { data, error } = await db
-        .from('cases')
-        .select('*')
-        .ilike('docket', input)
-        .maybeSingle();
+      // Ang column names parehas sa schema sa 'cases' table
+      const payload = {
+        docket: trackingNo,
+        complainant: document.getElementById('complainantName').value.trim(),
+        complainant_purok: document.getElementById('complainantPurok').value.trim(),
+        respondent: document.getElementById('respondentName').value.trim(),
+        respondent_purok: document.getElementById('respondentPurok').value.trim(),
+        dispute_type: document.getElementById('disputeType').value,
+        incident_date: document.getElementById('incidentDate').value,
+        narrative: document.getElementById('incidentNarrative').value.trim(),
+        status: 'Under Review',
+        hearing_date: null
+      };
+
+      // Isulat diretso sa Supabase 'cases' table
+      const { data, error } = await db.from('cases').insert([payload]);
 
       if (error) {
-        resultBox.innerHTML = `<p style="color:var(--danger); font-weight:600;">Error: ${error.message}</p>`;
-        return;
-      }
-
-      if (data) {
-        resultBox.innerHTML = `
-          <h3 style="color:var(--primary); margin-bottom:0.75rem;">Case Found: ${data.docket}</h3>
-          <p style="margin-bottom:0.4rem;"><strong>Current Status:</strong> <span class="status-badge">${data.status}</span></p>
-          <p style="margin-bottom:0.4rem;"><strong>Complainant:</strong> ${data.complainant}</p>
-          <p style="margin-bottom:0.4rem;"><strong>Respondent:</strong> ${data.respondent}</p>
-          <p style="margin-bottom:0.4rem; text-transform: capitalize;"><strong>Dispute Type:</strong> ${data.dispute_type}</p>
-          <p style="margin-bottom:0.4rem;"><strong>Hearing Schedule:</strong> ${data.hearing_date ? new Date(data.hearing_date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : '<em>Not yet scheduled by Lupon</em>'}</p>
-        `;
+        alert('Failed to submit: ' + error.message);
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Submit Complaint';
       } else {
-        resultBox.innerHTML = `<p style="color:var(--danger); font-weight:600; text-align:center;">No record found for docket "${input}". Please verify the number.</p>`;
-      }
-    });
+        // Ipakita ang docket number sa pop-up modal
+        document.getElementById('modalDocket').innerText = trackingNo;
+        document.getElementById('successModal').style.display = 'flex';
 
-    // Pindot og Enter key sa tracker input
-    document.getElementById('trackInput').addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') {
-        document.getElementById('trackBtn').click();
+        // 3 segundos nga countdown dayon auto-redirect pabalik sa home page
+        let timeLeft = 3;
+        const countdownEl = document.getElementById('countdown');
+        const timer = setInterval(() => {
+          timeLeft--;
+          if (countdownEl) countdownEl.innerText = timeLeft;
+          if (timeLeft <= 0) {
+            clearInterval(timer);
+            window.location.href = 'index.html';
+          }
+        }, 1000);
       }
     });
   </script>

@@ -4,18 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Official Portal | LuponResolve</title>
-
   <style>
     :root {
       --primary: #1e3a8a;
       --accent: #2563eb;
-      --accent-hover: #1d4ed8;
       --bg: #f8fafc;
       --card-bg: #ffffff;
       --text: #0f172a;
       --muted: #64748b;
-      --border: #e2e8f0;
-      --danger: #ef4444;
+      --border: #cbd5e1;
+      --success: #16a34a;
+      --warning: #d97706;
     }
 
     * {
@@ -29,97 +28,63 @@
       background-color: var(--bg);
       color: var(--text);
       line-height: 1.6;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+      padding: 2rem 1rem;
     }
 
-    header {
-      background: var(--card-bg);
-      border-bottom: 1px solid var(--border);
-      padding: 1.1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .brand {
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: var(--primary);
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    nav a {
-      margin-left: 1.5rem;
-      text-decoration: none;
-      color: var(--muted);
-      font-size: 0.95rem;
-      font-weight: 500;
-      transition: color 0.2s;
-    }
-
-    nav a:hover {
-      color: var(--primary);
-    }
-
-    main {
-      flex: 1;
+    .container {
       max-width: 1100px;
-      margin: 3.5rem auto 4rem;
-      padding: 0 1.5rem;
-      width: 100%;
+      margin: 0 auto;
     }
 
-    .login-card {
-      max-width: 420px;
-      margin: 2rem auto;
+    .back-link {
+      display: inline-block;
+      margin-bottom: 1.5rem;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    /* Auth Box */
+    .login-box {
+      max-width: 400px;
+      margin: 4rem auto;
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 2.5rem;
-      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04);
-      text-align: center;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
     }
 
-    .login-card h2 {
-      font-size: 1.75rem;
+    .login-box h2 {
       color: var(--primary);
       margin-bottom: 0.5rem;
     }
 
-    .login-card p {
+    .login-box p {
       color: var(--muted);
-      font-size: 0.95rem;
-      margin-bottom: 2rem;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
     }
 
     .form-group {
-      text-align: left;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.25rem;
     }
 
     label {
       display: block;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       font-weight: 600;
-      margin-bottom: 0.4rem;
+      margin-bottom: 0.35rem;
     }
 
     input[type="password"] {
       width: 100%;
-      padding: 0.8rem 1rem;
+      padding: 0.75rem;
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: 6px;
       font-size: 0.95rem;
       outline: none;
-    }
-
-    input:focus {
-      border-color: var(--accent);
     }
 
     .btn {
@@ -127,67 +92,68 @@
       background: var(--accent);
       color: #fff;
       border: none;
-      padding: 0.85rem;
-      border-radius: 8px;
-      font-size: 1rem;
+      padding: 0.75rem;
+      border-radius: 6px;
+      font-size: 0.95rem;
       font-weight: 600;
       cursor: pointer;
       transition: background 0.2s;
     }
 
     .btn:hover {
-      background: var(--accent-hover);
+      background: var(--primary);
     }
 
-    .dashboard-card {
+    /* Dashboard */
+    .dashboard {
       display: none;
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 2.5rem;
-      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
     }
 
     .dashboard-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 2rem;
-      padding-bottom: 1.25rem;
-      border-bottom: 1px solid var(--border);
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #f1f5f9;
       flex-wrap: wrap;
       gap: 1rem;
     }
 
     .dashboard-header h1 {
-      font-size: 1.75rem;
+      font-size: 1.5rem;
       color: var(--primary);
     }
 
-    .btn-logout {
+    .logout-btn {
       background: none;
-      border: 1px solid var(--danger);
-      color: var(--danger);
-      padding: 0.4rem 1rem;
+      border: 1px solid #ef4444;
+      color: #ef4444;
+      padding: 0.4rem 0.8rem;
       border-radius: 6px;
-      font-size: 0.9rem;
-      font-weight: 600;
+      font-size: 0.85rem;
       cursor: pointer;
-      transition: all 0.2s;
     }
 
-    .btn-logout:hover {
+    .logout-btn:hover {
       background: #fef2f2;
     }
 
+    /* Table */
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.9rem;
+      margin-top: 1rem;
+      font-size: 0.85rem;
     }
 
     th, td {
-      padding: 1rem 0.75rem;
+      padding: 0.75rem 0.5rem;
       text-align: left;
       border-bottom: 1px solid #f1f5f9;
       vertical-align: middle;
@@ -200,26 +166,29 @@
     }
 
     select.status-select, input.hearing-input {
-      padding: 0.4rem 0.6rem;
+      padding: 0.35rem 0.5rem;
+      border-radius: 4px;
       border: 1px solid var(--border);
-      border-radius: 6px;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       outline: none;
-      background: #fff;
     }
 
-    .action-btn {
+    .btn-action {
       background: none;
-      border: none;
+      border: 1px solid var(--accent);
       color: var(--accent);
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
       cursor: pointer;
-      font-weight: 600;
-      text-decoration: underline;
-      font-size: 0.85rem;
-      margin-right: 0.5rem;
+      margin-right: 0.25rem;
     }
 
-    /* Print Summons */
+    .btn-action:hover {
+      background: #eff6ff;
+    }
+
+    /* Printable KP Notice (Hidden by default) */
     #printableSummons {
       display: none;
     }
@@ -242,50 +211,34 @@
         color: black;
       }
     }
-
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 1.5rem;
-      text-align: center;
-      font-size: 0.85rem;
-      color: var(--muted);
-      background: var(--card-bg);
-      margin-top: auto;
-    }
   </style>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-  <header>
-    <a href="index.html" class="brand">⚖️ LuponResolve</a>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="filing.html">File Complaint</a>
-    </nav>
-  </header>
+  <div class="container">
+    <a href="index.html" class="back-link">&larr; Back to Home</a>
 
-  <main>
-    <div id="loginView" class="login-card">
-      <h2>Official Login</h2>
-      <p>Lupon Secretary & Mediation Registry</p>
+    <!-- Official Login View -->
+    <div id="loginView" class="login-box">
+      <h2>Lupon Portal Access</h2>
+      <p>Authorized access for Barangay Secretary and KP Conciliators.</p>
       <form id="loginForm">
         <div class="form-group">
-          <label for="pinCode">Enter Passcode PIN</label>
+          <label for="pinCode">Enter Access PIN</label>
           <input type="password" id="pinCode" placeholder="Default PIN: 1234" required />
         </div>
         <button type="submit" class="btn">Log In</button>
       </form>
     </div>
 
-    <div id="dashboardView" class="dashboard-card">
+    <!-- Dashboard View -->
+    <div id="dashboardView" class="dashboard">
       <div class="dashboard-header">
         <div>
           <h1>Dispute Docket Management</h1>
-          <p style="color:var(--muted); font-size:0.9rem;">Barangay Sumilihon Mediation Registry</p>
+          <p style="font-size: 0.85rem; color: var(--muted);">Barangay Sumilihon Mediation Registry</p>
         </div>
-        <button id="logoutBtn" class="btn-logout">Log Out</button>
+        <button id="logoutBtn" class="logout-btn">Log Out</button>
       </div>
 
       <div style="overflow-x: auto;">
@@ -306,14 +259,14 @@
         </table>
       </div>
     </div>
-  </main>
+  </div>
 
-  <!-- Printable KP Form No. 7 -->
+  <!-- KP Form No. 7 / Notice of Hearing Print Container -->
   <div id="printableSummons">
     <div style="text-align: center; margin-bottom: 2rem;">
-      <p style="font-size: 0.9rem; text-transform: uppercase;">Republic of the Philippines<br>City of Butuan<br><strong>Barangay Sumilihon</strong></p>
-      <h3 style="margin-top: 1rem; text-decoration: underline;">OFFICE OF THE LUPON TAGAPAMAYAPA</h3>
-      <h2 style="margin-top: 0.5rem;">KP Form No. 7: NOTICE OF HEARING (SUMMONS)</h2>
+      <p style="font-size: 0.9rem; text-transform: uppercase;">Republic of the Philippines<br>Province of Agusan del Norte<br>City of Butuan<br><strong>Barangay Sumilihon</strong></p>
+      <h3 style="margin-top: 1.5rem; text-decoration: underline;">OFFICE OF THE LUPON TAGAPAMAYAPA</h3>
+      <h2 style="margin-top: 1rem; font-size: 1.4rem;">KP Form No. 7: NOTICE OF HEARING (SUMMONS)</h2>
     </div>
 
     <div style="display: flex; justify-content: space-between; margin-bottom: 2rem;">
@@ -325,37 +278,74 @@
         <p><strong>Address:</strong> <span id="printRespondentAddress"></span></p>
       </div>
       <div style="text-align: right;">
-        <p><strong>Case No.:</strong> <span id="printDocket"></span></p>
+        <p><strong>Barangay Case No.:</strong> <span id="printDocket"></span></p>
         <p><strong>For:</strong> <span id="printDispute"></span></p>
       </div>
     </div>
 
-    <p style="line-height: 1.8; margin-bottom: 2rem;">
-      You are hereby summoned to appear personally before me on the date specified below at the Barangay Hall for conciliation and mediation proceedings:
+    <p style="line-height: 1.8; text-indent: 2rem; margin-bottom: 1.5rem;">
+      You are hereby summoned to appear personally before me on the date specified below at the Barangay Hall for the hearing and mediation of the dispute filed against you:
     </p>
 
-    <div style="border: 2px dashed #000; padding: 1rem; text-align: center; font-size: 1.2rem; font-weight: bold; margin-bottom: 2rem;">
-      Hearing Schedule: <span id="printHearingDate">NOT ASSIGNED</span>
+    <div style="border: 2px dashed #333; padding: 1rem; text-align: center; font-size: 1.1rem; font-weight: bold; margin-bottom: 2rem;">
+      Hearing Schedule: <span id="printHearingDate">NOT YET ASSIGNED</span>
     </div>
 
+    <p style="line-height: 1.8; margin-bottom: 3rem;">
+      Failure to appear may result in the issuance of a Certification to File Action in Court or appropriate non-appearance penalties under Katarungang Pambarangay rules.
+    </p>
+
     <div style="display: flex; justify-content: space-between; margin-top: 4rem;">
-      <div>________________________<br><strong>Lupon Secretary</strong></div>
-      <div style="text-align:right;">________________________<br><strong>Punong Barangay</strong></div>
+      <div>
+        <p>_____________________________________</p>
+        <p><strong>Lupon Secretary</strong></p>
+      </div>
+      <div style="text-align: right;">
+        <p>_____________________________________</p>
+        <p><strong>Punong Barangay / Lupon Chairman</strong></p>
+      </div>
     </div>
   </div>
 
-  <footer>
-    <p>&copy; 2026 LuponResolve. Compliant with RA 7160 & RA 10173 (Data Privacy Act).</p>
-  </footer>
-
-
-    <script>
-    const supabaseUrl = https://ivphxduuzemdmkjdgeqy.supabase.co;
-    const supabaseKey = sb_publishable_Eh44ol3xJHhoxPNOS6Tueg_SzHFTi5u; 
-    const db = window.supabase.createClient(supabaseUrl, supabaseKey);
-
+  <script>
     const correctPin = "1234";
-    let cachedCases = [];
+
+    // 1. Seed Demo Cases if local storage is completely empty
+    function seedDemoCases() {
+      if (!localStorage.getItem('luponCases')) {
+        const demoCases = [
+          {
+            docket: 'KP-2026-1011',
+            complainant: 'Maria Santos',
+            complainantPurok: 'Purok 2',
+            respondent: 'Pedro Penduko',
+            respondentPurok: 'Purok 2',
+            disputeType: 'boundary',
+            date: '2026-11-02',
+            narrative: 'Encroachment on boundary line during fence replacement.',
+            status: 'Mediation Scheduled',
+            hearingDate: '2026-11-15',
+            filedOn: '11/02/2026'
+          },
+          {
+            docket: 'KP-2026-1024',
+            complainant: 'Ernesto Reyes',
+            complainantPurok: 'Purok 5',
+            respondent: 'Danilo Cruz',
+            respondentPurok: 'Purok 4',
+            disputeType: 'debt',
+            date: '2026-10-28',
+            narrative: 'Unpaid loan obligation of PHP 4,500 due last month.',
+            status: 'Under Review',
+            hearingDate: '',
+            filedOn: '11/04/2026'
+          }
+        ];
+        localStorage.setItem('luponCases', JSON.stringify(demoCases));
+      }
+    }
+
+    seedDemoCases();
 
     const loginView = document.getElementById('loginView');
     const dashboardView = document.getElementById('dashboardView');
@@ -363,113 +353,96 @@
     const logoutBtn = document.getElementById('logoutBtn');
     const caseTableBody = document.getElementById('caseTableBody');
 
-    loginForm.addEventListener('submit', async function(e) {
-      e.preventDefault(); // Prevents page reload
-      e.stopPropagation();
-
-      const enteredPin = document.getElementById('pinCode').value.trim();
-
-      if (enteredPin === correctPin) {
-        // Switch views immediately
+    loginForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      if (document.getElementById('pinCode').value === correctPin) {
         loginView.style.display = 'none';
         dashboardView.style.display = 'block';
-
-        // Load data from Supabase
-        await fetchCases();
+        renderCases();
       } else {
-        alert('Incorrect PIN. (Default: 1234)');
+        alert('Incorrect PIN. Please try again.');
       }
     });
 
-    logoutBtn.addEventListener('click', function(e) {
-      e.preventDefault();
+    logoutBtn.addEventListener('click', function() {
       dashboardView.style.display = 'none';
       loginView.style.display = 'block';
       document.getElementById('pinCode').value = '';
     });
 
-    async function fetchCases() {
-      caseTableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:2rem; color:var(--muted);">Loading records from Supabase...</td></tr>`;
-
-      try {
-        const { data, error } = await db
-          .from('cases')
-          .select('*')
-          .order('id', { ascending: false });
-
-        if (error) {
-          caseTableBody.innerHTML = `<tr><td colspan="8" style="color:var(--danger); text-align:center; padding:2rem;">Database Error: ${error.message}</td></tr>`;
-          return;
-        }
-
-        cachedCases = data || [];
-        renderTable(cachedCases);
-      } catch (err) {
-        caseTableBody.innerHTML = `<tr><td colspan="8" style="color:var(--danger); text-align:center; padding:2rem;">Script Error: ${err.message}</td></tr>`;
-      }
-    }
-
-    function renderTable(cases) {
+    function renderCases() {
+      const cases = JSON.parse(localStorage.getItem('luponCases')) || [];
       caseTableBody.innerHTML = '';
-      if (!cases || cases.length === 0) {
-        caseTableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--muted); padding:2rem;">No registered complaints found.</td></tr>`;
+
+      if (cases.length === 0) {
+        caseTableBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--muted); padding: 2rem;">No complaints filed yet.</td></tr>`;
         return;
       }
 
       cases.forEach((item, index) => {
         const row = document.createElement('tr');
         row.innerHTML = `
-          <td><strong>${item.docket || '—'}</strong></td>
-          <td>${item.created_at ? new Date(item.created_at).toLocaleDateString() : '—'}</td>
-          <td>${item.complainant || '—'}</td>
-          <td>${item.respondent || '—'}</td>
-          <td style="text-transform: capitalize;">${item.dispute_type || '—'}</td>
+          <td><strong>${item.docket}</strong></td>
+          <td>${item.filedOn}</td>
+          <td>${item.complainant}</td>
+          <td>${item.respondent}</td>
+          <td style="text-transform: capitalize;">${item.disputeType}</td>
           <td>
-            <select class="status-select" onchange="updateStatus(${item.id}, this.value)">
+            <select class="status-select" onchange="updateStatus(${index}, this.value)">
               <option value="Under Review" ${item.status === 'Under Review' ? 'selected' : ''}>Under Review</option>
               <option value="Mediation Scheduled" ${item.status === 'Mediation Scheduled' ? 'selected' : ''}>Mediation Scheduled</option>
               <option value="Amicably Settled" ${item.status === 'Amicably Settled' ? 'selected' : ''}>Amicably Settled</option>
-              <option value="Repudiated" ${item.status === 'Repudiated' ? 'selected' : ''}>Repudiated</option>
+              <option value="Repudiated / Escalated" ${item.status === 'Repudiated / Escalated' ? 'selected' : ''}>Repudiated / Escalated</option>
             </select>
           </td>
           <td>
-            <input type="date" class="hearing-input" value="${item.hearing_date || ''}" onchange="updateHearing(${item.id}, this.value)" />
+            <input type="date" class="hearing-input" value="${item.hearingDate || ''}" onchange="updateHearing(${index}, this.value)" />
           </td>
           <td>
-            <button class="action-btn" type="button" onclick="viewDetails(${index})">Facts</button>
-            <button class="action-btn" type="button" onclick="printSummons(${index})">Summons</button>
+            <button class="btn-action" onclick="viewDetails(${index})">Facts</button>
+            <button class="btn-action" onclick="printSummons(${index})">Summons</button>
           </td>
         `;
         caseTableBody.appendChild(row);
       });
     }
 
-    window.updateStatus = async function(id, status) {
-      await db.from('cases').update({ status }).eq('id', id);
+    window.updateStatus = function(index, newStatus) {
+      const cases = JSON.parse(localStorage.getItem('luponCases')) || [];
+      cases[index].status = newStatus;
+      localStorage.setItem('luponCases', JSON.stringify(cases));
     };
 
-    window.updateHearing = async function(id, hearing_date) {
-      await db.from('cases').update({ hearing_date, status: 'Mediation Scheduled' }).eq('id', id);
-      fetchCases();
+    window.updateHearing = function(index, newDate) {
+      const cases = JSON.parse(localStorage.getItem('luponCases')) || [];
+      cases[index].hearingDate = newDate;
+      if (newDate && cases[index].status === 'Under Review') {
+        cases[index].status = 'Mediation Scheduled';
+      }
+      localStorage.setItem('luponCases', JSON.stringify(cases));
+      renderCases();
     };
 
     window.viewDetails = function(index) {
-      const c = cachedCases[index];
-      alert(`Docket: ${c.docket}\nIncident Date: ${c.incident_date}\n\nFacts:\n${c.narrative}`);
+      const cases = JSON.parse(localStorage.getItem('luponCases')) || [];
+      const c = cases[index];
+      alert(`Docket: ${c.docket}\nIncident Date: ${c.date}\nNarrative:\n${c.narrative}`);
     };
 
     window.printSummons = function(index) {
-      const c = cachedCases[index];
-      document.getElementById('printComplainant').innerText = c.complainant || '';
-      document.getElementById('printComplainantAddress').innerText = c.complainant_purok || 'Sumilihon';
-      document.getElementById('printRespondent').innerText = c.respondent || '';
-      document.getElementById('printRespondentAddress').innerText = c.respondent_purok || 'Sumilihon';
-      document.getElementById('printDocket').innerText = c.docket || '';
-      document.getElementById('printDispute').innerText = (c.dispute_type || '').toUpperCase();
-      document.getElementById('printHearingDate').innerText = c.hearing_date ? new Date(c.hearing_date).toLocaleDateString() : 'NOT YET SCHEDULED';
+      const cases = JSON.parse(localStorage.getItem('luponCases')) || [];
+      const c = cases[index];
+
+      document.getElementById('printComplainant').innerText = c.complainant;
+      document.getElementById('printComplainantAddress').innerText = c.complainantPurok || 'Sumilihon';
+      document.getElementById('printRespondent').innerText = c.respondent;
+      document.getElementById('printRespondentAddress').innerText = c.respondentPurok || 'Sumilihon';
+      document.getElementById('printDocket').innerText = c.docket;
+      document.getElementById('printDispute').innerText = c.disputeType.toUpperCase();
+      document.getElementById('printHearingDate').innerText = c.hearingDate ? new Date(c.hearingDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : 'NOT YET SCHEDULED';
 
       window.print();
     };
   </script>
 </body>
-</html>
+</html> 

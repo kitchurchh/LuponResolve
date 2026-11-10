@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Official Portal | LuponResolve</title>
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --accent: #2563eb;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #cbd5e1;
+      --success: #16a34a;
+      --warning: #d97706;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 1.5rem;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    /* Auth Box */
+    .login-box {
+      max-width: 400px;
+      margin: 4rem auto;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .login-box h2 {
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .login-box p {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+    }
+
+    input[type="password"] {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: var(--accent);
+    }
+
+    .btn {
+      width: 100%;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 0.75rem;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn:hover {
+      background: var(--primary);
+    }
+
+    /* Dashboard */
+    .dashboard {
+      display: none;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .dashboard-header h1 {
+      font-size: 1.5rem;
+      color: var(--primary);
+    }
+
+    .logout-btn {
+      background: none;
+      border: 1px solid #ef4444;
+      color: #ef4444;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .logout-btn:hover {
+      background: #fef2f2;
+    }
+
+    /* Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+
+    th, td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    th {
+      background-color: #f8fafc;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    select.status-select {
+      padding: 0.35rem 0.6rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .badge-review { background: #fef3c7; color: var(--warning); }
+    .badge-mediation { background: #dbeafe; color: var(--accent); }
+    .badge-settled { background: #dcfce7; color: var(--success); }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <a href="index.html" class="back-link">&larr; Back to Home</a>
+
+    <!-- Official Login Section -->
+    <div id="loginView" class="login-box">
+      <h2>Lupon Portal Access</h2>
+      <p>Authorized access for Barangay Secretary and KP Conciliators.</p>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="pinCode">Enter Access PIN</label>
+          <input type="password" id="pinCode" placeholder="Default PIN: 1234" required />
+        </div>
+        <button type="submit" class="btn">Log In</button>
+      </form>
+    </div>
+
+    <!-- Protected Secretary Dashboard -->
+    <div id="dashboardView" class="dashboard">
+      <div class="dashboard-header">
+        <div>
+          <h1>Dispute Docket Management</h1>
+          <p style="font-size: 0.85rem; color: var(--muted);">Barangay Sumilihon Mediation Registry</p>
+        </div>
+        <button id="logoutBtn" class="logout-btn">Log Out</button>
+      </div>
+
+      <div style="overflow-x: auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Docket No.</th>
+              <th>Filed On</th>
+              <th>Complainant</th>
+              <th>Respondent</th>
+              <th>Type</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="caseTableBody">
+            <!-- Cases will be populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const correctPin = "1234"; // Default placeholder passcode for local testing
+
+    const loginView = document.getElementById('loginView');
+    const dashboardView = document.getElementById('dashboardView');
+    const loginForm = document.getElementById('loginForm');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const caseTableBody = document.getElementById('caseTableBody');
+
+    // Handle Login
+    loginForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const enteredPin = document.getElementById('pinCode').value;
+
+      if (enteredPin === correctPin) {
+        loginView.style.display = 'none';
+        dashboardView.style.display = 'block';
+        renderCases();
+      } else {
+        alert('Incorrect PIN. Please try again.');
+      }
+    });
+
+    // Handle Logout
+    logoutBtn.addEventListener('click', function() {
+      dashboardView.style.display = 'none';
+      loginView.style.display = 'block';
+      document.getElementById('pinCode').value = '';
+    });
+
+    // Populate Cases Table
+    function renderCases() {
+      const cases = JSON.parse(localStorage.getItem('luponCases')) || [];
+      caseTableBody.innerHTML = '';
+
+      if (cases.length === 0) {
+        caseTableBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--muted); padding: 2rem;">No complaints filed yet.</td></tr>`;
+        return;
+      }
+
+      cases.forEach((item, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td><strong>${item.docket}</strong></td>
+          <td>${item.filedOn}</td>
+          <td>${item.complainant}</td>
+          <td>${item.respondent}</td>
+          <td style="text-transform: capitalize;">${item.disputeType}</td>
+          <td>
+            <select class="status-select" data-index="${index}">
+              <option value="Under Review" ${item.status === 'Under Review' ? 'selected' : ''}>Under Review</option>
+              <option value="Mediation Scheduled" ${item.status === 'Mediation Scheduled' ? 'selected' : ''}>Mediation Scheduled</option>
+              <option value="Amicably Settled" ${item.status === 'Amicably Settled' ? 'selected' : ''}>Amicably Settled</option>
+              <option value="Repudiated / Escalated" ${item.status === 'Repudiated / Escalated' ? 'selected' : ''}>Repudiated / Escalated</option>
+            </select>
+          </td>
+          <td>
+            <button onclick="viewDetails(${index})" style="background: none; border: none; color: var(--accent); cursor: pointer; text-decoration: underline; font-size: 0.85rem;">View Narrative</button>
+          </td>
+        `;
+        caseTableBody.appendChild(row);
+      });
+
+      // Attach event listeners to status dropdowns
+      document.querySelectorAll('.status-select').forEach(select => {
+        select.addEventListener('change', function() {
+          const caseIndex = this.getAttribute('data-index');
+          cases[caseIndex].status = this.value;
+          localStorage.setItem('luponCases', JSON.stringify(cases));
+          alert(`Status for ${cases[caseIndex].docket} updated to: ${this.value}`);
+        });
+      });
+    }
+
+    // Modal / alert for viewing facts
+    window.viewDetails = function(index) {
+      const cases = JSON.parse(localStorage.getItem('luponCases')) || [];
+      const c = cases[index];
+      alert(`Docket: ${c.docket}\nIncident Date: ${c.date}\n\nNarrative:\n${c.narrative}`);
+    };
+  </script>
+</body>
+</html>

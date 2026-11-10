@@ -90,45 +90,26 @@
       margin: 0 auto;
     }
 
-    .tracker-box {
+    er-box {
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 1.5rem;
-      display: flex;
+      display: flex;.track
       gap: 0.75rem;
       max-width: 550px;
       margin: 0 auto 3.5rem;
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
     }
 
-    .tracker-box input {
-      flex: 1;
-      padding: 0.75rem 1rem;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 0.95rem;
-      outline: none;
-    }
+    <!-- Case Status Search -->
+    <div class="tracker-box">
+      <input type="text" id="trackInput" placeholder="Enter Docket / Case Number (e.g., KP-2026-1024)" />
+      <button type="button" id="trackBtn">Track</button>
+    </div>
 
-    .tracker-box input:focus {
-      border-color: var(--accent);
-    }
-
-    .tracker-box button {
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      padding: 0.75rem 1.25rem;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .tracker-box button:hover {
-      background: var(--primary);
-    }
+    <!-- Case Status Result Card -->
+    <div id="statusResult" style="display:none; max-width:550px; margin:-2rem auto 3rem; background:#fff; border:1px solid var(--border); border-radius:8px; padding:1.25rem; box-shadow:0 2px 4px rgba(0,0,0,0.05);"></div>
 
     .grid {
       display: grid;
@@ -254,6 +235,36 @@
   <footer>
     <p>&copy; 2026 LuponResolve. Compliant with RA 7160 (Local Government Code) & RA 10173 (Data Privacy Act).</p>
   </footer>
+<script>
+    document.getElementById('trackBtn').addEventListener('click', function() {
+      const input = document.getElementById('trackInput').value.trim().toUpperCase();
+      const resultBox = document.getElementById('statusResult');
 
+      if (!input) {
+        alert('Please enter a valid docket number.');
+        return;
+      }
+
+      const existingCases = JSON.parse(localStorage.getItem('luponCases')) || [];
+      const foundCase = existingCases.find(c => c.docket.toUpperCase() === input);
+
+      resultBox.style.display = 'block';
+
+      if (foundCase) {
+        resultBox.innerHTML = `
+          <h3 style="color:var(--primary); margin-bottom:0.5rem;">Case Found: ${foundCase.docket}</h3>
+          <p><strong>Status:</strong> <span style="background:#dbeafe; color:#1e40af; padding:2px 8px; border-radius:4px; font-weight:600;">${foundCase.status}</span></p>
+          <p><strong>Complainant:</strong> ${foundCase.complainant}</p>
+          <p><strong>Respondent:</strong> ${foundCase.respondent}</p>
+          <p><strong>Filing Date:</strong> ${foundCase.filedOn}</p>
+        `;
+      } else {
+        resultBox.innerHTML = `
+          <p style="color:#dc2626; font-weight:600;">No record found for docket number "${input}".</p>
+          <p style="font-size:0.85rem; color:var(--muted); margin-top:0.25rem;">Please check the format and try again.</p>
+        `;
+      }
+    });
+  </script>
 </body>
 </html>

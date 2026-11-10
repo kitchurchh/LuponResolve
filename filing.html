@@ -15,6 +15,7 @@
       --text: #0f172a;
       --muted: #64748b;
       --border: #e2e8f0;
+      --success: #16a34a;
     }
 
     * {
@@ -196,6 +197,61 @@
       background: var(--accent-hover);
     }
 
+    /* Success Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 1rem;
+    }
+
+    .modal-card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 2.5rem 2rem;
+      max-width: 440px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      animation: popIn 0.25s ease-out;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .check-icon {
+      width: 64px;
+      height: 64px;
+      background: #dcfce7;
+      color: var(--success);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin: 0 auto 1.25rem;
+    }
+
+    .docket-badge {
+      display: inline-block;
+      background: #f1f5f9;
+      border: 1px dashed var(--accent);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin: 1rem 0;
+    }
+
     footer {
       border-top: 1px solid var(--border);
       padding: 1.5rem;
@@ -207,7 +263,6 @@
     }
   </style>
 
-  <!-- Supabase CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -228,7 +283,6 @@
 
     <div class="form-card">
       <form id="complaintForm">
-        
         <div class="section-title">1. Complainant Information (Nangreklamo)</div>
         <div class="form-group">
           <label for="complainantName">Full Name</label>
@@ -291,6 +345,26 @@
     </div>
   </main>
 
+  <!-- Thank You Modal -->
+  <div class="modal-overlay" id="successModal">
+    <div class="modal-card">
+      <div class="check-icon">✓</div>
+      <h2 style="color:var(--primary); margin-bottom:0.5rem;">Thank You for Filing!</h2>
+      <p style="color:var(--muted); font-size:0.95rem;">Your complaint has been successfully recorded into the Lupon registry.</p>
+      
+      <p style="font-size:0.85rem; margin-top:1.25rem; color:var(--text); font-weight:600;">Your Tracking Number:</p>
+      <div class="docket-badge" id="modalDocket">KP-2026-0000</div>
+      
+      <p style="font-size:0.85rem; color:var(--muted); margin-bottom:1.5rem;">
+        Please take a screenshot or write down this number to monitor your case status.
+      </p>
+
+      <button type="button" class="btn-submit" onclick="window.location.href='index.html'">
+        Return to Home (<span id="countdown">3</span>s)
+      </button>
+    </div>
+  </div>
+
   <footer>
     <p>&copy; 2026 LuponResolve. Compliant with RA 7160 & RA 10173 (Data Privacy Act).</p>
   </footer>
@@ -329,8 +403,19 @@
         submitBtn.disabled = false;
         submitBtn.innerText = 'Submit Complaint';
       } else {
-        alert('Complaint recorded successfully!\n\nTracking Docket Number: ' + trackingNo);
-        window.location.href = 'index.html';
+        document.getElementById('modalDocket').innerText = trackingNo;
+        document.getElementById('successModal').style.display = 'flex';
+
+        let timeLeft = 3;
+        const countdownEl = document.getElementById('countdown');
+        const timer = setInterval(() => {
+          timeLeft--;
+          if (countdownEl) countdownEl.innerText = timeLeft;
+          if (timeLeft <= 0) {
+            clearInterval(timer);
+            window.location.href = 'index.html';
+          }
+        }, 1000);
       }
     });
   </script>

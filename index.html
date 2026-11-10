@@ -33,7 +33,6 @@
       flex-direction: column;
     }
 
-    /* Navbar */
     header {
       background: var(--card-bg);
       border-bottom: 1px solid var(--border);
@@ -66,7 +65,6 @@
       color: var(--primary);
     }
 
-    /* Main Container */
     main {
       flex: 1;
       max-width: 900px;
@@ -92,7 +90,6 @@
       font-size: 1.1rem;
     }
 
-    /* Search Tracker */
     .tracker-box {
       background: var(--card-bg);
       border: 1px solid var(--border);
@@ -134,7 +131,6 @@
       background: var(--accent-hover);
     }
 
-    /* Result Box */
     #statusResult {
       display: none;
       max-width: 580px;
@@ -146,7 +142,6 @@
       box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04);
     }
 
-    /* Portal Grid */
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -223,7 +218,6 @@
     }
   </style>
 
-  <!-- Supabase CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -242,16 +236,13 @@
       <p>Streamlined Katarungang Pambarangay Filing & Mediation Tracker</p>
     </section>
 
-    <!-- Case Status Search -->
     <div class="tracker-box">
       <input type="text" id="trackInput" placeholder="Enter Docket / Tracking No. (e.g., KP-2026-1024)" />
       <button type="button" id="trackBtn">Track</button>
     </div>
 
-    <!-- Case Status Result Card -->
     <div id="statusResult"></div>
 
-    <!-- Portals -->
     <div class="grid">
       <div class="card">
         <div>
@@ -276,8 +267,8 @@
   </footer>
 
   <script>
-    const supabaseUrl = https://ivphxduuzemdmkjdgeqy.supabase.co;
-    const supabaseKey = sb_publishable_Eh44ol3xJHhoxPNOS6Tueg_SzHFTi5u;
+    const supabaseUrl = 'https://ivphxduuzemdmkjdgeqy.supabase.co';
+    const supabaseKey = 'PASTE_YOUR_COPIED_KEY_HERE';
     const db = window.supabase.createClient(supabaseUrl, supabaseKey);
 
     document.getElementById('trackBtn').addEventListener('click', async function() {

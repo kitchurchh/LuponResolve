@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Account Access | LuponResolve</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --accent: #2563eb;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #cbd5e1;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 2rem 1rem; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .auth-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; width: 100%; max-width: 420px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+    .back-link { display: inline-block; margin-bottom: 1rem; color: var(--accent); text-decoration: none; font-size: 0.85rem; }
+    h2 { color: var(--primary); margin-bottom: 0.5rem; }
+    p.subtitle { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
+    .tab-bar { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
+    .tab-btn { flex: 1; padding: 0.6rem; border: none; background: none; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; }
+    .tab-btn.active { color: var(--accent); border-color: var(--accent); }
+    .form-group { margin-bottom: 1rem; text-align: left; }
+    label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.3rem; }
+    input, select { width: 100%; padding: 0.7rem; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem; outline: none; }
+    input:focus, select:focus { border-color: var(--accent); }
+    .btn { width: 100%; background: var(--accent); color: #fff; border: none; padding: 0.75rem; border-radius: 6px; font-weight: 600; cursor: pointer; margin-top: 0.5rem; }
+    .btn:hover { background: var(--primary); }
+  </style>
+</head>
+<body>
+
+  <div class="auth-card">
+    <a href="index.html" class="back-link">&larr; Back to Home</a>
+    <h2>LuponResolve Account</h2>
+    <p class="subtitle">Access portal services for Residents and Officers</p>
+
+    <div class="tab-bar">
+      <button class="tab-btn active" id="tabLoginBtn" type="button">Log In</button>
+      <button class="tab-btn" id="tabRegisterBtn" type="button">Register</button>
+    </div>
+
+    <!-- Log In Form -->
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="loginEmail">Email Address</label>
+        <input type="email" id="loginEmail" required placeholder="name@example.com" />
+      </div>
+      <div class="form-group">
+        <label for="loginPassword">Password</label>
+        <input type="password" id="loginPassword" required placeholder="••••••••" />
+      </div>
+      <button type="submit" class="btn" id="loginSubmitBtn">Log In</button>
+    </form>
+
+    <!-- Register Form -->
+    <form id="registerForm" style="display: none;">
+      <div class="form-group">
+        <label for="regRole">Account Type (Role)</label>
+        <select id="regRole" required>
+          <option value="resident" selected>Resident (Barangay Citizen)</option>
+          <option value="officer">Barangay Officer / Lupon Secretary</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="regName">Full Name</label>
+        <input type="text" id="regName" required placeholder="e.g. Juan Dela Cruz" />
+      </div>
+      <div class="form-group">
+        <label for="regPurok">Purok / Sitio</label>
+        <input type="text" id="regPurok" placeholder="e.g. Purok 3" />
+      </div>
+      <div class="form-group">
+        <label for="regEmail">Email Address</label>
+        <input type="email" id="regEmail" required placeholder="name@example.com" />
+      </div>
+      <div class="form-group">
+        <label for="regPassword">Password</label>
+        <input type="password" id="regPassword" required placeholder="At least 6 characters" minlength="6" />
+      </div>
+      <button type="submit" class="btn" id="regSubmitBtn">Create Account</button>
+    </form>
+  </div>
+
+  <script>
+    const supabaseUrl = 'https://ivphxduuzemdmkjdgeqy.supabase.co';
+    const supabaseKey = 'sb_publishable_Eh44ol3xJHhoxPNOS6Tueg_SzHFTi5u';
+    const db = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+    const tabLoginBtn = document.getElementById('tabLoginBtn');
+    const tabRegisterBtn = document.getElementById('tabRegisterBtn');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+
+    tabLoginBtn.addEventListener('click', () => {
+      tabLoginBtn.classList.add('active');
+      tabRegisterBtn.classList.remove('active');
+      loginForm.style.display = 'block';
+      registerForm.style.display = 'none';
+    });
+
+    tabRegisterBtn.addEventListener('click', () => {
+      tabRegisterBtn.classList.add('active');
+      tabLoginBtn.classList.remove('active');
+      registerForm.style.display = 'block';
+      loginForm.style.display = 'none';
+    });
+
+    // Handle Login
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('loginSubmitBtn');
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Logging in...';
+
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+
+      const { data, error } = await db.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        alert('Login failed: ' + error.message);
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Log In';
+        return;
+      }
+
+      // Check role in profiles table
+      const { data: profile, error: profError } = await db
+        .from('profiles')
+        .select('role')
+        .eq('id', data.user.id)
+        .single();
+
+      if (profile && profile.role === 'officer') {
+        window.location.href = 'portal.html';
+      } else {
+        window.location.href = 'filing.html';
+      }
+    });
+
+    // Handle Registration
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('regSubmitBtn');
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Creating account...';
+
+      const role = document.getElementById('regRole').value;
+      const fullName = document.getElementById('regName').value.trim();
+      const purok = document.getElementById('regPurok').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const password = document.getElementById('regPassword').value;
+
+      const { data: authData, error: authError } = await db.auth.signUp({ email, password });
+
+      if (authError) {
+        alert('Registration failed: ' + authError.message);
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Create Account';
+        return;
+      }
+
+      const { error: profileError } = await db.from('profiles').insert([
+        { id: authData.user.id, full_name: fullName, purok, role }
+      ]);
+
+      if (profileError) {
+        alert('Profile error: ' + profileError.message);
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Create Account';
+      } else {
+        alert('Registration successful! You may now log in.');
+        tabLoginBtn.click();
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Create Account';
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>File a Complaint | LuponResolve</title>
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --accent: #2563eb;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #cbd5e1;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 2.5rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e2e8f0;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 1.5rem;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    p.subtitle {
+      color: var(--muted);
+      margin-bottom: 2rem;
+      font-size: 0.95rem;
+    }
+
+    fieldset {
+      border: none;
+      margin-bottom: 2rem;
+      padding: 0;
+    }
+
+    legend {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      border-bottom: 2px solid #f1f5f9;
+      padding-bottom: 0.4rem;
+      width: 100%;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+
+    input[type="text"],
+    input[type="tel"],
+    input[type="date"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.95rem;
+      outline: none;
+      background: #fff;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--accent);
+      ring: 2px solid var(--accent);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .consent-box {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.85rem;
+      color: #1e3a8a;
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+
+    .consent-box input {
+      margin-top: 0.25rem;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 0.85rem;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button[type="submit"]:hover {
+      background: var(--primary);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <a href="index.html" class="back-link">&larr; Back to Home</a>
+    <h1>Barangay Incident & Dispute Filing</h1>
+    <p class="subtitle">Enter the required details for mediation under Katarungang Pambarangay.</p>
+
+    <form id="complaintForm">
+      <!-- Complainant Details -->
+      <fieldset>
+        <legend>1. Complainant Information (Nangreklamo)</legend>
+        <div class="form-group">
+          <label for="complainantName">Full Name</label>
+          <input type="text" id="complainantName" required placeholder="Juan Dela Cruz" />
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="complainantContact">Contact Number</label>
+            <input type="tel" id="complainantContact" required placeholder="09xxxxxxxxx" />
+          </div>
+          <div class="form-group">
+            <label for="complainantPurok">Purok / Sitio Address</label>
+            <input type="text" id="complainantPurok" required placeholder="Purok 3" />
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Respondent Details -->
+      <fieldset>
+        <legend>2. Respondent Information (Gireklamo)</legend>
+        <div class="form-group">
+          <label for="respondentName">Full Name</label>
+          <input type="text" id="respondentName" required placeholder="Full name of person being reported" />
+        </div>
+        <div class="form-group">
+          <label for="respondentPurok">Known Purok / Address</label>
+          <input type="text" id="respondentPurok" required placeholder="Purok or exact location" />
+        </div>
+      </fieldset>
+
+      <!-- Incident Details -->
+      <fieldset>
+        <legend>3. Nature of Complaint</legend>
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="disputeType">Dispute Type</label>
+            <select id="disputeType" required>
+              <option value="" disabled selected>Select category</option>
+              <option value="boundary">Boundary / Property Dispute</option>
+              <option value="debt">Unpaid Debt / Financial Obligation</option>
+              <option value="altercation">Physical / Verbal Altercation</option>
+              <option value="disturbance">Public Disturbance / Noise</option>
+              <option value="other">Other Civil Dispute</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="incidentDate">Date of Incident</label>
+            <input type="date" id="incidentDate" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="incidentNarrative">Statement of Facts / Summary</label>
+          <textarea id="incidentNarrative" rows="4" required placeholder="Describe what happened clearly..."></textarea>
+        </div>
+      </fieldset>
+
+      <!-- Privacy Consent -->
+      <div class="consent-box">
+        <input type="checkbox" id="privacyConsent" required />
+        <label for="privacyConsent">
+          I confirm that the information provided is accurate and grant consent to process this data strictly for Katarungang Pambarangay proceedings pursuant to RA 10173 (Data Privacy Act).
+        </label>
+      </div>
+
+      <button type="submit">Submit Complaint</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('complaintForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const trackingNo = 'KP-' + new Date().getFullYear() + '-' + Math.floor(1000 + Math.random() * 9000);
+      alert('Complaint submitted successfully!\n\nYour Case Tracking Number is: ' + trackingNo + '\nPlease keep this number to monitor your docket status.');
+      window.location.href = 'index.html';
+    });
+  </script>
+</body>
+</html>

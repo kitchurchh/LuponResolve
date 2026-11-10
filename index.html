@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LuponResolve | Barangay Dispute Resolution System</title>
+
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     :root {
       --primary: #1e3a8a;
@@ -14,6 +18,8 @@
       --text: #0f172a;
       --muted: #64748b;
       --border: #e2e8f0;
+      --danger: #ef4444;
+      --success: #16a34a;
     }
 
     * {
@@ -74,7 +80,7 @@
 
     .hero {
       text-align: center;
-      margin-bottom: 3rem;
+      margin-bottom: 2.5rem;
     }
 
     .hero h1 {
@@ -90,15 +96,16 @@
       margin: 0 auto;
     }
 
+    /* Tracker Input Box */
     .tracker-box {
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 1.5rem;
+      padding: 1.25rem;
       display: flex;
       gap: 0.75rem;
-      max-width: 550px;
-      margin: 0 auto 3.5rem;
+      max-width: 580px;
+      margin: 0 auto 1.5rem;
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
     }
 
@@ -130,6 +137,29 @@
       background: var(--primary);
     }
 
+    /* Case Status Card Result */
+    #statusResult {
+      display: none;
+      max-width: 580px;
+      margin: 0 auto 3rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .status-badge {
+      display: inline-block;
+      background: #dbeafe;
+      color: #1e40af;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    /* Card Navigation */
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -199,17 +229,17 @@
       font-size: 0.85rem;
       color: var(--muted);
       background: var(--card-bg);
+      margin-top: auto;
     }
   </style>
 </head>
 <body>
 
   <header>
-    <a href="#" class="brand">⚖️ LuponResolve</a>
+    <a href="index.html" class="brand">⚖️ LuponResolve</a>
     <nav>
-      <a href="#about">About</a>
-      <a href="#guidelines">KP Guidelines</a>
-      <a href="#contact">Contact</a>
+      <a href="filing.html">File Complaint</a>
+      <a href="portal.html">Official Portal</a>
     </nav>
   </header>
 
@@ -219,16 +249,21 @@
       <p>Streamlined complaint filing, mediation scheduling, and record-keeping under Katarungang Pambarangay.</p>
     </section>
 
+    <!-- Case Status Search Box -->
     <div class="tracker-box">
-      <input type="text" placeholder="Enter Docket / Case Number (e.g., KP-2026-001)" />
-      <button type="button">Track</button>
+      <input type="text" id="trackInput" placeholder="Enter Docket / Tracking No. (e.g., KP-2026-1024)" />
+      <button type="button" id="trackBtn">Track</button>
     </div>
 
+    <!-- Live Case Search Results -->
+    <div id="statusResult"></div>
+
+    <!-- Navigation Cards -->
     <div class="grid">
       <div class="card">
         <div>
           <h2>File a Complaint</h2>
-          <p>Submit an incident report or dispute claim for Katarungang Pambarangay mediation review.</p>
+          <p>Submit an incident report or civil claim for Katarungang Pambarangay mediation review.</p>
         </div>
         <a href="filing.html" class="card-btn primary">Start Filing</a>
       </div>
@@ -236,17 +271,17 @@
       <div class="card">
         <div>
           <h2>Barangay Portal</h2>
-          <p>Restricted access for the Punong Barangay and Lupon Secretary to manage hearings and notices.</p>
+          <p>Restricted access for the Punong Barangay and Lupon Secretary to manage hearings and summons.</p>
         </div>
         <a href="portal.html" class="card-btn">Official Login</a>
       </div>
 
       <div class="card">
         <div>
-          <h2>Mediation Guidelines</h2>
-          <p>Review covered cases, amicable settlement procedures, and Data Privacy rights before filing.</p>
+          <h2>KP Conciliation Flow</h2>
+          <p>Review standard stages: Barangay Captain mediation, Pangkat constitution, and settlement execution.</p>
         </div>
-        <a href="#guidelines" class="card-btn">Read Procedures</a>
+        <a href="filing.html" class="card-btn">View Guidelines</a>
       </div>
     </div>
   </main>
@@ -255,5 +290,56 @@
     <p>&copy; 2026 LuponResolve. Compliant with RA 7160 (Local Government Code) & RA 10173 (Data Privacy Act).</p>
   </footer>
 
+  <script>
+    // Konektado sa parehas nga database ug publishable key sa filing.html ug portal.html
+    const supabaseUrl = 'https://ivphxduuzemdmkjdgeqy.supabase.co';
+    const supabaseKey = 'sb_publishable_Eh44ol3xJHhoxPNOS6Tueg_SzHFTi5u';
+    const db = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+    document.getElementById('trackBtn').addEventListener('click', async function() {
+      const input = document.getElementById('trackInput').value.trim();
+      const resultBox = document.getElementById('statusResult');
+
+      if (!input) {
+        alert('Please enter a docket tracking number.');
+        return;
+      }
+
+      resultBox.style.display = 'block';
+      resultBox.innerHTML = '<p style="color:var(--muted); text-align:center;">Searching case records from database...</p>';
+
+      // Pangitaon sa Supabase cases table ang docket number
+      const { data, error } = await db
+        .from('cases')
+        .select('*')
+        .ilike('docket', input)
+        .maybeSingle();
+
+      if (error) {
+        resultBox.innerHTML = `<p style="color:var(--danger); font-weight:600;">Error: ${error.message}</p>`;
+        return;
+      }
+
+      if (data) {
+        resultBox.innerHTML = `
+          <h3 style="color:var(--primary); margin-bottom:0.75rem;">Case Found: ${data.docket}</h3>
+          <p style="margin-bottom:0.4rem;"><strong>Current Status:</strong> <span class="status-badge">${data.status}</span></p>
+          <p style="margin-bottom:0.4rem;"><strong>Complainant:</strong> ${data.complainant}</p>
+          <p style="margin-bottom:0.4rem;"><strong>Respondent:</strong> ${data.respondent}</p>
+          <p style="margin-bottom:0.4rem; text-transform: capitalize;"><strong>Dispute Type:</strong> ${data.dispute_type}</p>
+          <p style="margin-bottom:0.4rem;"><strong>Hearing Schedule:</strong> ${data.hearing_date ? new Date(data.hearing_date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : '<em>Not yet scheduled by Lupon</em>'}</p>
+        `;
+      } else {
+        resultBox.innerHTML = `<p style="color:var(--danger); font-weight:600; text-align:center;">No record found for docket "${input}". Please verify the number.</p>`;
+      }
+    });
+
+    // Pindot og Enter key sa tracker input
+    document.getElementById('trackInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        document.getElementById('trackBtn').click();
+      }
+    });
+  </script>
 </body>
 </html>

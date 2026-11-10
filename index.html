@@ -96,6 +96,7 @@
       margin: 0 auto;
     }
 
+    /* Tracker Input Box */
     .tracker-box {
       background: var(--card-bg);
       border: 1px solid var(--border);
@@ -380,7 +381,7 @@
     </div>
   </main>
 
-  <!-- Guidelines Pop-up Modal -->
+  <!-- English Guidelines Pop-up Modal -->
   <div class="modal-overlay" id="guidelinesModal">
     <div class="guidelines-modal">
       <div class="modal-header">
@@ -390,44 +391,45 @@
 
       <div class="modal-body">
         <div class="guide-section">
-          <h3>📌 Mga Kasong Sakop sa Lupon (Covered Cases)</h3>
+          <h3>📌 Covered Cases Under Lupon Authority</h3>
           <ul>
-            <li>Away sa magka-silingan o boundary dispute (yuta o koral).</li>
-            <li>Wala mabayri nga utang o obligasyon sa panalapi (unpaid loans/debts).</li>
-            <li>Kasamok sa komunidad (public disturbance, saba, iro/hayop nga nakadistorbo).</li>
-            <li>Ginagmay nga away o lalis (verbal altercation, slight physical injuries).</li>
-            <li>Bisan unsang panagbangi tali sa mga residente nga nagpuyo sa samang siyudad/barangay nga dili bug-at nga krimen.</li>
+            <li>Boundary line disputes and property encroachments between neighbors.</li>
+            <li>Unpaid personal loans, financial obligations, or minor collection claims.</li>
+            <li>Community disturbances (excessive noise, unruly pets, neighborhood nuisance).</li>
+            <li>Verbal altercations, slander, oral defamation, or slight physical injuries.</li>
+            <li>Civil disputes between individuals residing in the same city or municipality not classified as serious criminal offenses.</li>
           </ul>
         </div>
 
         <div class="guide-section">
-          <h3>⛔ Dili Sakop sa Lupon (Excluded from KP)</h3>
+          <h3>⛔ Cases Excluded from Barangay Conciliation</h3>
           <ul>
-            <li>Bug-at nga mga krimen nga naay silot nga pagkapriso nga molapas sa usa (1) ka tuig o multa nga labaw sa PHP 5,000.</li>
-            <li>Kaso batok sa opisyal o empleyado sa gobyerno bahin sa ilang opisyal nga katungdanan.</li>
-            <li>Mga nagkasungi nga nagpuyo sa magkalahi nga probinsya o layo kaayong siyudad.</li>
+            <li>Offenses punishable by imprisonment exceeding one (1) year or fines over PHP 5,000.</li>
+            <li>Complaints involving public officers or government employees relating to the performance of official duties.</li>
+            <li>Disputes where one or both parties reside in different provinces or distant municipalities.</li>
+            <li>Disputes involving real property located outside the jurisdiction of the city or municipality.</li>
           </ul>
         </div>
 
         <div class="guide-section">
-          <h3>🔄 Ang 3 ka Yugto sa Paghusay (Resolution Flow)</h3>
+          <h3>🔄 The 3 Stages of Katarungang Pambarangay</h3>
           <ul>
-            <li><strong>Yugto 1 (Mediation):</strong> Atubangon una sa Punong Barangay sulod sa napulog-lima (15) ka adlaw.</li>
-            <li><strong>Yugto 2 (Pangkat Conciliation):</strong> Kung dili magkasinabot, tukoron ang Pangkat Tagapagkasundo (3 ka piniling miyembro sa Lupon) aron mosulay paghusay sulod sa 15 ka adlaw.</li>
-            <li><strong>Yugto 3 (Settlement o CFA):</strong> Kung magkauli, pirmahan ang Amicable Settlement nga may gahum sa balaod. Kung dili gyud magkasinabot, hatagan og <em>Certificate to File Action (CFA)</em> aron madala ang kaso sa Korte.</li>
+            <li><strong>Stage 1 (Mediation by Punong Barangay):</strong> The Punong Barangay summons both parties within fifteen (15) days to achieve an amicable settlement.</li>
+            <li><strong>Stage 2 (Pangkat Conciliation):</strong> If mediation fails, a three-member panel (Pangkat Tagapagkasundo) is constituted to resolve the matter within another fifteen (15) days.</li>
+            <li><strong>Stage 3 (Settlement or Certificate to File Action):</strong> If agreed upon, an Amicable Settlement is signed with the force and effect of a final court judgment. If conciliation fails, a <em>Certificate to File Action (CFA)</em> is issued to allow formal court filing.</li>
           </ul>
         </div>
 
         <div class="guide-section" style="margin-bottom: 0;">
-          <h3>🔒 Proteksyon sa Data (RA 10173)</h3>
+          <h3>🔒 Data Privacy & Confidentiality (RA 10173)</h3>
           <p style="color:var(--muted); font-size: 0.85rem;">
-            Ang tanang detalye nga isumite pinaagi sa LuponResolve gitipigan nga kompidensyal sumala sa Data Privacy Act of 2012 ug gamiton lamang alang sa opisyal nga paghusay sa Barangay Sumilihon.
+            All personal information submitted through LuponResolve is handled with strict confidentiality under the Data Privacy Act of 2012 (RA 10173) and will be used solely for the official conciliation proceedings of Barangay Sumilihon.
           </p>
         </div>
       </div>
 
       <div class="modal-footer">
-        <button type="button" class="card-btn primary" id="closeGuidelinesFooterBtn" style="padding: 0.5rem 1.25rem;">Nakasabot Ko (Close)</button>
+        <button type="button" class="card-btn primary" id="closeGuidelinesFooterBtn" style="padding: 0.5rem 1.25rem;">Understood (Close)</button>
       </div>
     </div>
   </div>

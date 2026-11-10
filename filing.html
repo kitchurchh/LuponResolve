@@ -173,7 +173,6 @@
       background: var(--accent-hover);
     }
 
-    /* Modal Pop-up */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -349,12 +348,36 @@
     const supabaseKey = 'sb_publishable_Eh44ol3xJHhoxPNOS6Tueg_SzHFTi5u';
     const db = window.supabase.createClient(supabaseUrl, supabaseKey);
 
+    async function checkUserSession() {
+      const { data: { session } } = await db.auth.getSession();
+      if (!session) {
+        window.location.href = 'auth.html';
+        return;
+      }
+
+      const { data: profile } = await db
+        .from('profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .maybeSingle();
+
+      if (profile) {
+        if (profile.full_name) document.getElementById('complainantName').value = profile.full_name;
+        if (profile.purok) document.getElementById('complainantPurok').value = profile.purok;
+      }
+    }
+
+    checkUserSession();
+
     document.getElementById('complaintForm').addEventListener('submit', async function(e) {
       e.preventDefault();
 
       const submitBtn = document.getElementById('submitBtn');
       submitBtn.disabled = true;
       submitBtn.innerText = 'Submitting to database...';
+
+      const { data: { session } } = await db.auth.getSession();
+      const currentUserId = session ? session.user.id : null;
 
       const trackingNo = 'KP-' + new Date().getFullYear() + '-' + Math.floor(1000 + Math.random() * 9000);
 
@@ -368,7 +391,8 @@
         incident_date: document.getElementById('incidentDate').value,
         narrative: document.getElementById('incidentNarrative').value.trim(),
         status: 'Under Review',
-        hearing_date: null
+        hearing_date: null,
+        user_id: currentUserId
       };
 
       const { data, error } = await db.from('cases').insert([payload]);

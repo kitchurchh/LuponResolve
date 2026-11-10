@@ -50,68 +50,7 @@
       font-size: 0.9rem;
     }
 
-    /* Auth Box */
-    .login-box {
-      max-width: 400px;
-      margin: 4rem auto;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 2rem;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    }
-
-    .login-box h2 {
-      color: var(--primary);
-      margin-bottom: 0.5rem;
-    }
-
-    .login-box p {
-      color: var(--muted);
-      font-size: 0.9rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .form-group {
-      margin-bottom: 1.25rem;
-    }
-
-    label {
-      display: block;
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-bottom: 0.35rem;
-    }
-
-    input[type="password"] {
-      width: 100%;
-      padding: 0.75rem;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      font-size: 0.95rem;
-      outline: none;
-    }
-
-    .btn {
-      width: 100%;
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      padding: 0.75rem;
-      border-radius: 6px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .btn:hover {
-      background: var(--primary);
-    }
-
-    /* Dashboard */
     .dashboard {
-      display: none;
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 12px;
@@ -149,7 +88,6 @@
       background: #fef2f2;
     }
 
-    /* Table */
     table {
       width: 100%;
       border-collapse: collapse;
@@ -176,6 +114,7 @@
       border: 1px solid var(--border);
       font-size: 0.8rem;
       outline: none;
+      background: #fff;
     }
 
     .btn-action {
@@ -193,7 +132,6 @@
       background: #eff6ff;
     }
 
-    /* Empty state styling */
     .empty-state {
       text-align: center;
       padding: 3rem 1rem;
@@ -205,7 +143,6 @@
       margin-bottom: 0.5rem;
     }
 
-    /* Printable KP Notice */
     #printableSummons {
       display: none;
     }
@@ -234,19 +171,6 @@
 
   <div class="container">
     <a href="index.html" class="back-link">&larr; Back to Home</a>
-
-    <!-- Official Login View -->
-    <div id="loginView" class="login-box">
-      <h2>Lupon Portal Access</h2>
-      <p>Authorized access for Barangay Secretary and KP Conciliators.</p>
-      <form id="loginForm">
-        <div class="form-group">
-          <label for="pinCode">Enter Access PIN</label>
-          <input type="password" id="pinCode" placeholder="Default PIN: 1234" required />
-        </div>
-        <button type="submit" class="btn">Log In</button>
-      </form>
-    </div>
 
     <!-- Dashboard View -->
     <div id="dashboardView" class="dashboard">
@@ -278,7 +202,7 @@
     </div>
   </div>
 
-  <!-- KP Form No. 7 / Notice of Hearing Print Container -->
+  <!-- KP Form No. 7 Print Container -->
   <div id="printableSummons">
     <div style="text-align: center; margin-bottom: 2rem;">
       <p style="font-size: 0.9rem; text-transform: uppercase;">Republic of the Philippines<br>Province of Agusan del Norte<br>City of Butuan<br><strong>Barangay Sumilihon</strong></p>
@@ -329,38 +253,39 @@
     const supabaseKey = 'sb_publishable_Eh44ol3xJHhoxPNOS6Tueg_SzHFTi5u'; 
     const db = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    const correctPin = "1234";
     let cachedCases = [];
-
-    const loginView = document.getElementById('loginView');
-    const dashboardView = document.getElementById('dashboardView');
-    const loginForm = document.getElementById('loginForm');
-    const logoutBtn = document.getElementById('logoutBtn');
     const caseTableBody = document.getElementById('caseTableBody');
 
-    // Handle Login
-    loginForm.addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const enteredPin = document.getElementById('pinCode').value.trim();
+    async function verifyOfficerSession() {
+      const { data: { session } } = await db.auth.getSession();
 
-      if (enteredPin === correctPin) {
-        loginView.style.display = 'none';
-        dashboardView.style.display = 'block';
-        await fetchCases();
-      } else {
-        alert('Incorrect PIN. Please try again.');
+      if (!session) {
+        window.location.href = 'auth.html';
+        return;
       }
+
+      const { data: profile } = await db
+        .from('profiles')
+        .select('role')
+        .eq('id', session.user.id)
+        .maybeSingle();
+
+      if (!profile || profile.role !== 'officer') {
+        alert('Access Restricted: Only Barangay Officers and Lupon members are permitted.');
+        window.location.href = 'index.html';
+        return;
+      }
+
+      fetchCases();
+    }
+
+    verifyOfficerSession();
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await db.auth.signOut();
+      window.location.href = 'auth.html';
     });
 
-    // Handle Logout
-    logoutBtn.addEventListener('click', function(e) {
-      e.preventDefault();
-      dashboardView.style.display = 'none';
-      loginView.style.display = 'block';
-      document.getElementById('pinCode').value = '';
-    });
-
-    // Fetch Records directly from Supabase
     async function fetchCases() {
       caseTableBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--muted); padding: 2.5rem;">Checking database for cases...</td></tr>`;
 
@@ -378,7 +303,6 @@
       renderTable(cachedCases);
     }
 
-    // Render Table
     function renderTable(cases) {
       caseTableBody.innerHTML = '';
 
@@ -408,6 +332,7 @@
           <td>
             <select class="status-select" onchange="updateStatus(${item.id}, this.value)">
               <option value="Under Review" ${item.status === 'Under Review' ? 'selected' : ''}>Under Review</option>
+              <option value="Accepted / For Hearing" ${item.status === 'Accepted / For Hearing' ? 'selected' : ''}>Accepted / For Hearing</option>
               <option value="Mediation Scheduled" ${item.status === 'Mediation Scheduled' ? 'selected' : ''}>Mediation Scheduled</option>
               <option value="Amicably Settled" ${item.status === 'Amicably Settled' ? 'selected' : ''}>Amicably Settled</option>
               <option value="Repudiated / Escalated" ${item.status === 'Repudiated / Escalated' ? 'selected' : ''}>Repudiated / Escalated</option>
@@ -425,26 +350,22 @@
       });
     }
 
-    // Update Status
     window.updateStatus = async function(id, newStatus) {
       const { error } = await db.from('cases').update({ status: newStatus }).eq('id', id);
       if (error) alert('Error updating status: ' + error.message);
     };
 
-    // Update Hearing Date
     window.updateHearing = async function(id, newDate) {
       const { error } = await db.from('cases').update({ hearing_date: newDate, status: 'Mediation Scheduled' }).eq('id', id);
       if (error) alert('Error updating hearing date: ' + error.message);
       else fetchCases();
     };
 
-    // View Facts
     window.viewDetails = function(index) {
       const c = cachedCases[index];
       alert(`Docket: ${c.docket}\nIncident Date: ${c.incident_date}\n\nFacts/Narrative:\n${c.narrative}`);
     };
 
-    // Print KP Form No. 7 Summons
     window.printSummons = function(index) {
       const c = cachedCases[index];
 

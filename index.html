@@ -76,7 +76,6 @@
       color: var(--primary);
     }
 
-    /* User Profile Menu Trigger */
     .profile-dropdown-wrapper {
       position: relative;
     }
@@ -114,7 +113,6 @@
       text-transform: uppercase;
     }
 
-    /* Dropdown Floating Card */
     .dropdown-menu {
       display: none;
       position: absolute;
@@ -207,9 +205,36 @@
     main {
       flex: 1;
       max-width: 1000px;
-      margin: 3rem auto;
+      margin: 2.5rem auto;
       padding: 0 1.5rem;
       width: 100%;
+    }
+
+    #residentAlertContainer {
+      display: none;
+      margin-bottom: 2rem;
+    }
+
+    .alert-banner {
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .alert-banner.accepted {
+      background: #dcfce7;
+      border: 1px solid #86efac;
+      color: #166534;
+    }
+
+    .alert-banner.rejected {
+      background: #fee2e2;
+      border: 1px solid #fca5a5;
+      color: #991b1b;
     }
 
     .hero {
@@ -230,7 +255,6 @@
       margin: 0 auto;
     }
 
-    /* Tracker Input Box */
     .tracker-box {
       background: var(--card-bg);
       border: 1px solid var(--border);
@@ -356,7 +380,6 @@
       background: #eff6ff;
     }
 
-    /* Modal Styling */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -455,10 +478,11 @@
     
     <nav>
       <a href="filing.html">File Complaint</a>
+      <!-- Link for Officers ONLY -->
       <a href="portal.html" id="officerPortalLink" style="display: none;">Official Portal</a>
       <a href="#" id="navGuidelinesLink">Guidelines</a>
 
-      <!-- Profile Avatar Button with Dropdown -->
+      <!-- Profile Avatar Button -->
       <div class="profile-dropdown-wrapper">
         <button class="profile-btn" id="profileDropdownBtn" type="button">
           <div class="avatar-circle" id="userAvatar">U</div>
@@ -466,7 +490,6 @@
           <span style="font-size: 0.7rem; color: var(--muted);">▼</span>
         </button>
 
-        <!-- The Floating Dropdown Card -->
         <div class="dropdown-menu" id="dropdownMenu">
           <div class="dropdown-header">
             <div class="name" id="dropFullName">User Name</div>
@@ -475,7 +498,7 @@
           </div>
           <div class="dropdown-items">
             <button class="dropdown-item" type="button" id="openSettingsBtn">
-              ⚙️ Account Settings & Password
+              ⚙️ Account Settings
             </button>
             <button class="dropdown-item danger" type="button" id="logoutBtn">
               🚪 Log Out
@@ -487,6 +510,9 @@
   </header>
 
   <main>
+    <!-- Resident Case Notifications Banner -->
+    <div id="residentAlertContainer"></div>
+
     <section class="hero">
       <h1>Barangay Dispute & Case Portal</h1>
       <p>Streamlined complaint filing, mediation scheduling, and record-keeping under Katarungang Pambarangay.</p>
@@ -511,7 +537,8 @@
         <a href="filing.html" class="card-btn primary">Start Filing</a>
       </div>
 
-      <div class="card">
+      <!-- Official Portal Card: Hidden for Residents, visible to Officers -->
+      <div class="card" id="officerCard" style="display: none;">
         <div>
           <h2>Official Portal</h2>
           <p>Restricted access for Lupon Secretary to manage docket schedules and print notices.</p>
@@ -529,7 +556,7 @@
     </div>
   </main>
 
-  <!-- ACCOUNT SETTINGS & CHANGE PASSWORD MODAL -->
+  <!-- ACCOUNT SETTINGS MODAL -->
   <div class="modal-overlay" id="settingsModal">
     <div class="modal-card">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
@@ -537,11 +564,10 @@
         <button class="modal-close" id="closeSettingsBtn">&times;</button>
       </div>
       
-      <!-- User Info Details -->
       <div style="background:#f8fafc; border:1px solid var(--border); border-radius:8px; padding:0.85rem; margin-bottom:1.5rem; font-size:0.88rem;">
         <p style="margin-bottom:0.25rem;"><strong>Signed in as:</strong> <span id="settingsEmail">user@email.com</span></p>
         <p style="margin-bottom:0.25rem;"><strong>Role:</strong> <span id="settingsRole" style="text-transform:capitalize;">Resident</span></p>
-        <p style="margin:0;"><strong>Location:</strong> <span id="settingsPurok">Barangay Sumilihon</span></p>
+        <p style="margin:0;"><strong>Purok/Address:</strong> <span id="settingsPurok">Barangay Sumilihon</span></p>
       </div>
 
       <h3 style="font-size:1rem; color:var(--primary); margin-bottom:0.75rem;">Change Password</h3>
@@ -618,7 +644,6 @@
 
     let currentSessionUser = null;
 
-    // 1. Session Guard & Populate Profile Info
     async function checkAuthSession() {
       const { data: { session } } = await db.auth.getSession();
 
@@ -639,29 +664,83 @@
       const role = profile?.role || 'resident';
       const purok = profile?.purok || 'Barangay Sumilihon';
 
-      // Update Nav Bar
       document.getElementById('navUserName').innerText = fullName;
       document.getElementById('userAvatar').innerText = fullName.charAt(0);
 
-      // Update Dropdown Header
       document.getElementById('dropFullName').innerText = fullName;
       document.getElementById('dropEmail').innerText = session.user.email;
       document.getElementById('dropRole').innerText = role;
 
-      // Update Settings Modal
       document.getElementById('settingsEmail').innerText = session.user.email;
       document.getElementById('settingsRole').innerText = role;
       document.getElementById('settingsPurok').innerText = purok;
 
-      // Show Officer Portal link if role is officer
       if (role === 'officer') {
         document.getElementById('officerPortalLink').style.display = 'inline-block';
+        document.getElementById('officerCard').style.display = 'flex';
+      } else {
+        document.getElementById('officerPortalLink').style.display = 'none';
+        document.getElementById('officerCard').style.display = 'none';
+        fetchResidentCaseAlerts(session.user.id);
       }
     }
 
+    async function fetchResidentCaseAlerts(userId) {
+      const { data: userCases } = await db
+        .from('cases')
+        .select('*')
+        .eq('user_id', userId)
+        .order('id', { ascending: false });
+
+      const alertContainer = document.getElementById('residentAlertContainer');
+
+      if (userCases && userCases.length > 0) {
+        let alertsHTML = '';
+
+        userCases.forEach(c => {
+          if (c.status === 'Accepted / For Hearing' || c.status === 'Mediation Scheduled') {
+            alertsHTML += `
+              <div class="alert-banner accepted">
+                <div>
+                  <strong>✅ Case Accepted (${c.docket})</strong>
+                  <p style="font-size:0.85rem; margin:0.15rem 0 0;">
+                    Your complaint regarding "${c.dispute_type}" has been accepted! 
+                    Hearing Schedule: <strong>${c.hearing_date ? new Date(c.hearing_date).toLocaleDateString() : 'To be announced'}</strong>
+                  </p>
+                </div>
+                <button type="button" class="card-btn primary" style="padding:0.4rem 0.8rem; font-size:0.8rem;" onclick="trackSpecificCase('${c.docket}')">View</button>
+              </div>
+            `;
+          } else if (c.status === 'Repudiated' || c.status === 'Repudiated / Escalated') {
+            alertsHTML += `
+              <div class="alert-banner rejected">
+                <div>
+                  <strong>⚠️ Case Not Settled / Escalated (${c.docket})</strong>
+                  <p style="font-size:0.85rem; margin:0.15rem 0 0;">
+                    Your complaint for "${c.dispute_type}" was repudiated or endorsed for Certificate to File Action (CFA).
+                  </p>
+                </div>
+                <button type="button" class="card-btn" style="padding:0.4rem 0.8rem; font-size:0.8rem; border-color:var(--danger); color:var(--danger);" onclick="trackSpecificCase('${c.docket}')">View</button>
+              </div>
+            `;
+          }
+        });
+
+        if (alertsHTML) {
+          alertContainer.innerHTML = alertsHTML;
+          alertContainer.style.display = 'block';
+        }
+      }
+    }
+
+    window.trackSpecificCase = function(docketNo) {
+      document.getElementById('trackInput').value = docketNo;
+      document.getElementById('trackBtn').click();
+      window.scrollTo({ top: 350, behavior: 'smooth' });
+    };
+
     checkAuthSession();
 
-    // 2. Dropdown Toggle Behavior
     const profileDropdownBtn = document.getElementById('profileDropdownBtn');
     const dropdownMenu = document.getElementById('dropdownMenu');
 
@@ -671,14 +750,12 @@
       dropdownMenu.style.display = isVisible ? 'none' : 'block';
     });
 
-    // Close dropdown when clicking outside
     window.addEventListener('click', (e) => {
       if (!dropdownMenu.contains(e.target) && !profileDropdownBtn.contains(e.target)) {
         dropdownMenu.style.display = 'none';
       }
     });
 
-    // 3. Settings & Change Password Modal
     const settingsModal = document.getElementById('settingsModal');
     const openSettingsBtn = document.getElementById('openSettingsBtn');
     const closeSettingsBtn = document.getElementById('closeSettingsBtn');
@@ -725,13 +802,11 @@
       }
     });
 
-    // 4. Logout Functionality
     document.getElementById('logoutBtn').addEventListener('click', async () => {
       await db.auth.signOut();
       window.location.href = 'auth.html';
     });
 
-    // 5. Track Case Status
     document.getElementById('trackBtn').addEventListener('click', async function() {
       const input = document.getElementById('trackInput').value.trim();
       const resultBox = document.getElementById('statusResult');
@@ -791,7 +866,6 @@
       }
     });
 
-    // 6. Guidelines Modal Logic
     const guidelinesModal = document.getElementById('guidelinesModal');
     const openGuidelinesBtn = document.getElementById('openGuidelinesBtn');
     const navGuidelinesLink = document.getElementById('navGuidelinesLink');

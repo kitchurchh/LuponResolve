@@ -18,7 +18,7 @@
       --muted: #64748b;
       --border: #cbd5e1;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
     body { background-color: var(--bg); color: var(--text); padding: 2rem 1rem; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
     .auth-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 2.2rem; width: 100%; max-width: 420px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.06); }
     .brand { text-align: center; font-size: 1.6rem; font-weight: 800; color: var(--primary); margin-bottom: 0.25rem; }
@@ -30,7 +30,7 @@
     label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem; }
     input, select { width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px; font-size: 0.95rem; outline: none; background: #fff; }
     input:focus, select:focus { border-color: var(--accent); }
-    .btn { width: 100%; background: var(--accent); color: #fff; border: none; padding: 0.85rem; border-radius: 6px; font-weight: 600; font-size: 1rem; cursor: pointer; margin-top: 0.5rem; }
+    .btn { width: 100%; background: var(--accent); color: #fff; border: none; padding: 0.85rem; border-radius: 6px; font-weight: 600; font-size: 1rem; cursor: pointer; margin-top: 0.5rem; transition: background 0.2s; }
     .btn:hover { background: var(--primary); }
   </style>
 </head>
@@ -111,7 +111,6 @@
       loginForm.style.display = 'none';
     });
 
-    // Handle Login
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const submitBtn = document.getElementById('loginSubmitBtn');
@@ -130,18 +129,9 @@
         return;
       }
 
-      // Check role
-      const { data: profile } = await db
-        .from('profiles')
-        .select('role')
-        .eq('id', data.user.id)
-        .maybeSingle();
-
-      // Mo-deretso sa index.html pagkahuman
       window.location.href = 'index.html';
     });
 
-    // Handle Registration
     registerForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const submitBtn = document.getElementById('regSubmitBtn');
@@ -163,13 +153,11 @@
         return;
       }
 
-      // Isulat sa profiles table
       await db.from('profiles').insert([
         { id: authData.user.id, full_name: fullName, purok, role }
       ]);
 
       alert('Account successfully created! Directing you to Home...');
-      // Auto login o diretso sa index.html
       window.location.href = 'index.html';
     });
   </script>

@@ -3,23 +3,257 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My GitHub Site</title>
+  <title>LuponResolve | Barangay Dispute Resolution System</title>
   <style>
+    :root {
+      --primary: #1e3a8a;
+      --primary-hover: #172554;
+      --accent: #2563eb;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
     body {
-      font-family: system-ui, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
       display: flex;
       flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
       align-items: center;
-      justify-content: center;
-      height: 90vh;
-      margin: 0;
-      background-color: #f4f4f9;
-      color: #333;
+    }
+
+    .brand {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    nav a {
+      margin-left: 1.5rem;
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    nav a:hover {
+      color: var(--primary);
+    }
+
+    main {
+      flex: 1;
+      max-width: 1000px;
+      margin: 3rem auto;
+      padding: 0 1.5rem;
+      width: 100%;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .hero h1 {
+      font-size: 2.25rem;
+      color: var(--primary);
+      margin-bottom: 0.75rem;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .tracker-box {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      gap: 0.75rem;
+      max-width: 550px;
+      margin: 0 auto 3.5rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .tracker-box input {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .tracker-box input:focus {
+      border-color: var(--accent);
+    }
+
+    .tracker-box button {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 0.75rem 1.25rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .tracker-box button:hover {
+      background: var(--primary);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+    }
+
+    .card h2 {
+      font-size: 1.25rem;
+      margin-bottom: 0.5rem;
+      color: var(--primary);
+    }
+
+    .card p {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-btn {
+      display: inline-block;
+      text-align: center;
+      padding: 0.65rem 1rem;
+      border-radius: 6px;
+      font-weight: 600;
+      text-decoration: none;
+      font-size: 0.9rem;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      transition: all 0.2s;
+    }
+
+    .card-btn.primary {
+      background: var(--accent);
+      color: white;
+    }
+
+    .card-btn.primary:hover {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .card-btn:hover {
+      background: #eff6ff;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--muted);
+      background: var(--card-bg);
     }
   </style>
 </head>
 <body>
-  <h1>Hello, World!</h1>
-  <p>My site is hosted on GitHub Pages.</p>
+
+  <header>
+    <a href="#" class="brand">⚖️ LuponResolve</a>
+    <nav>
+      <a href="#about">About</a>
+      <a href="#guidelines">KP Guidelines</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>Barangay Dispute & Case Portal</h1>
+      <p>Streamlined complaint filing, mediation scheduling, and record-keeping under Katarungang Pambarangay.</p>
+    </section>
+
+    <div class="tracker-box">
+      <input type="text" placeholder="Enter Docket / Case Number (e.g., KP-2026-001)" />
+      <button type="button">Track</button>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div>
+          <h2>File a Complaint</h2>
+          <p>Submit an incident report or dispute claim for Katarungang Pambarangay mediation review.</p>
+        </div>
+        <a href="filing.html" class="card-btn primary">Start Filing</a>
+      </div>
+
+      <div class="card">
+        <div>
+          <h2>Barangay Portal</h2>
+          <p>Restricted access for the Punong Barangay and Lupon Secretary to manage hearings and notices.</p>
+        </div>
+        <a href="portal.html" class="card-btn">Official Login</a>
+      </div>
+
+      <div class="card">
+        <div>
+          <h2>Mediation Guidelines</h2>
+          <p>Review covered cases, amicable settlement procedures, and Data Privacy rights before filing.</p>
+        </div>
+        <a href="#guidelines" class="card-btn">Read Procedures</a>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 LuponResolve. Compliant with RA 7160 (Local Government Code) & RA 10173 (Data Privacy Act).</p>
+  </footer>
+
 </body>
 </html>

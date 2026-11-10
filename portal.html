@@ -348,7 +348,8 @@
     <p>&copy; 2026 LuponResolve. Compliant with RA 7160 & RA 10173 (Data Privacy Act).</p>
   </footer>
 
-  <script>
+
+    <script>
     const supabaseUrl = https://ivphxduuzemdmkjdgeqy.supabase.co;
     const supabaseKey = sb_publishable_Eh44ol3xJHhoxPNOS6Tueg_SzHFTi5u; 
     const db = window.supabase.createClient(supabaseUrl, supabaseKey);
@@ -362,18 +363,26 @@
     const logoutBtn = document.getElementById('logoutBtn');
     const caseTableBody = document.getElementById('caseTableBody');
 
-    loginForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      if (document.getElementById('pinCode').value === correctPin) {
+    loginForm.addEventListener('submit', async function(e) {
+      e.preventDefault(); // Prevents page reload
+      e.stopPropagation();
+
+      const enteredPin = document.getElementById('pinCode').value.trim();
+
+      if (enteredPin === correctPin) {
+        // Switch views immediately
         loginView.style.display = 'none';
         dashboardView.style.display = 'block';
-        fetchCases();
+
+        // Load data from Supabase
+        await fetchCases();
       } else {
-        alert('Incorrect PIN.');
+        alert('Incorrect PIN. (Default: 1234)');
       }
     });
 
-    logoutBtn.addEventListener('click', function() {
+    logoutBtn.addEventListener('click', function(e) {
+      e.preventDefault();
       dashboardView.style.display = 'none';
       loginView.style.display = 'block';
       document.getElementById('pinCode').value = '';
@@ -382,18 +391,22 @@
     async function fetchCases() {
       caseTableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:2rem; color:var(--muted);">Loading records from Supabase...</td></tr>`;
 
-      const { data, error } = await db
-        .from('cases')
-        .select('*')
-        .order('id', { ascending: false });
+      try {
+        const { data, error } = await db
+          .from('cases')
+          .select('*')
+          .order('id', { ascending: false });
 
-      if (error) {
-        caseTableBody.innerHTML = `<tr><td colspan="8" style="color:var(--danger); text-align:center; padding:2rem;">Error: ${error.message}</td></tr>`;
-        return;
+        if (error) {
+          caseTableBody.innerHTML = `<tr><td colspan="8" style="color:var(--danger); text-align:center; padding:2rem;">Database Error: ${error.message}</td></tr>`;
+          return;
+        }
+
+        cachedCases = data || [];
+        renderTable(cachedCases);
+      } catch (err) {
+        caseTableBody.innerHTML = `<tr><td colspan="8" style="color:var(--danger); text-align:center; padding:2rem;">Script Error: ${err.message}</td></tr>`;
       }
-
-      cachedCases = data;
-      renderTable(data);
     }
 
     function renderTable(cases) {
@@ -406,11 +419,11 @@
       cases.forEach((item, index) => {
         const row = document.createElement('tr');
         row.innerHTML = `
-          <td><strong>${item.docket}</strong></td>
+          <td><strong>${item.docket || '—'}</strong></td>
           <td>${item.created_at ? new Date(item.created_at).toLocaleDateString() : '—'}</td>
-          <td>${item.complainant}</td>
-          <td>${item.respondent}</td>
-          <td style="text-transform: capitalize;">${item.dispute_type}</td>
+          <td>${item.complainant || '—'}</td>
+          <td>${item.respondent || '—'}</td>
+          <td style="text-transform: capitalize;">${item.dispute_type || '—'}</td>
           <td>
             <select class="status-select" onchange="updateStatus(${item.id}, this.value)">
               <option value="Under Review" ${item.status === 'Under Review' ? 'selected' : ''}>Under Review</option>
@@ -423,8 +436,8 @@
             <input type="date" class="hearing-input" value="${item.hearing_date || ''}" onchange="updateHearing(${item.id}, this.value)" />
           </td>
           <td>
-            <button class="action-btn" onclick="viewDetails(${index})">Facts</button>
-            <button class="action-btn" onclick="printSummons(${index})">Summons</button>
+            <button class="action-btn" type="button" onclick="viewDetails(${index})">Facts</button>
+            <button class="action-btn" type="button" onclick="printSummons(${index})">Summons</button>
           </td>
         `;
         caseTableBody.appendChild(row);
@@ -447,11 +460,11 @@
 
     window.printSummons = function(index) {
       const c = cachedCases[index];
-      document.getElementById('printComplainant').innerText = c.complainant;
+      document.getElementById('printComplainant').innerText = c.complainant || '';
       document.getElementById('printComplainantAddress').innerText = c.complainant_purok || 'Sumilihon';
-      document.getElementById('printRespondent').innerText = c.respondent;
+      document.getElementById('printRespondent').innerText = c.respondent || '';
       document.getElementById('printRespondentAddress').innerText = c.respondent_purok || 'Sumilihon';
-      document.getElementById('printDocket').innerText = c.docket;
+      document.getElementById('printDocket').innerText = c.docket || '';
       document.getElementById('printDispute').innerText = (c.dispute_type || '').toUpperCase();
       document.getElementById('printHearingDate').innerText = c.hearing_date ? new Date(c.hearing_date).toLocaleDateString() : 'NOT YET SCHEDULED';
 

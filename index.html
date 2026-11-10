@@ -7,7 +7,6 @@
 
   <!-- Supabase CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <a href="auth.html" class="card-btn">Login / Register</a>
 
   <style>
     :root {
@@ -58,8 +57,13 @@
       gap: 0.5rem;
     }
 
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
     nav a {
-      margin-left: 1.5rem;
       text-decoration: none;
       color: var(--muted);
       font-size: 0.95rem;
@@ -69,6 +73,30 @@
 
     nav a:hover {
       color: var(--primary);
+    }
+
+    .user-tag {
+      font-size: 0.85rem;
+      color: var(--primary);
+      font-weight: 600;
+      background: #eff6ff;
+      padding: 0.35rem 0.75rem;
+      border-radius: 20px;
+    }
+
+    .logout-btn {
+      background: none;
+      border: 1px solid var(--danger);
+      color: var(--danger);
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .logout-btn:hover {
+      background: #fef2f2;
     }
 
     main {
@@ -333,9 +361,11 @@
   <header>
     <a href="index.html" class="brand">⚖️ LuponResolve</a>
     <nav>
+      <span class="user-tag" id="userGreeting">Checking session...</span>
       <a href="filing.html">File Complaint</a>
-      <a href="portal.html">Official Portal</a>
+      <a href="portal.html" id="officerPortalLink" style="display: none;">Official Portal</a>
       <a href="#" id="navGuidelinesLink">Guidelines</a>
+      <button class="logout-btn" id="logoutBtn">Log Out</button>
     </nav>
   </header>
 
@@ -366,10 +396,10 @@
 
       <div class="card">
         <div>
-          <h2>Barangay Portal</h2>
-          <p>Restricted access for the Punong Barangay and Lupon Secretary to manage hearings and summons.</p>
+          <h2>Official Portal</h2>
+          <p>Restricted access for Lupon Secretary to manage docket schedules and print notices.</p>
         </div>
-        <a href="portal.html" class="card-btn">Official Login</a>
+        <a href="portal.html" class="card-btn">Open Portal</a>
       </div>
 
       <div class="card">
@@ -382,7 +412,7 @@
     </div>
   </main>
 
-  <!-- English Guidelines Pop-up Modal -->
+  <!-- Guidelines Pop-up Modal -->
   <div class="modal-overlay" id="guidelinesModal">
     <div class="guidelines-modal">
       <div class="modal-header">
@@ -444,7 +474,45 @@
     const supabaseKey = 'sb_publishable_Eh44ol3xJHhoxPNOS6Tueg_SzHFTi5u';
     const db = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    // Track Case Status Logic
+    // 1. Session Guard Check (Kini ang mopugos og balik sa auth.html kung wala pa naka-login)
+    async function checkAuthSession() {
+      const { data: { session } } = await db.auth.getSession();
+
+      if (!session) {
+        // Walay account o wala naka-login -> Diretso sa auth.html
+        window.location.href = 'auth.html';
+        return;
+      }
+
+      // Naka-login -> kuhaon ang ngalan ug role gikan sa profiles table
+      const { data: profile } = await db
+        .from('profiles')
+        .select('full_name, role')
+        .eq('id', session.user.id)
+        .maybeSingle();
+
+      const userGreeting = document.getElementById('userGreeting');
+      if (profile && profile.full_name) {
+        userGreeting.innerText = `👤 ${profile.full_name} (${profile.role})`;
+      } else {
+        userGreeting.innerText = `👤 ${session.user.email}`;
+      }
+
+      // Ipakita ang Official Portal link kung opisyal siya
+      if (profile && profile.role === 'officer') {
+        document.getElementById('officerPortalLink').style.display = 'inline-block';
+      }
+    }
+
+    checkAuthSession();
+
+    // Logout Functionality
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await db.auth.signOut();
+      window.location.href = 'auth.html';
+    });
+
+    // Track Case Status Logic with Acceptance Banner
     document.getElementById('trackBtn').addEventListener('click', async function() {
       const input = document.getElementById('trackInput').value.trim();
       const resultBox = document.getElementById('statusResult');
@@ -469,9 +537,25 @@
       }
 
       if (data) {
+        let acceptedNotice = '';
+        if (data.status === 'Accepted / For Hearing' || data.status === 'Mediation Scheduled') {
+          acceptedNotice = `
+            <div style="background: #dcfce7; border: 1px solid #86efac; border-radius: 8px; padding: 0.85rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
+              <span style="font-size: 1.5rem;">🎉</span>
+              <div>
+                <strong style="color: #166534; font-size: 0.95rem;">Complaint Formally Accepted!</strong>
+                <p style="color: #15803d; font-size: 0.85rem; margin: 0;">
+                  Your filed dispute has been accepted by the Barangay Lupon. Please review your hearing schedule below.
+                </p>
+              </div>
+            </div>
+          `;
+        }
+
         resultBox.innerHTML = `
-          <h3 style="color:var(--primary); margin-bottom:0.75rem;">Case Found: ${data.docket}</h3>
-          <p style="margin-bottom:0.4rem;"><strong>Current Status:</strong> <span class="status-badge">${data.status}</span></p>
+          ${acceptedNotice}
+          <h3 style="color:var(--primary); margin-bottom:0.75rem;">Docket: ${data.docket}</h3>
+          <p style="margin-bottom:0.4rem;"><strong>Status:</strong> <span class="status-badge" style="background:${data.status.includes('Accepted') ? '#dcfce7' : '#dbeafe'}; color:${data.status.includes('Accepted') ? '#15803d' : '#1e40af'};">${data.status}</span></p>
           <p style="margin-bottom:0.4rem;"><strong>Complainant:</strong> ${data.complainant}</p>
           <p style="margin-bottom:0.4rem;"><strong>Respondent:</strong> ${data.respondent}</p>
           <p style="margin-bottom:0.4rem; text-transform: capitalize;"><strong>Dispute Type:</strong> ${data.dispute_type}</p>
@@ -509,7 +593,6 @@
     closeGuidelinesBtn.addEventListener('click', closeModal);
     closeGuidelinesFooterBtn.addEventListener('click', closeModal);
 
-    // Close when clicking outside modal box
     window.addEventListener('click', function(e) {
       if (e.target === guidelinesModal) {
         closeModal();

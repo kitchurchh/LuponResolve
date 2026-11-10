@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Account Access | LuponResolve</title>
+  <title>Login / Register | LuponResolve</title>
+  
+  <!-- Supabase CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     :root {
       --primary: #1e3a8a;
@@ -17,27 +20,25 @@
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
     body { background-color: var(--bg); color: var(--text); padding: 2rem 1rem; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-    .auth-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; width: 100%; max-width: 420px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-    .back-link { display: inline-block; margin-bottom: 1rem; color: var(--accent); text-decoration: none; font-size: 0.85rem; }
-    h2 { color: var(--primary); margin-bottom: 0.5rem; }
-    p.subtitle { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
+    .auth-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 2.2rem; width: 100%; max-width: 420px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.06); }
+    .brand { text-align: center; font-size: 1.6rem; font-weight: 800; color: var(--primary); margin-bottom: 0.25rem; }
+    p.subtitle { text-align: center; color: var(--muted); font-size: 0.9rem; margin-bottom: 1.75rem; }
     .tab-bar { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
-    .tab-btn { flex: 1; padding: 0.6rem; border: none; background: none; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; }
+    .tab-btn { flex: 1; padding: 0.7rem; border: none; background: none; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; }
     .tab-btn.active { color: var(--accent); border-color: var(--accent); }
-    .form-group { margin-bottom: 1rem; text-align: left; }
-    label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.3rem; }
-    input, select { width: 100%; padding: 0.7rem; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem; outline: none; }
+    .form-group { margin-bottom: 1.1rem; text-align: left; }
+    label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem; }
+    input, select { width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px; font-size: 0.95rem; outline: none; background: #fff; }
     input:focus, select:focus { border-color: var(--accent); }
-    .btn { width: 100%; background: var(--accent); color: #fff; border: none; padding: 0.75rem; border-radius: 6px; font-weight: 600; cursor: pointer; margin-top: 0.5rem; }
+    .btn { width: 100%; background: var(--accent); color: #fff; border: none; padding: 0.85rem; border-radius: 6px; font-weight: 600; font-size: 1rem; cursor: pointer; margin-top: 0.5rem; }
     .btn:hover { background: var(--primary); }
   </style>
 </head>
 <body>
 
   <div class="auth-card">
-    <a href="index.html" class="back-link">&larr; Back to Home</a>
-    <h2>LuponResolve Account</h2>
-    <p class="subtitle">Access portal services for Residents and Officers</p>
+    <div class="brand">⚖️ LuponResolve</div>
+    <p class="subtitle">Barangay Sumilihon Online Dispute Resolution</p>
 
     <div class="tab-bar">
       <button class="tab-btn active" id="tabLoginBtn" type="button">Log In</button>
@@ -48,41 +49,41 @@
     <form id="loginForm">
       <div class="form-group">
         <label for="loginEmail">Email Address</label>
-        <input type="email" id="loginEmail" required placeholder="name@example.com" />
+        <input type="email" id="loginEmail" required placeholder="resident@email.com" />
       </div>
       <div class="form-group">
         <label for="loginPassword">Password</label>
         <input type="password" id="loginPassword" required placeholder="••••••••" />
       </div>
-      <button type="submit" class="btn" id="loginSubmitBtn">Log In</button>
+      <button type="submit" class="btn" id="loginSubmitBtn">Log In to Account</button>
     </form>
 
     <!-- Register Form -->
     <form id="registerForm" style="display: none;">
       <div class="form-group">
-        <label for="regRole">Account Type (Role)</label>
+        <label for="regRole">Account Type</label>
         <select id="regRole" required>
-          <option value="resident" selected>Resident (Barangay Citizen)</option>
-          <option value="officer">Barangay Officer / Lupon Secretary</option>
+          <option value="resident" selected>Resident (Citizen)</option>
+          <option value="officer">Barangay Officer / Lupon</option>
         </select>
       </div>
       <div class="form-group">
         <label for="regName">Full Name</label>
-        <input type="text" id="regName" required placeholder="e.g. Juan Dela Cruz" />
+        <input type="text" id="regName" required placeholder="Juan Dela Cruz" />
       </div>
       <div class="form-group">
-        <label for="regPurok">Purok / Sitio</label>
-        <input type="text" id="regPurok" placeholder="e.g. Purok 3" />
+        <label for="regPurok">Purok / Address</label>
+        <input type="text" id="regPurok" placeholder="Purok 1" required />
       </div>
       <div class="form-group">
         <label for="regEmail">Email Address</label>
-        <input type="email" id="regEmail" required placeholder="name@example.com" />
+        <input type="email" id="regEmail" required placeholder="resident@email.com" />
       </div>
       <div class="form-group">
         <label for="regPassword">Password</label>
-        <input type="password" id="regPassword" required placeholder="At least 6 characters" minlength="6" />
+        <input type="password" id="regPassword" required placeholder="Minimum 6 characters" minlength="6" />
       </div>
-      <button type="submit" class="btn" id="regSubmitBtn">Create Account</button>
+      <button type="submit" class="btn" id="regSubmitBtn">Create Account & Proceed</button>
     </form>
   </div>
 
@@ -115,7 +116,7 @@
       e.preventDefault();
       const submitBtn = document.getElementById('loginSubmitBtn');
       submitBtn.disabled = true;
-      submitBtn.innerText = 'Logging in...';
+      submitBtn.innerText = 'Verifying...';
 
       const email = document.getElementById('loginEmail').value.trim();
       const password = document.getElementById('loginPassword').value;
@@ -125,22 +126,19 @@
       if (error) {
         alert('Login failed: ' + error.message);
         submitBtn.disabled = false;
-        submitBtn.innerText = 'Log In';
+        submitBtn.innerText = 'Log In to Account';
         return;
       }
 
-      // Check role in profiles table
-      const { data: profile, error: profError } = await db
+      // Check role
+      const { data: profile } = await db
         .from('profiles')
         .select('role')
         .eq('id', data.user.id)
-        .single();
+        .maybeSingle();
 
-      if (profile && profile.role === 'officer') {
-        window.location.href = 'portal.html';
-      } else {
-        window.location.href = 'filing.html';
-      }
+      // Mo-deretso sa index.html pagkahuman
+      window.location.href = 'index.html';
     });
 
     // Handle Registration
@@ -161,24 +159,18 @@
       if (authError) {
         alert('Registration failed: ' + authError.message);
         submitBtn.disabled = false;
-        submitBtn.innerText = 'Create Account';
+        submitBtn.innerText = 'Create Account & Proceed';
         return;
       }
 
-      const { error: profileError } = await db.from('profiles').insert([
+      // Isulat sa profiles table
+      await db.from('profiles').insert([
         { id: authData.user.id, full_name: fullName, purok, role }
       ]);
 
-      if (profileError) {
-        alert('Profile error: ' + profileError.message);
-        submitBtn.disabled = false;
-        submitBtn.innerText = 'Create Account';
-      } else {
-        alert('Registration successful! You may now log in.');
-        tabLoginBtn.click();
-        submitBtn.disabled = false;
-        submitBtn.innerText = 'Create Account';
-      }
+      alert('Account successfully created! Directing you to Home...');
+      // Auto login o diretso sa index.html
+      window.location.href = 'index.html';
     });
   </script>
 </body>

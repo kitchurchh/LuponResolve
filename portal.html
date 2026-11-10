@@ -4,6 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Official Portal | LuponResolve</title>
+  
+  <!-- Supabase JS Library -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     :root {
       --primary: #1e3a8a;
@@ -15,6 +19,7 @@
       --border: #cbd5e1;
       --success: #16a34a;
       --warning: #d97706;
+      --danger: #ef4444;
     }
 
     * {
@@ -132,8 +137,8 @@
 
     .logout-btn {
       background: none;
-      border: 1px solid #ef4444;
-      color: #ef4444;
+      border: 1px solid var(--danger);
+      color: var(--danger);
       padding: 0.4rem 0.8rem;
       border-radius: 6px;
       font-size: 0.85rem;
@@ -188,7 +193,19 @@
       background: #eff6ff;
     }
 
-    /* Printable KP Notice (Hidden by default) */
+    /* Empty state styling */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--muted);
+    }
+
+    .empty-state-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Printable KP Notice */
     #printableSummons {
       display: none;
     }
@@ -308,44 +325,12 @@
   </div>
 
   <script>
+    const supabaseUrl = 'https://ivphxduuzemdmkjdgeqy.supabase.co';
+    const supabaseKey = 'sb_publishable_Eh44ol3xJHhoxPNOS6Tueg_SzHFTi5u'; 
+    const db = window.supabase.createClient(supabaseUrl, supabaseKey);
+
     const correctPin = "1234";
-
-    // 1. Seed Demo Cases if local storage is completely empty
-    function seedDemoCases() {
-      if (!localStorage.getItem('luponCases')) {
-        const demoCases = [
-          {
-            docket: 'KP-2026-1011',
-            complainant: 'Maria Santos',
-            complainantPurok: 'Purok 2',
-            respondent: 'Pedro Penduko',
-            respondentPurok: 'Purok 2',
-            disputeType: 'boundary',
-            date: '2026-11-02',
-            narrative: 'Encroachment on boundary line during fence replacement.',
-            status: 'Mediation Scheduled',
-            hearingDate: '2026-11-15',
-            filedOn: '11/02/2026'
-          },
-          {
-            docket: 'KP-2026-1024',
-            complainant: 'Ernesto Reyes',
-            complainantPurok: 'Purok 5',
-            respondent: 'Danilo Cruz',
-            respondentPurok: 'Purok 4',
-            disputeType: 'debt',
-            date: '2026-10-28',
-            narrative: 'Unpaid loan obligation of PHP 4,500 due last month.',
-            status: 'Under Review',
-            hearingDate: '',
-            filedOn: '11/04/2026'
-          }
-        ];
-        localStorage.setItem('luponCases', JSON.stringify(demoCases));
-      }
-    }
-
-    seedDemoCases();
+    let cachedCases = [];
 
     const loginView = document.getElementById('loginView');
     const dashboardView = document.getElementById('dashboardView');
@@ -353,42 +338,75 @@
     const logoutBtn = document.getElementById('logoutBtn');
     const caseTableBody = document.getElementById('caseTableBody');
 
-    loginForm.addEventListener('submit', function(e) {
+    // Handle Login
+    loginForm.addEventListener('submit', async function(e) {
       e.preventDefault();
-      if (document.getElementById('pinCode').value === correctPin) {
+      const enteredPin = document.getElementById('pinCode').value.trim();
+
+      if (enteredPin === correctPin) {
         loginView.style.display = 'none';
         dashboardView.style.display = 'block';
-        renderCases();
+        await fetchCases();
       } else {
         alert('Incorrect PIN. Please try again.');
       }
     });
 
-    logoutBtn.addEventListener('click', function() {
+    // Handle Logout
+    logoutBtn.addEventListener('click', function(e) {
+      e.preventDefault();
       dashboardView.style.display = 'none';
       loginView.style.display = 'block';
       document.getElementById('pinCode').value = '';
     });
 
-    function renderCases() {
-      const cases = JSON.parse(localStorage.getItem('luponCases')) || [];
+    // Fetch Records directly from Supabase
+    async function fetchCases() {
+      caseTableBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--muted); padding: 2.5rem;">Checking database for cases...</td></tr>`;
+
+      const { data, error } = await db
+        .from('cases')
+        .select('*')
+        .order('id', { ascending: false });
+
+      if (error) {
+        caseTableBody.innerHTML = `<tr><td colspan="8" style="color: var(--danger); text-align: center; padding: 2rem;">Error: ${error.message}</td></tr>`;
+        return;
+      }
+
+      cachedCases = data || [];
+      renderTable(cachedCases);
+    }
+
+    // Render Table
+    function renderTable(cases) {
       caseTableBody.innerHTML = '';
 
-      if (cases.length === 0) {
-        caseTableBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--muted); padding: 2rem;">No complaints filed yet.</td></tr>`;
+      if (!cases || cases.length === 0) {
+        caseTableBody.innerHTML = `
+          <tr>
+            <td colspan="8">
+              <div class="empty-state">
+                <div class="empty-state-icon">📋</div>
+                <strong>No complaints filed yet.</strong>
+                <p style="font-size: 0.85rem; margin-top: 0.25rem;">When residents submit complaints through the filing form, they will appear here automatically.</p>
+              </div>
+            </td>
+          </tr>
+        `;
         return;
       }
 
       cases.forEach((item, index) => {
         const row = document.createElement('tr');
         row.innerHTML = `
-          <td><strong>${item.docket}</strong></td>
-          <td>${item.filedOn}</td>
-          <td>${item.complainant}</td>
-          <td>${item.respondent}</td>
-          <td style="text-transform: capitalize;">${item.disputeType}</td>
+          <td><strong>${item.docket || '—'}</strong></td>
+          <td>${item.created_at ? new Date(item.created_at).toLocaleDateString() : '—'}</td>
+          <td>${item.complainant || '—'}</td>
+          <td>${item.respondent || '—'}</td>
+          <td style="text-transform: capitalize;">${item.dispute_type || '—'}</td>
           <td>
-            <select class="status-select" onchange="updateStatus(${index}, this.value)">
+            <select class="status-select" onchange="updateStatus(${item.id}, this.value)">
               <option value="Under Review" ${item.status === 'Under Review' ? 'selected' : ''}>Under Review</option>
               <option value="Mediation Scheduled" ${item.status === 'Mediation Scheduled' ? 'selected' : ''}>Mediation Scheduled</option>
               <option value="Amicably Settled" ${item.status === 'Amicably Settled' ? 'selected' : ''}>Amicably Settled</option>
@@ -396,53 +414,52 @@
             </select>
           </td>
           <td>
-            <input type="date" class="hearing-input" value="${item.hearingDate || ''}" onchange="updateHearing(${index}, this.value)" />
+            <input type="date" class="hearing-input" value="${item.hearing_date || ''}" onchange="updateHearing(${item.id}, this.value)" />
           </td>
           <td>
-            <button class="btn-action" onclick="viewDetails(${index})">Facts</button>
-            <button class="btn-action" onclick="printSummons(${index})">Summons</button>
+            <button class="btn-action" type="button" onclick="viewDetails(${index})">Facts</button>
+            <button class="btn-action" type="button" onclick="printSummons(${index})">Summons</button>
           </td>
         `;
         caseTableBody.appendChild(row);
       });
     }
 
-    window.updateStatus = function(index, newStatus) {
-      const cases = JSON.parse(localStorage.getItem('luponCases')) || [];
-      cases[index].status = newStatus;
-      localStorage.setItem('luponCases', JSON.stringify(cases));
+    // Update Status
+    window.updateStatus = async function(id, newStatus) {
+      const { error } = await db.from('cases').update({ status: newStatus }).eq('id', id);
+      if (error) alert('Error updating status: ' + error.message);
     };
 
-    window.updateHearing = function(index, newDate) {
-      const cases = JSON.parse(localStorage.getItem('luponCases')) || [];
-      cases[index].hearingDate = newDate;
-      if (newDate && cases[index].status === 'Under Review') {
-        cases[index].status = 'Mediation Scheduled';
-      }
-      localStorage.setItem('luponCases', JSON.stringify(cases));
-      renderCases();
+    // Update Hearing Date
+    window.updateHearing = async function(id, newDate) {
+      const { error } = await db.from('cases').update({ hearing_date: newDate, status: 'Mediation Scheduled' }).eq('id', id);
+      if (error) alert('Error updating hearing date: ' + error.message);
+      else fetchCases();
     };
 
+    // View Facts
     window.viewDetails = function(index) {
-      const cases = JSON.parse(localStorage.getItem('luponCases')) || [];
-      const c = cases[index];
-      alert(`Docket: ${c.docket}\nIncident Date: ${c.date}\nNarrative:\n${c.narrative}`);
+      const c = cachedCases[index];
+      alert(`Docket: ${c.docket}\nIncident Date: ${c.incident_date}\n\nFacts/Narrative:\n${c.narrative}`);
     };
 
+    // Print KP Form No. 7 Summons
     window.printSummons = function(index) {
-      const cases = JSON.parse(localStorage.getItem('luponCases')) || [];
-      const c = cases[index];
+      const c = cachedCases[index];
 
-      document.getElementById('printComplainant').innerText = c.complainant;
-      document.getElementById('printComplainantAddress').innerText = c.complainantPurok || 'Sumilihon';
-      document.getElementById('printRespondent').innerText = c.respondent;
-      document.getElementById('printRespondentAddress').innerText = c.respondentPurok || 'Sumilihon';
-      document.getElementById('printDocket').innerText = c.docket;
-      document.getElementById('printDispute').innerText = c.disputeType.toUpperCase();
-      document.getElementById('printHearingDate').innerText = c.hearingDate ? new Date(c.hearingDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : 'NOT YET SCHEDULED';
+      document.getElementById('printComplainant').innerText = c.complainant || '';
+      document.getElementById('printComplainantAddress').innerText = c.complainant_purok || 'Sumilihon';
+      document.getElementById('printRespondent').innerText = c.respondent || '';
+      document.getElementById('printRespondentAddress').innerText = c.respondent_purok || 'Sumilihon';
+      document.getElementById('printDocket').innerText = c.docket || '';
+      document.getElementById('printDispute').innerText = (c.dispute_type || '').toUpperCase();
+      document.getElementById('printHearingDate').innerText = c.hearing_date 
+        ? new Date(c.hearing_date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) 
+        : 'NOT YET ASSIGNED';
 
       window.print();
     };
   </script>
 </body>
-</html> 
+</html>

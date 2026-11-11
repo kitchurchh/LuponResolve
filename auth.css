@@ -1,0 +1,254 @@
+:root {
+  --primary: #0f291e;         /* Deep forest black - ultra readable for headings */
+  --accent: #1b5e20;          /* Classic accessible dark green for main actions */
+  --accent-hover: #144718;
+  --bg: #1b382b;              /* Dark, glare-free background canvas */
+  --card-bg: #ffffff;         /* Pure, solid card for maximum contrast */
+  --text: #111827;            /* Sharp near-black text */
+  --muted: #4b5563;           /* Accessible medium-gray for secondary text */
+  --border: #d1d5db;          /* Distinct gray border for inputs */
+  --danger: #b91c1c;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  padding: 2rem 1rem;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-card {
+  background: var(--card-bg);
+  border: 1px solid #e5e7eb;
+  border-top: 5px solid #2e7d32;
+  border-radius: 14px;
+  padding: 2.2rem;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.35);
+}
+
+.brand {
+  text-align: center;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 0.25rem;
+}
+
+p.subtitle {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 1.75rem;
+}
+
+.section-instruct {
+  text-align: center;
+  font-weight: 700;
+  margin-bottom: 1.15rem;
+  color: var(--primary);
+}
+
+/* Role Selector Tiles */
+.role-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.role-card-btn {
+  background: #f9fafb;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  padding: 1.1rem 1rem;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  transition: all 0.2s;
+}
+
+.role-card-btn:hover {
+  border-color: var(--accent);
+  background: #f0fdf4;
+  transform: translateY(-2px);
+}
+
+.role-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.2rem;
+}
+
+.role-card-btn strong {
+  color: var(--primary);
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.role-card-btn small {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+/* Panels, Titles & Navs */
+.back-text-btn {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 0.5rem;
+}
+
+.back-text-btn:hover {
+  text-decoration: underline;
+}
+
+.panel-heading {
+  color: var(--primary);
+  font-size: 1.15rem;
+  font-weight: 800;
+  margin: 0.75rem 0 0.4rem;
+}
+
+.panel-subtext {
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-weight: 500;
+  margin-bottom: 1.25rem;
+  line-height: 1.4;
+}
+
+.primary-action-btn {
+  margin-bottom: 0.75rem;
+}
+
+/* Tab Bar */
+.tab-bar {
+  display: flex;
+  border-bottom: 2px solid #e5e7eb;
+  margin: 1rem 0 1.25rem;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 0.75rem;
+  border: none;
+  background: none;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+}
+
+.tab-btn.active {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* Form Styles */
+.form-group {
+  margin-bottom: 1.15rem;
+  text-align: left;
+}
+
+label {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 0.4rem;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #111827;
+  outline: none;
+  background: #f9fafb;
+}
+
+input:focus,
+select:focus {
+  border-color: var(--accent);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(27, 94, 32, 0.15);
+}
+
+.field-hint {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Button Variants */
+.btn {
+  width: 100%;
+  background: var(--accent);
+  color: #ffffff;
+  border: none;
+  padding: 0.85rem;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 0.6rem;
+  transition: background 0.2s;
+}
+
+.btn:hover {
+  background: var(--accent-hover);
+}
+
+.btn.secondary {
+  background: #f3f4f6;
+  color: var(--primary);
+  border: 1.5px solid var(--border);
+  margin-bottom: 0.75rem;
+}
+
+.btn.secondary:hover {
+  background: #e5e7eb;
+}
+
+.btn.text-btn {
+  background: transparent;
+  color: var(--accent);
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-top: 0.25rem;
+}
+
+.btn.text-btn:hover {
+  text-decoration: underline;
+  background: transparent;
+}
+
+.hidden {
+  display: none !important;
+}

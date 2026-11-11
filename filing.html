@@ -5,245 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>File a Complaint | LuponResolve</title>
 
+  <!-- External Stylesheet -->
+  <link rel="stylesheet" href="filling.css" />
+
   <!-- Supabase CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <style>
-    :root {
-      --primary: #1e3a8a;
-      --accent: #2563eb;
-      --accent-hover: #1d4ed8;
-      --bg: #f8fafc;
-      --card-bg: #ffffff;
-      --text: #0f172a;
-      --muted: #64748b;
-      --border: #cbd5e1;
-      --success: #16a34a;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      padding: 2rem 1rem;
-    }
-
-    .container {
-      max-width: 720px;
-      margin: 0 auto;
-      background: var(--card-bg);
-      border-radius: 12px;
-      padding: 2.5rem;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-      border: 1px solid #e2e8f0;
-      width: 100%;
-      flex: 1;
-    }
-
-    .back-link {
-      display: inline-block;
-      margin-bottom: 1.5rem;
-      color: var(--accent);
-      text-decoration: none;
-      font-weight: 500;
-      font-size: 0.9rem;
-    }
-
-    h1 {
-      font-size: 1.75rem;
-      color: var(--primary);
-      margin-bottom: 0.5rem;
-    }
-
-    p.subtitle {
-      color: var(--muted);
-      margin-bottom: 2rem;
-      font-size: 0.95rem;
-    }
-
-    fieldset {
-      border: none;
-      margin-bottom: 2rem;
-      padding: 0;
-    }
-
-    legend {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--primary);
-      margin-bottom: 1rem;
-      border-bottom: 2px solid #f1f5f9;
-      padding-bottom: 0.4rem;
-      width: 100%;
-    }
-
-    .form-group {
-      margin-bottom: 1.25rem;
-    }
-
-    label {
-      display: block;
-      font-size: 0.9rem;
-      font-weight: 600;
-      margin-bottom: 0.4rem;
-    }
-
-    input[type="text"],
-    input[type="tel"],
-    input[type="date"],
-    select,
-    textarea {
-      width: 100%;
-      padding: 0.75rem;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      font-size: 0.95rem;
-      outline: none;
-      background: #fff;
-    }
-
-    input:focus,
-    select:focus,
-    textarea:focus {
-      border-color: var(--accent);
-    }
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-    }
-
-    @media (max-width: 600px) {
-      .grid-2 {
-        grid-template-columns: 1fr;
-      }
-      .container {
-        padding: 1.5rem;
-      }
-    }
-
-    .consent-box {
-      background: #eff6ff;
-      border: 1px solid #bfdbfe;
-      border-radius: 8px;
-      padding: 1rem;
-      margin-bottom: 1.5rem;
-      font-size: 0.85rem;
-      color: #1e3a8a;
-      display: flex;
-      gap: 0.75rem;
-      align-items: flex-start;
-    }
-
-    .consent-box input {
-      margin-top: 0.25rem;
-      cursor: pointer;
-    }
-
-    .consent-box label {
-      cursor: pointer;
-      font-weight: 500;
-    }
-
-    button[type="submit"] {
-      width: 100%;
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      padding: 0.85rem;
-      border-radius: 6px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    button[type="submit"]:hover {
-      background: var(--accent-hover);
-    }
-
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.65);
-      backdrop-filter: blur(4px);
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      padding: 1rem;
-    }
-
-    .modal-card {
-      background: #ffffff;
-      border-radius: 16px;
-      padding: 2.5rem 2rem;
-      max-width: 440px;
-      width: 100%;
-      text-align: center;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-      animation: popIn 0.25s ease-out;
-    }
-
-    @keyframes popIn {
-      from { transform: scale(0.95); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-
-    .check-icon {
-      width: 60px;
-      height: 60px;
-      background: #dcfce7;
-      color: var(--success);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.8rem;
-      margin: 0 auto 1.25rem;
-    }
-
-    .docket-badge {
-      display: inline-block;
-      background: #f1f5f9;
-      border: 1px dashed var(--accent);
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      font-family: monospace;
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: var(--primary);
-      margin: 1rem 0;
-    }
-
-    .btn-return {
-      width: 100%;
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      padding: 0.8rem;
-      border-radius: 6px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 0.5rem;
-    }
-
-    .btn-return:hover {
-      background: var(--accent-hover);
-    }
-  </style>
 </head>
 <body>
 
@@ -327,96 +93,23 @@
   <div class="modal-overlay" id="successModal">
     <div class="modal-card">
       <div class="check-icon">✓</div>
-      <h2 style="color:var(--primary); margin-bottom:0.5rem;">Thank You for Filing!</h2>
-      <p style="color:var(--muted); font-size:0.95rem;">Your complaint has been successfully recorded into the Lupon registry.</p>
+      <h2 class="modal-title">Thank You for Filing!</h2>
+      <p class="modal-subtitle">Your complaint has been successfully recorded into the Lupon registry.</p>
       
-      <p style="font-size:0.85rem; margin-top:1.25rem; color:var(--text); font-weight:600;">Your Tracking Docket:</p>
+      <p class="modal-label">Your Tracking Docket:</p>
       <div class="docket-badge" id="modalDocket">KP-2026-0000</div>
       
-      <p style="font-size:0.85rem; color:var(--muted); margin-bottom:1.5rem;">
+      <p class="modal-help">
         Take a screenshot or record this number to track your case status.
       </p>
 
-      <button type="button" class="btn-return" onclick="window.location.href='index.html'">
+      <button type="button" class="btn-return" id="returnHomeBtn">
         Return to Home (<span id="countdown">3</span>s)
       </button>
     </div>
   </div>
 
-  <script>
-    const supabaseUrl = 'https://ivphxduuzemdmkjdgeqy.supabase.co';
-    const supabaseKey = 'sb_publishable_Eh44ol3xJHhoxPNOS6Tueg_SzHFTi5u';
-    const db = window.supabase.createClient(supabaseUrl, supabaseKey);
-
-    async function checkUserSession() {
-      const { data: { session } } = await db.auth.getSession();
-      if (!session) {
-        window.location.href = 'auth.html';
-        return;
-      }
-
-      const { data: profile } = await db
-        .from('profiles')
-        .select('*')
-        .eq('id', session.user.id)
-        .maybeSingle();
-
-      if (profile) {
-        if (profile.full_name) document.getElementById('complainantName').value = profile.full_name;
-        if (profile.purok) document.getElementById('complainantPurok').value = profile.purok;
-      }
-    }
-
-    checkUserSession();
-
-    document.getElementById('complaintForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-
-      const submitBtn = document.getElementById('submitBtn');
-      submitBtn.disabled = true;
-      submitBtn.innerText = 'Submitting to database...';
-
-      const { data: { session } } = await db.auth.getSession();
-      const currentUserId = session ? session.user.id : null;
-
-      const trackingNo = 'KP-' + new Date().getFullYear() + '-' + Math.floor(1000 + Math.random() * 9000);
-
-      const payload = {
-        docket: trackingNo,
-        complainant: document.getElementById('complainantName').value.trim(),
-        complainant_purok: document.getElementById('complainantPurok').value.trim(),
-        respondent: document.getElementById('respondentName').value.trim(),
-        respondent_purok: document.getElementById('respondentPurok').value.trim(),
-        dispute_type: document.getElementById('disputeType').value,
-        incident_date: document.getElementById('incidentDate').value,
-        narrative: document.getElementById('incidentNarrative').value.trim(),
-        status: 'Under Review',
-        hearing_date: null,
-        user_id: currentUserId
-      };
-
-      const { data, error } = await db.from('cases').insert([payload]);
-
-      if (error) {
-        alert('Failed to submit: ' + error.message);
-        submitBtn.disabled = false;
-        submitBtn.innerText = 'Submit Complaint';
-      } else {
-        document.getElementById('modalDocket').innerText = trackingNo;
-        document.getElementById('successModal').style.display = 'flex';
-
-        let timeLeft = 3;
-        const countdownEl = document.getElementById('countdown');
-        const timer = setInterval(() => {
-          timeLeft--;
-          if (countdownEl) countdownEl.innerText = timeLeft;
-          if (timeLeft <= 0) {
-            clearInterval(timer);
-            window.location.href = 'index.html';
-          }
-        }, 1000);
-      }
-    });
-  </script>
+  <!-- Application Logic (JavaScript) -->
+  <script src="filling.js"></script>
 </body>
 </html>

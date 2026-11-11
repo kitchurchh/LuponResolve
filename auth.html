@@ -3,36 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login / Register | LuponResolve</title>
+  <title>Portal Access | LuponResolve</title>
   
+  <!-- External Stylesheet -->
+  <link rel="stylesheet" href="auth.css" />
+
   <!-- Supabase CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <style>
-    :root {
-      --primary: #1e3a8a;
-      --accent: #2563eb;
-      --bg: #f8fafc;
-      --card-bg: #ffffff;
-      --text: #0f172a;
-      --muted: #64748b;
-      --border: #cbd5e1;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); padding: 2rem 1rem; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-    .auth-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 2.2rem; width: 100%; max-width: 420px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.06); }
-    .brand { text-align: center; font-size: 1.6rem; font-weight: 800; color: var(--primary); margin-bottom: 0.25rem; }
-    p.subtitle { text-align: center; color: var(--muted); font-size: 0.9rem; margin-bottom: 1.75rem; }
-    .tab-bar { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
-    .tab-btn { flex: 1; padding: 0.7rem; border: none; background: none; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; }
-    .tab-btn.active { color: var(--accent); border-color: var(--accent); }
-    .form-group { margin-bottom: 1.1rem; text-align: left; }
-    label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem; }
-    input, select { width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px; font-size: 0.95rem; outline: none; background: #fff; }
-    input:focus, select:focus { border-color: var(--accent); }
-    .btn { width: 100%; background: var(--accent); color: #fff; border: none; padding: 0.85rem; border-radius: 6px; font-weight: 600; font-size: 1rem; cursor: pointer; margin-top: 0.5rem; transition: background 0.2s; }
-    .btn:hover { background: var(--primary); }
-  </style>
 </head>
 <body>
 
@@ -40,126 +17,141 @@
     <div class="brand">⚖️ LuponResolve</div>
     <p class="subtitle">Barangay Sumilihon Online Dispute Resolution</p>
 
-    <div class="tab-bar">
-      <button class="tab-btn active" id="tabLoginBtn" type="button">Log In</button>
-      <button class="tab-btn" id="tabRegisterBtn" type="button">Register</button>
+    <!-- STEP 1: Role Selection Screen -->
+    <div id="roleSelectionScreen">
+      <p class="section-instruct">Please select your role to proceed:</p>
+
+      <div class="role-grid">
+        <button type="button" class="role-card-btn" id="chooseResidentBtn">
+          <span class="role-icon">📝</span>
+          <strong>I am a Resident</strong>
+          <small>File an incident report or register using an approved docket</small>
+        </button>
+
+        <button type="button" class="role-card-btn" id="chooseOfficerBtn">
+          <span class="role-icon">🛡️</span>
+          <strong>I am a Barangay Officer</strong>
+          <small>Access official docket records & mediation desk</small>
+        </button>
+      </div>
     </div>
 
-    <!-- Log In Form -->
-    <form id="loginForm">
+    <!-- STEP 2A: Resident Action Menu -->
+    <div id="residentActionScreen" class="hidden">
+      <button type="button" class="back-text-btn" id="backToRoleBtn1">&larr; Back to role selection</button>
+      <h3 class="panel-heading">Resident Services</h3>
+      <p class="panel-subtext">
+        New complaints must be filed first for Lupon review before an account can be registered.
+      </p>
+
+      <button type="button" class="btn primary-action-btn" onclick="window.location.href='filing.html'">
+        📄 File a New Complaint First
+      </button>
+
+      <button type="button" class="btn secondary" id="showResidentRegBtn">
+        🔑 My Case is Approved (Create Account)
+      </button>
+
+      <button type="button" class="btn text-btn" id="showResidentLoginBtn">
+        Already have an account? Log In
+      </button>
+    </div>
+
+    <!-- STEP 2B: Officer Screen (Login / Secure Register) -->
+    <div id="officerScreen" class="hidden">
+      <button type="button" class="back-text-btn" id="backToRoleBtn2">&larr; Back to role selection</button>
+      
+      <div class="tab-bar">
+        <button class="tab-btn active" id="tabOfficerLoginBtn" type="button">Officer Login</button>
+        <button class="tab-btn" id="tabOfficerRegBtn" type="button">Officer Register</button>
+      </div>
+
+      <!-- Officer Login Form -->
+      <form id="officerLoginForm">
+        <div class="form-group">
+          <label for="offEmail">Officer Email</label>
+          <input type="email" id="offEmail" required placeholder="officer@email.com" />
+        </div>
+        <div class="form-group">
+          <label for="offPassword">Password</label>
+          <input type="password" id="offPassword" required placeholder="••••••••" />
+        </div>
+        <button type="submit" class="btn" id="offLoginSubmitBtn">Log In as Officer</button>
+      </form>
+
+      <!-- Officer Register Form (PIN Protected) -->
+      <form id="officerRegisterForm" class="hidden">
+        <div class="form-group">
+          <label for="officerPin">Barangay Security Access PIN</label>
+          <input type="password" id="officerPin" required placeholder="Enter Secret Officer PIN" />
+          <small class="field-hint">Authorized barangay personnel only.</small>
+        </div>
+        <div class="form-group">
+          <label for="offRegName">Full Name & Designation</label>
+          <input type="text" id="offRegName" required placeholder="e.g. Juan Perez (Lupon Secretary)" />
+        </div>
+        <div class="form-group">
+          <label for="offRegEmail">Official Email</label>
+          <input type="email" id="offRegEmail" required placeholder="officer@email.com" />
+        </div>
+        <div class="form-group">
+          <label for="offRegPassword">Password</label>
+          <input type="password" id="offRegPassword" required minlength="6" placeholder="Minimum 6 characters" />
+        </div>
+        <button type="submit" class="btn" id="offRegSubmitBtn">Verify PIN & Create Account</button>
+      </form>
+    </div>
+
+    <!-- STEP 3A: Resident Registration Form (Requires Approved Docket) -->
+    <form id="residentRegisterForm" class="hidden">
+      <button type="button" class="back-text-btn" id="backToResidentActionBtn">&larr; Back to resident options</button>
+      <h3 class="panel-heading">Create Resident Account</h3>
+      <p class="panel-subtext">
+        Enter your approved complaint docket number to link your case and register.
+      </p>
+
       <div class="form-group">
-        <label for="loginEmail">Email Address</label>
-        <input type="email" id="loginEmail" required placeholder="resident@email.com" />
+        <label for="resDocketInput">Approved Docket Number</label>
+        <input type="text" id="resDocketInput" required placeholder="e.g. KP-2026-1024" />
       </div>
       <div class="form-group">
-        <label for="loginPassword">Password</label>
-        <input type="password" id="loginPassword" required placeholder="••••••••" />
+        <label for="resFullName">Full Name</label>
+        <input type="text" id="resFullName" required placeholder="Juan Dela Cruz" />
       </div>
-      <button type="submit" class="btn" id="loginSubmitBtn">Log In to Account</button>
+      <div class="form-group">
+        <label for="resPurok">Purok / Address</label>
+        <input type="text" id="resPurok" required placeholder="Purok 2" />
+      </div>
+      <div class="form-group">
+        <label for="resEmail">Email Address</label>
+        <input type="email" id="resEmail" required placeholder="resident@email.com" />
+      </div>
+      <div class="form-group">
+        <label for="resPassword">Password</label>
+        <input type="password" id="resPassword" required minlength="6" placeholder="Minimum 6 characters" />
+      </div>
+      <button type="submit" class="btn" id="resRegSubmitBtn">Verify Docket & Register</button>
     </form>
 
-    <!-- Register Form -->
-    <form id="registerForm" style="display: none;">
+    <!-- STEP 3B: Resident Normal Login Form -->
+    <form id="residentLoginForm" class="hidden">
+      <button type="button" class="back-text-btn" id="backToResidentActionBtn2">&larr; Back to resident options</button>
+      <h3 class="panel-heading">Resident Log In</h3>
+      
       <div class="form-group">
-        <label for="regRole">Account Type</label>
-        <select id="regRole" required>
-          <option value="resident" selected>Resident (Citizen)</option>
-          <option value="officer">Barangay Officer / Lupon</option>
-        </select>
+        <label for="resLoginEmail">Email Address</label>
+        <input type="email" id="resLoginEmail" required placeholder="resident@email.com" />
       </div>
       <div class="form-group">
-        <label for="regName">Full Name</label>
-        <input type="text" id="regName" required placeholder="Juan Dela Cruz" />
+        <label for="resLoginPassword">Password</label>
+        <input type="password" id="resLoginPassword" required placeholder="••••••••" />
       </div>
-      <div class="form-group">
-        <label for="regPurok">Purok / Address</label>
-        <input type="text" id="regPurok" placeholder="Purok 1" required />
-      </div>
-      <div class="form-group">
-        <label for="regEmail">Email Address</label>
-        <input type="email" id="regEmail" required placeholder="resident@email.com" />
-      </div>
-      <div class="form-group">
-        <label for="regPassword">Password</label>
-        <input type="password" id="regPassword" required placeholder="Minimum 6 characters" minlength="6" />
-      </div>
-      <button type="submit" class="btn" id="regSubmitBtn">Create Account & Proceed</button>
+      <button type="submit" class="btn" id="resLoginSubmitBtn">Log In</button>
     </form>
+
   </div>
 
-  <script>
-    const supabaseUrl = 'https://ivphxduuzemdmkjdgeqy.supabase.co';
-    const supabaseKey = 'sb_publishable_Eh44ol3xJHhoxPNOS6Tueg_SzHFTi5u';
-    const db = window.supabase.createClient(supabaseUrl, supabaseKey);
-
-    const tabLoginBtn = document.getElementById('tabLoginBtn');
-    const tabRegisterBtn = document.getElementById('tabRegisterBtn');
-    const loginForm = document.getElementById('loginForm');
-    const registerForm = document.getElementById('registerForm');
-
-    tabLoginBtn.addEventListener('click', () => {
-      tabLoginBtn.classList.add('active');
-      tabRegisterBtn.classList.remove('active');
-      loginForm.style.display = 'block';
-      registerForm.style.display = 'none';
-    });
-
-    tabRegisterBtn.addEventListener('click', () => {
-      tabRegisterBtn.classList.add('active');
-      tabLoginBtn.classList.remove('active');
-      registerForm.style.display = 'block';
-      loginForm.style.display = 'none';
-    });
-
-    loginForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const submitBtn = document.getElementById('loginSubmitBtn');
-      submitBtn.disabled = true;
-      submitBtn.innerText = 'Verifying...';
-
-      const email = document.getElementById('loginEmail').value.trim();
-      const password = document.getElementById('loginPassword').value;
-
-      const { data, error } = await db.auth.signInWithPassword({ email, password });
-
-      if (error) {
-        alert('Login failed: ' + error.message);
-        submitBtn.disabled = false;
-        submitBtn.innerText = 'Log In to Account';
-        return;
-      }
-
-      window.location.href = 'index.html';
-    });
-
-    registerForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const submitBtn = document.getElementById('regSubmitBtn');
-      submitBtn.disabled = true;
-      submitBtn.innerText = 'Creating account...';
-
-      const role = document.getElementById('regRole').value;
-      const fullName = document.getElementById('regName').value.trim();
-      const purok = document.getElementById('regPurok').value.trim();
-      const email = document.getElementById('regEmail').value.trim();
-      const password = document.getElementById('regPassword').value;
-
-      const { data: authData, error: authError } = await db.auth.signUp({ email, password });
-
-      if (authError) {
-        alert('Registration failed: ' + authError.message);
-        submitBtn.disabled = false;
-        submitBtn.innerText = 'Create Account & Proceed';
-        return;
-      }
-
-      await db.from('profiles').insert([
-        { id: authData.user.id, full_name: fullName, purok, role }
-      ]);
-
-      alert('Account successfully created! Directing you to Home...');
-      window.location.href = 'index.html';
-    });
-  </script>
+  <!-- Application Logic -->
+  <script src="auth.js"></script>
 </body>
 </html>

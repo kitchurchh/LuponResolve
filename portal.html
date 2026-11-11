@@ -4,168 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Official Portal | LuponResolve</title>
-  
+
+  <!-- External Stylesheet -->
+  <link rel="stylesheet" href="portal.css" />
+
   <!-- Supabase JS Library -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <style>
-    :root {
-      --primary: #1e3a8a;
-      --accent: #2563eb;
-      --bg: #f8fafc;
-      --card-bg: #ffffff;
-      --text: #0f172a;
-      --muted: #64748b;
-      --border: #cbd5e1;
-      --success: #16a34a;
-      --warning: #d97706;
-      --danger: #ef4444;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      padding: 2rem 1rem;
-    }
-
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-
-    .back-link {
-      display: inline-block;
-      margin-bottom: 1.5rem;
-      color: var(--accent);
-      text-decoration: none;
-      font-weight: 500;
-      font-size: 0.9rem;
-    }
-
-    .dashboard {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 2rem;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    }
-
-    .dashboard-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.5rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid #f1f5f9;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-
-    .dashboard-header h1 {
-      font-size: 1.5rem;
-      color: var(--primary);
-    }
-
-    .logout-btn {
-      background: none;
-      border: 1px solid var(--danger);
-      color: var(--danger);
-      padding: 0.4rem 0.8rem;
-      border-radius: 6px;
-      font-size: 0.85rem;
-      cursor: pointer;
-    }
-
-    .logout-btn:hover {
-      background: #fef2f2;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1rem;
-      font-size: 0.85rem;
-    }
-
-    th, td {
-      padding: 0.75rem 0.5rem;
-      text-align: left;
-      border-bottom: 1px solid #f1f5f9;
-      vertical-align: middle;
-    }
-
-    th {
-      background-color: #f8fafc;
-      color: var(--muted);
-      font-weight: 600;
-    }
-
-    select.status-select, input.hearing-input {
-      padding: 0.35rem 0.5rem;
-      border-radius: 4px;
-      border: 1px solid var(--border);
-      font-size: 0.8rem;
-      outline: none;
-      background: #fff;
-    }
-
-    .btn-action {
-      background: none;
-      border: 1px solid var(--accent);
-      color: var(--accent);
-      padding: 0.25rem 0.5rem;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      cursor: pointer;
-      margin-right: 0.25rem;
-    }
-
-    .btn-action:hover {
-      background: #eff6ff;
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 3rem 1rem;
-      color: var(--muted);
-    }
-
-    .empty-state-icon {
-      font-size: 2.5rem;
-      margin-bottom: 0.5rem;
-    }
-
-    #printableSummons {
-      display: none;
-    }
-
-    @media print {
-      body * {
-        visibility: hidden;
-      }
-      #printableSummons, #printableSummons * {
-        visibility: visible;
-      }
-      #printableSummons {
-        display: block !important;
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        padding: 2rem;
-        background: white;
-        color: black;
-      }
-    }
-  </style>
 </head>
 <body>
 
@@ -177,12 +21,12 @@
       <div class="dashboard-header">
         <div>
           <h1>Dispute Docket Management</h1>
-          <p style="font-size: 0.85rem; color: var(--muted);">Barangay Sumilihon Mediation Registry</p>
+          <p class="header-subtitle">Barangay Sumilihon Mediation Registry</p>
         </div>
         <button id="logoutBtn" class="logout-btn">Log Out</button>
       </div>
 
-      <div style="overflow-x: auto;">
+      <div class="table-wrapper">
         <table>
           <thead>
             <tr>
@@ -204,183 +48,56 @@
 
   <!-- KP Form No. 7 Print Container -->
   <div id="printableSummons">
-    <div style="text-align: center; margin-bottom: 2rem;">
-      <p style="font-size: 0.9rem; text-transform: uppercase;">Republic of the Philippines<br>Province of Agusan del Norte<br>City of Butuan<br><strong>Barangay Sumilihon</strong></p>
-      <h3 style="margin-top: 1.5rem; text-decoration: underline;">OFFICE OF THE LUPON TAGAPAMAYAPA</h3>
-      <h2 style="margin-top: 1rem; font-size: 1.4rem;">KP Form No. 7: NOTICE OF HEARING (SUMMONS)</h2>
+    <div class="print-header">
+      <p class="print-heading-text">
+        Republic of the Philippines<br>
+        Province of Agusan del Norte<br>
+        City of Butuan<br>
+        <strong>Barangay Sumilihon</strong>
+      </p>
+      <h3 class="print-office-title">OFFICE OF THE LUPON TAGAPAMAYAPA</h3>
+      <h2 class="print-form-title">KP Form No. 7: NOTICE OF HEARING (SUMMONS)</h2>
     </div>
 
-    <div style="display: flex; justify-content: space-between; margin-bottom: 2rem;">
+    <div class="print-parties-row">
       <div>
         <p><strong>Complainant:</strong> <span id="printComplainant"></span></p>
         <p><strong>Address:</strong> <span id="printComplainantAddress"></span></p>
-        <p style="margin-top: 1rem;"><em>— against —</em></p>
-        <p style="margin-top: 1rem;"><strong>Respondent:</strong> <span id="printRespondent"></span></p>
+        <p class="print-separator"><em>— against —</em></p>
+        <p class="print-separator"><strong>Respondent:</strong> <span id="printRespondent"></span></p>
         <p><strong>Address:</strong> <span id="printRespondentAddress"></span></p>
       </div>
-      <div style="text-align: right;">
+      <div class="text-right">
         <p><strong>Barangay Case No.:</strong> <span id="printDocket"></span></p>
         <p><strong>For:</strong> <span id="printDispute"></span></p>
       </div>
     </div>
 
-    <p style="line-height: 1.8; text-indent: 2rem; margin-bottom: 1.5rem;">
+    <p class="print-body-text">
       You are hereby summoned to appear personally before me on the date specified below at the Barangay Hall for the hearing and mediation of the dispute filed against you:
     </p>
 
-    <div style="border: 2px dashed #333; padding: 1rem; text-align: center; font-size: 1.1rem; font-weight: bold; margin-bottom: 2rem;">
+    <div class="print-schedule-box">
       Hearing Schedule: <span id="printHearingDate">NOT YET ASSIGNED</span>
     </div>
 
-    <p style="line-height: 1.8; margin-bottom: 3rem;">
+    <p class="print-warning-text">
       Failure to appear may result in the issuance of a Certification to File Action in Court or appropriate non-appearance penalties under Katarungang Pambarangay rules.
     </p>
 
-    <div style="display: flex; justify-content: space-between; margin-top: 4rem;">
+    <div class="print-signatures-row">
       <div>
         <p>_____________________________________</p>
         <p><strong>Lupon Secretary</strong></p>
       </div>
-      <div style="text-align: right;">
+      <div class="text-right">
         <p>_____________________________________</p>
         <p><strong>Punong Barangay / Lupon Chairman</strong></p>
       </div>
     </div>
   </div>
 
-  <script>
-    const supabaseUrl = 'https://ivphxduuzemdmkjdgeqy.supabase.co';
-    const supabaseKey = 'sb_publishable_Eh44ol3xJHhoxPNOS6Tueg_SzHFTi5u'; 
-    const db = window.supabase.createClient(supabaseUrl, supabaseKey);
-
-    let cachedCases = [];
-    const caseTableBody = document.getElementById('caseTableBody');
-
-    async function verifyOfficerSession() {
-      const { data: { session } } = await db.auth.getSession();
-
-      if (!session) {
-        window.location.href = 'auth.html';
-        return;
-      }
-
-      const { data: profile } = await db
-        .from('profiles')
-        .select('role')
-        .eq('id', session.user.id)
-        .maybeSingle();
-
-      if (!profile || profile.role !== 'officer') {
-        alert('Access Restricted: Only Barangay Officers and Lupon members are permitted.');
-        window.location.href = 'index.html';
-        return;
-      }
-
-      fetchCases();
-    }
-
-    verifyOfficerSession();
-
-    document.getElementById('logoutBtn').addEventListener('click', async () => {
-      await db.auth.signOut();
-      window.location.href = 'auth.html';
-    });
-
-    async function fetchCases() {
-      caseTableBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--muted); padding: 2.5rem;">Checking database for cases...</td></tr>`;
-
-      const { data, error } = await db
-        .from('cases')
-        .select('*')
-        .order('id', { ascending: false });
-
-      if (error) {
-        caseTableBody.innerHTML = `<tr><td colspan="8" style="color: var(--danger); text-align: center; padding: 2rem;">Error: ${error.message}</td></tr>`;
-        return;
-      }
-
-      cachedCases = data || [];
-      renderTable(cachedCases);
-    }
-
-    function renderTable(cases) {
-      caseTableBody.innerHTML = '';
-
-      if (!cases || cases.length === 0) {
-        caseTableBody.innerHTML = `
-          <tr>
-            <td colspan="8">
-              <div class="empty-state">
-                <div class="empty-state-icon">📋</div>
-                <strong>No complaints filed yet.</strong>
-                <p style="font-size: 0.85rem; margin-top: 0.25rem;">When residents submit complaints through the filing form, they will appear here automatically.</p>
-              </div>
-            </td>
-          </tr>
-        `;
-        return;
-      }
-
-      cases.forEach((item, index) => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td><strong>${item.docket || '—'}</strong></td>
-          <td>${item.created_at ? new Date(item.created_at).toLocaleDateString() : '—'}</td>
-          <td>${item.complainant || '—'}</td>
-          <td>${item.respondent || '—'}</td>
-          <td style="text-transform: capitalize;">${item.dispute_type || '—'}</td>
-          <td>
-            <select class="status-select" onchange="updateStatus(${item.id}, this.value)">
-              <option value="Under Review" ${item.status === 'Under Review' ? 'selected' : ''}>Under Review</option>
-              <option value="Accepted / For Hearing" ${item.status === 'Accepted / For Hearing' ? 'selected' : ''}>Accepted / For Hearing</option>
-              <option value="Mediation Scheduled" ${item.status === 'Mediation Scheduled' ? 'selected' : ''}>Mediation Scheduled</option>
-              <option value="Amicably Settled" ${item.status === 'Amicably Settled' ? 'selected' : ''}>Amicably Settled</option>
-              <option value="Repudiated / Escalated" ${item.status === 'Repudiated / Escalated' ? 'selected' : ''}>Repudiated / Escalated</option>
-            </select>
-          </td>
-          <td>
-            <input type="date" class="hearing-input" value="${item.hearing_date || ''}" onchange="updateHearing(${item.id}, this.value)" />
-          </td>
-          <td>
-            <button class="btn-action" type="button" onclick="viewDetails(${index})">Facts</button>
-            <button class="btn-action" type="button" onclick="printSummons(${index})">Summons</button>
-          </td>
-        `;
-        caseTableBody.appendChild(row);
-      });
-    }
-
-    window.updateStatus = async function(id, newStatus) {
-      const { error } = await db.from('cases').update({ status: newStatus }).eq('id', id);
-      if (error) alert('Error updating status: ' + error.message);
-    };
-
-    window.updateHearing = async function(id, newDate) {
-      const { error } = await db.from('cases').update({ hearing_date: newDate, status: 'Mediation Scheduled' }).eq('id', id);
-      if (error) alert('Error updating hearing date: ' + error.message);
-      else fetchCases();
-    };
-
-    window.viewDetails = function(index) {
-      const c = cachedCases[index];
-      alert(`Docket: ${c.docket}\nIncident Date: ${c.incident_date}\n\nFacts/Narrative:\n${c.narrative}`);
-    };
-
-    window.printSummons = function(index) {
-      const c = cachedCases[index];
-
-      document.getElementById('printComplainant').innerText = c.complainant || '';
-      document.getElementById('printComplainantAddress').innerText = c.complainant_purok || 'Sumilihon';
-      document.getElementById('printRespondent').innerText = c.respondent || '';
-      document.getElementById('printRespondentAddress').innerText = c.respondent_purok || 'Sumilihon';
-      document.getElementById('printDocket').innerText = c.docket || '';
-      document.getElementById('printDispute').innerText = (c.dispute_type || '').toUpperCase();
-      document.getElementById('printHearingDate').innerText = c.hearing_date 
-        ? new Date(c.hearing_date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) 
-        : 'NOT YET ASSIGNED';
-
-      window.print();
-    };
-  </script>
+  <!-- Application Logic (JavaScript) -->
+  <script src="portal.js"></script>
 </body>
 </html>

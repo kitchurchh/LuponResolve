@@ -5,471 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LuponResolve | Barangay Dispute Resolution System</title>
 
+  <!-- External Stylesheet -->
+  <link rel="stylesheet" href="index.css">
+
   <!-- Supabase CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <style>
-    :root {
-      --primary: #1e3a8a;
-      --primary-hover: #172554;
-      --accent: #2563eb;
-      --bg: #f8fafc;
-      --card-bg: #ffffff;
-      --text: #0f172a;
-      --muted: #64748b;
-      --border: #e2e8f0;
-      --danger: #ef4444;
-      --success: #16a34a;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-
-    header {
-      background: var(--card-bg);
-      border-bottom: 1px solid var(--border);
-      padding: 0.85rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: relative;
-    }
-
-    .brand {
-      font-size: 1.35rem;
-      font-weight: 700;
-      color: var(--primary);
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    nav {
-      display: flex;
-      align-items: center;
-      gap: 1.5rem;
-    }
-
-    nav a {
-      text-decoration: none;
-      color: var(--muted);
-      font-size: 0.95rem;
-      font-weight: 500;
-      transition: color 0.2s;
-    }
-
-    nav a:hover {
-      color: var(--primary);
-    }
-
-    .profile-dropdown-wrapper {
-      position: relative;
-    }
-
-    .profile-btn {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      background: #f1f5f9;
-      border: 1px solid var(--border);
-      padding: 0.35rem 0.75rem 0.35rem 0.4rem;
-      border-radius: 30px;
-      cursor: pointer;
-      font-size: 0.88rem;
-      font-weight: 600;
-      color: var(--text);
-      transition: all 0.2s;
-    }
-
-    .profile-btn:hover {
-      background: #e2e8f0;
-    }
-
-    .avatar-circle {
-      width: 32px;
-      height: 32px;
-      background: var(--primary);
-      color: white;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 0.85rem;
-      text-transform: uppercase;
-    }
-
-    .dropdown-menu {
-      display: none;
-      position: absolute;
-      right: 0;
-      top: calc(100% + 0.6rem);
-      width: 250px;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-      z-index: 50;
-      overflow: hidden;
-      animation: fadeIn 0.15s ease-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .dropdown-header {
-      padding: 1rem;
-      background: #f8fafc;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .dropdown-header .name {
-      font-weight: 700;
-      font-size: 0.95rem;
-      color: var(--text);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .dropdown-header .email {
-      font-size: 0.8rem;
-      color: var(--muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .dropdown-header .badge {
-      display: inline-block;
-      margin-top: 0.35rem;
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 4px;
-      background: #dbeafe;
-      color: #1e40af;
-    }
-
-    .dropdown-items {
-      padding: 0.4rem 0;
-    }
-
-    .dropdown-item {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      width: 100%;
-      padding: 0.65rem 1rem;
-      background: none;
-      border: none;
-      text-align: left;
-      font-size: 0.88rem;
-      color: var(--text);
-      cursor: pointer;
-      text-decoration: none;
-      transition: background 0.15s;
-    }
-
-    .dropdown-item:hover {
-      background: #f1f5f9;
-    }
-
-    .dropdown-item.danger {
-      color: var(--danger);
-      border-top: 1px solid var(--border);
-      margin-top: 0.3rem;
-    }
-
-    .dropdown-item.danger:hover {
-      background: #fef2f2;
-    }
-
-    main {
-      flex: 1;
-      max-width: 1000px;
-      margin: 2.5rem auto;
-      padding: 0 1.5rem;
-      width: 100%;
-    }
-
-    #residentAlertContainer {
-      display: none;
-      margin-bottom: 2rem;
-    }
-
-    .alert-banner {
-      border-radius: 10px;
-      padding: 1rem 1.25rem;
-      margin-bottom: 0.75rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-    }
-
-    .alert-banner.accepted {
-      background: #dcfce7;
-      border: 1px solid #86efac;
-      color: #166534;
-    }
-
-    .alert-banner.rejected {
-      background: #fee2e2;
-      border: 1px solid #fca5a5;
-      color: #991b1b;
-    }
-
-    .hero {
-      text-align: center;
-      margin-bottom: 2.5rem;
-    }
-
-    .hero h1 {
-      font-size: 2.25rem;
-      color: var(--primary);
-      margin-bottom: 0.75rem;
-    }
-
-    .hero p {
-      color: var(--muted);
-      font-size: 1.1rem;
-      max-width: 600px;
-      margin: 0 auto;
-    }
-
-    .tracker-box {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.25rem;
-      display: flex;
-      gap: 0.75rem;
-      max-width: 580px;
-      margin: 0 auto 1.5rem;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    }
-
-    .tracker-box input {
-      flex: 1;
-      padding: 0.75rem 1rem;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 0.95rem;
-      outline: none;
-    }
-
-    .tracker-box input:focus {
-      border-color: var(--accent);
-    }
-
-    .tracker-box button {
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      padding: 0.75rem 1.25rem;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .tracker-box button:hover {
-      background: var(--primary);
-    }
-
-    #statusResult {
-      display: none;
-      max-width: 580px;
-      margin: 0 auto 3rem;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.5rem;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    }
-
-    .status-badge {
-      display: inline-block;
-      background: #dbeafe;
-      color: #1e40af;
-      padding: 3px 10px;
-      border-radius: 6px;
-      font-weight: 600;
-      font-size: 0.85rem;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 2rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04);
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
-    }
-
-    .card h2 {
-      font-size: 1.25rem;
-      margin-bottom: 0.5rem;
-      color: var(--primary);
-    }
-
-    .card p {
-      color: var(--muted);
-      font-size: 0.95rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .card-btn {
-      display: inline-block;
-      text-align: center;
-      padding: 0.65rem 1rem;
-      border-radius: 6px;
-      font-weight: 600;
-      text-decoration: none;
-      font-size: 0.9rem;
-      border: 1px solid var(--accent);
-      color: var(--accent);
-      background: transparent;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .card-btn.primary {
-      background: var(--accent);
-      color: white;
-    }
-
-    .card-btn.primary:hover {
-      background: var(--primary);
-      border-color: var(--primary);
-    }
-
-    .card-btn:hover {
-      background: #eff6ff;
-    }
-
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.65);
-      backdrop-filter: blur(4px);
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      padding: 1.5rem;
-    }
-
-    .modal-card {
-      background: #ffffff;
-      border-radius: 16px;
-      max-width: 440px;
-      width: 100%;
-      padding: 2rem;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
-      animation: popIn 0.2s ease-out;
-    }
-
-    .guidelines-modal {
-      background: #ffffff;
-      border-radius: 16px;
-      max-width: 650px;
-      width: 100%;
-      max-height: 85vh;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
-      animation: popIn 0.2s ease-out;
-    }
-
-    @keyframes popIn {
-      from { transform: scale(0.96); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-
-    .modal-header {
-      padding: 1.25rem 1.5rem;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .modal-close {
-      background: none;
-      border: none;
-      font-size: 1.5rem;
-      color: var(--muted);
-      cursor: pointer;
-    }
-
-    .form-group {
-      margin-bottom: 1.2rem;
-      text-align: left;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-bottom: 0.35rem;
-    }
-
-    .form-group input {
-      width: 100%;
-      padding: 0.75rem;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      font-size: 0.95rem;
-      outline: none;
-    }
-
-    .form-group input:focus {
-      border-color: var(--accent);
-    }
-
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 1.5rem;
-      text-align: center;
-      font-size: 0.85rem;
-      color: var(--muted);
-      background: var(--card-bg);
-      margin-top: auto;
-    }
-  </style>
 </head>
 <body>
 
@@ -487,7 +27,7 @@
         <button class="profile-btn" id="profileDropdownBtn" type="button">
           <div class="avatar-circle" id="userAvatar">U</div>
           <span id="navUserName">Loading...</span>
-          <span style="font-size: 0.7rem; color: var(--muted);">▼</span>
+          <span class="dropdown-arrow">▼</span>
         </button>
 
         <div class="dropdown-menu" id="dropdownMenu">
@@ -559,18 +99,18 @@
   <!-- ACCOUNT SETTINGS MODAL -->
   <div class="modal-overlay" id="settingsModal">
     <div class="modal-card">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
-        <h2 style="color:var(--primary); font-size:1.25rem;">Account Settings</h2>
+      <div class="modal-title-row">
+        <h2>Account Settings</h2>
         <button class="modal-close" id="closeSettingsBtn">&times;</button>
       </div>
       
-      <div style="background:#f8fafc; border:1px solid var(--border); border-radius:8px; padding:0.85rem; margin-bottom:1.5rem; font-size:0.88rem;">
-        <p style="margin-bottom:0.25rem;"><strong>Signed in as:</strong> <span id="settingsEmail">user@email.com</span></p>
-        <p style="margin-bottom:0.25rem;"><strong>Role:</strong> <span id="settingsRole" style="text-transform:capitalize;">Resident</span></p>
-        <p style="margin:0;"><strong>Purok/Address:</strong> <span id="settingsPurok">Barangay Sumilihon</span></p>
+      <div class="settings-info-box">
+        <p><strong>Signed in as:</strong> <span id="settingsEmail">user@email.com</span></p>
+        <p><strong>Role:</strong> <span id="settingsRole">Resident</span></p>
+        <p class="mb-0"><strong>Purok/Address:</strong> <span id="settingsPurok">Barangay Sumilihon</span></p>
       </div>
 
-      <h3 style="font-size:1rem; color:var(--primary); margin-bottom:0.75rem;">Change Password</h3>
+      <h3 class="modal-section-title">Change Password</h3>
 
       <form id="changePasswordForm">
         <div class="form-group">
@@ -581,7 +121,7 @@
           <label for="confirmNewPassword">Confirm New Password</label>
           <input type="password" id="confirmNewPassword" required minlength="6" placeholder="Re-type new password" />
         </div>
-        <button type="submit" class="card-btn primary" id="savePwdBtn" style="width:100%; padding:0.75rem;">
+        <button type="submit" class="card-btn primary btn-block" id="savePwdBtn">
           Save New Password
         </button>
       </form>
@@ -592,14 +132,14 @@
   <div class="modal-overlay" id="guidelinesModal">
     <div class="guidelines-modal">
       <div class="modal-header">
-        <h2 style="font-size:1.3rem; color:var(--primary);">⚖️ Katarungang Pambarangay Guidelines</h2>
+        <h2>⚖️ Katarungang Pambarangay Guidelines</h2>
         <button class="modal-close" id="closeGuidelinesBtn">&times;</button>
       </div>
 
-      <div style="padding:1.5rem; overflow-y:auto; font-size:0.92rem;">
-        <div style="margin-bottom:1.5rem;">
-          <h3 style="font-size:1rem; color:var(--accent); margin-bottom:0.5rem;">📌 Covered Cases Under Lupon Authority</h3>
-          <ul style="padding-left:1.4rem;">
+      <div class="guidelines-body">
+        <div class="guidelines-section">
+          <h3>📌 Covered Cases Under Lupon Authority</h3>
+          <ul>
             <li>Boundary line disputes and property encroachments between neighbors.</li>
             <li>Unpaid personal loans, financial obligations, or minor collection claims.</li>
             <li>Community disturbances (excessive noise, unruly pets, neighborhood nuisance).</li>
@@ -608,18 +148,18 @@
           </ul>
         </div>
 
-        <div style="margin-bottom:1.5rem;">
-          <h3 style="font-size:1rem; color:var(--accent); margin-bottom:0.5rem;">⛔ Cases Excluded from Barangay Conciliation</h3>
-          <ul style="padding-left:1.4rem;">
+        <div class="guidelines-section">
+          <h3>⛔ Cases Excluded from Barangay Conciliation</h3>
+          <ul>
             <li>Offenses punishable by imprisonment exceeding one (1) year or fines over PHP 5,000.</li>
             <li>Complaints involving public officers relating to official duties.</li>
             <li>Disputes where parties reside in different provinces or distant municipalities.</li>
           </ul>
         </div>
 
-        <div style="margin-bottom:0;">
-          <h3 style="font-size:1rem; color:var(--accent); margin-bottom:0.5rem;">🔄 The 3 Stages of Conciliation</h3>
-          <ul style="padding-left:1.4rem;">
+        <div>
+          <h3>🔄 The 3 Stages of Conciliation</h3>
+          <ul>
             <li><strong>Stage 1 (Mediation by Punong Barangay):</strong> 15-day amicable settlement period.</li>
             <li><strong>Stage 2 (Pangkat Conciliation):</strong> 3-member panel conciliation within 15 days.</li>
             <li><strong>Stage 3 (Settlement or CFA):</strong> Formal settlement or Certificate to File Action in Court.</li>
@@ -627,8 +167,8 @@
         </div>
       </div>
 
-      <div style="padding:1rem 1.5rem; border-top:1px solid var(--border); text-align:right; background:#f8fafc; border-bottom-left-radius:16px; border-bottom-right-radius:16px;">
-        <button type="button" class="card-btn primary" id="closeGuidelinesFooterBtn" style="padding:0.5rem 1.25rem;">Understood (Close)</button>
+      <div class="guidelines-footer">
+        <button type="button" class="card-btn primary px-md" id="closeGuidelinesFooterBtn">Understood (Close)</button>
       </div>
     </div>
   </div>
@@ -637,262 +177,7 @@
     <p>&copy; 2026 LuponResolve. Compliant with RA 7160 & RA 10173 (Data Privacy Act).</p>
   </footer>
 
-  <script>
-    const supabaseUrl = 'https://ivphxduuzemdmkjdgeqy.supabase.co';
-    const supabaseKey = 'sb_publishable_Eh44ol3xJHhoxPNOS6Tueg_SzHFTi5u';
-    const db = window.supabase.createClient(supabaseUrl, supabaseKey);
-
-    let currentSessionUser = null;
-
-    async function checkAuthSession() {
-      const { data: { session } } = await db.auth.getSession();
-
-      if (!session) {
-        window.location.href = 'auth.html';
-        return;
-      }
-
-      currentSessionUser = session.user;
-
-      const { data: profile } = await db
-        .from('profiles')
-        .select('*')
-        .eq('id', session.user.id)
-        .maybeSingle();
-
-      const fullName = profile?.full_name || session.user.email.split('@')[0];
-      const role = profile?.role || 'resident';
-      const purok = profile?.purok || 'Barangay Sumilihon';
-
-      document.getElementById('navUserName').innerText = fullName;
-      document.getElementById('userAvatar').innerText = fullName.charAt(0);
-
-      document.getElementById('dropFullName').innerText = fullName;
-      document.getElementById('dropEmail').innerText = session.user.email;
-      document.getElementById('dropRole').innerText = role;
-
-      document.getElementById('settingsEmail').innerText = session.user.email;
-      document.getElementById('settingsRole').innerText = role;
-      document.getElementById('settingsPurok').innerText = purok;
-
-      if (role === 'officer') {
-        document.getElementById('officerPortalLink').style.display = 'inline-block';
-        document.getElementById('officerCard').style.display = 'flex';
-      } else {
-        document.getElementById('officerPortalLink').style.display = 'none';
-        document.getElementById('officerCard').style.display = 'none';
-        fetchResidentCaseAlerts(session.user.id);
-      }
-    }
-
-    async function fetchResidentCaseAlerts(userId) {
-      const { data: userCases } = await db
-        .from('cases')
-        .select('*')
-        .eq('user_id', userId)
-        .order('id', { ascending: false });
-
-      const alertContainer = document.getElementById('residentAlertContainer');
-
-      if (userCases && userCases.length > 0) {
-        let alertsHTML = '';
-
-        userCases.forEach(c => {
-          if (c.status === 'Accepted / For Hearing' || c.status === 'Mediation Scheduled') {
-            alertsHTML += `
-              <div class="alert-banner accepted">
-                <div>
-                  <strong>✅ Case Accepted (${c.docket})</strong>
-                  <p style="font-size:0.85rem; margin:0.15rem 0 0;">
-                    Your complaint regarding "${c.dispute_type}" has been accepted! 
-                    Hearing Schedule: <strong>${c.hearing_date ? new Date(c.hearing_date).toLocaleDateString() : 'To be announced'}</strong>
-                  </p>
-                </div>
-                <button type="button" class="card-btn primary" style="padding:0.4rem 0.8rem; font-size:0.8rem;" onclick="trackSpecificCase('${c.docket}')">View</button>
-              </div>
-            `;
-          } else if (c.status === 'Repudiated' || c.status === 'Repudiated / Escalated') {
-            alertsHTML += `
-              <div class="alert-banner rejected">
-                <div>
-                  <strong>⚠️ Case Not Settled / Escalated (${c.docket})</strong>
-                  <p style="font-size:0.85rem; margin:0.15rem 0 0;">
-                    Your complaint for "${c.dispute_type}" was repudiated or endorsed for Certificate to File Action (CFA).
-                  </p>
-                </div>
-                <button type="button" class="card-btn" style="padding:0.4rem 0.8rem; font-size:0.8rem; border-color:var(--danger); color:var(--danger);" onclick="trackSpecificCase('${c.docket}')">View</button>
-              </div>
-            `;
-          }
-        });
-
-        if (alertsHTML) {
-          alertContainer.innerHTML = alertsHTML;
-          alertContainer.style.display = 'block';
-        }
-      }
-    }
-
-    window.trackSpecificCase = function(docketNo) {
-      document.getElementById('trackInput').value = docketNo;
-      document.getElementById('trackBtn').click();
-      window.scrollTo({ top: 350, behavior: 'smooth' });
-    };
-
-    checkAuthSession();
-
-    const profileDropdownBtn = document.getElementById('profileDropdownBtn');
-    const dropdownMenu = document.getElementById('dropdownMenu');
-
-    profileDropdownBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const isVisible = dropdownMenu.style.display === 'block';
-      dropdownMenu.style.display = isVisible ? 'none' : 'block';
-    });
-
-    window.addEventListener('click', (e) => {
-      if (!dropdownMenu.contains(e.target) && !profileDropdownBtn.contains(e.target)) {
-        dropdownMenu.style.display = 'none';
-      }
-    });
-
-    const settingsModal = document.getElementById('settingsModal');
-    const openSettingsBtn = document.getElementById('openSettingsBtn');
-    const closeSettingsBtn = document.getElementById('closeSettingsBtn');
-    const changePasswordForm = document.getElementById('changePasswordForm');
-    const savePwdBtn = document.getElementById('savePwdBtn');
-
-    openSettingsBtn.addEventListener('click', () => {
-      dropdownMenu.style.display = 'none';
-      settingsModal.style.display = 'flex';
-    });
-
-    closeSettingsBtn.addEventListener('click', () => {
-      settingsModal.style.display = 'none';
-      changePasswordForm.reset();
-    });
-
-    changePasswordForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const newPwd = document.getElementById('newPassword').value;
-      const confirmPwd = document.getElementById('confirmNewPassword').value;
-
-      if (newPwd !== confirmPwd) {
-        alert('Passwords do not match. Please verify.');
-        return;
-      }
-
-      savePwdBtn.disabled = true;
-      savePwdBtn.innerText = 'Updating password...';
-
-      const { data, error } = await db.auth.updateUser({
-        password: newPwd
-      });
-
-      if (error) {
-        alert('Failed to update password: ' + error.message);
-        savePwdBtn.disabled = false;
-        savePwdBtn.innerText = 'Save New Password';
-      } else {
-        alert('Password successfully updated! Please use this password on your next login.');
-        settingsModal.style.display = 'none';
-        changePasswordForm.reset();
-        savePwdBtn.disabled = false;
-        savePwdBtn.innerText = 'Save New Password';
-      }
-    });
-
-    document.getElementById('logoutBtn').addEventListener('click', async () => {
-      await db.auth.signOut();
-      window.location.href = 'auth.html';
-    });
-
-    document.getElementById('trackBtn').addEventListener('click', async function() {
-      const input = document.getElementById('trackInput').value.trim();
-      const resultBox = document.getElementById('statusResult');
-
-      if (!input) {
-        alert('Please enter a docket tracking number.');
-        return;
-      }
-
-      resultBox.style.display = 'block';
-      resultBox.innerHTML = '<p style="color:var(--muted); text-align:center;">Searching case records from database...</p>';
-
-      const { data, error } = await db
-        .from('cases')
-        .select('*')
-        .ilike('docket', input)
-        .maybeSingle();
-
-      if (error) {
-        resultBox.innerHTML = `<p style="color:var(--danger); font-weight:600;">Error: ${error.message}</p>`;
-        return;
-      }
-
-      if (data) {
-        let acceptedNotice = '';
-        if (data.status === 'Accepted / For Hearing' || data.status === 'Mediation Scheduled') {
-          acceptedNotice = `
-            <div style="background: #dcfce7; border: 1px solid #86efac; border-radius: 8px; padding: 0.85rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
-              <span style="font-size: 1.5rem;">🎉</span>
-              <div>
-                <strong style="color: #166534; font-size: 0.95rem;">Complaint Formally Accepted!</strong>
-                <p style="color: #15803d; font-size: 0.85rem; margin: 0;">
-                  Your filed dispute has been accepted by the Barangay Lupon. Please review your hearing schedule below.
-                </p>
-              </div>
-            </div>
-          `;
-        }
-
-        resultBox.innerHTML = `
-          ${acceptedNotice}
-          <h3 style="color:var(--primary); margin-bottom:0.75rem;">Docket: ${data.docket}</h3>
-          <p style="margin-bottom:0.4rem;"><strong>Status:</strong> <span class="status-badge" style="background:${data.status.includes('Accepted') ? '#dcfce7' : '#dbeafe'}; color:${data.status.includes('Accepted') ? '#15803d' : '#1e40af'};">${data.status}</span></p>
-          <p style="margin-bottom:0.4rem;"><strong>Complainant:</strong> ${data.complainant}</p>
-          <p style="margin-bottom:0.4rem;"><strong>Respondent:</strong> ${data.respondent}</p>
-          <p style="margin-bottom:0.4rem; text-transform: capitalize;"><strong>Dispute Type:</strong> ${data.dispute_type}</p>
-          <p style="margin-bottom:0.4rem;"><strong>Hearing Schedule:</strong> ${data.hearing_date ? new Date(data.hearing_date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : '<em>Not yet scheduled by Lupon</em>'}</p>
-        `;
-      } else {
-        resultBox.innerHTML = `<p style="color:var(--danger); font-weight:600; text-align:center;">No record found for docket "${input}". Please verify the number.</p>`;
-      }
-    });
-
-    document.getElementById('trackInput').addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') {
-        document.getElementById('trackBtn').click();
-      }
-    });
-
-    const guidelinesModal = document.getElementById('guidelinesModal');
-    const openGuidelinesBtn = document.getElementById('openGuidelinesBtn');
-    const navGuidelinesLink = document.getElementById('navGuidelinesLink');
-    const closeGuidelinesBtn = document.getElementById('closeGuidelinesBtn');
-    const closeGuidelinesFooterBtn = document.getElementById('closeGuidelinesFooterBtn');
-
-    function openModal(e) {
-      if (e) e.preventDefault();
-      guidelinesModal.style.display = 'flex';
-    }
-
-    function closeModal() {
-      guidelinesModal.style.display = 'none';
-    }
-
-    openGuidelinesBtn.addEventListener('click', openModal);
-    navGuidelinesLink.addEventListener('click', openModal);
-    closeGuidelinesBtn.addEventListener('click', closeModal);
-    closeGuidelinesFooterBtn.addEventListener('click', closeModal);
-
-    window.addEventListener('click', function(e) {
-      if (e.target === guidelinesModal) closeModal();
-      if (e.target === settingsModal) {
-        settingsModal.style.display = 'none';
-        changePasswordForm.reset();
-      }
-    });
-  </script>
+  <!-- Application Logic -->
+  <script src="index.js"></script>
 </body>
 </html>

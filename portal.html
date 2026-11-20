@@ -3,12 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Official Portal | LuponResolve</title>
-
-  <!-- External Stylesheet -->
+  <title>Official Lupon Portal | LuponDesk</title>
   <link rel="stylesheet" href="portal.css" />
-
-  <!-- Supabase JS Library -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -16,14 +12,13 @@
   <div class="container">
     <a href="index.html" class="back-link">&larr; Back to Home</a>
 
-    <!-- Dashboard View -->
-    <div id="dashboardView" class="dashboard">
+    <div class="dashboard">
       <div class="dashboard-header">
         <div>
-          <h1>Dispute Docket Management</h1>
-          <p class="header-subtitle">Barangay Sumilihon Mediation Registry</p>
+          <h1>🛡️ Official Lupon Desk</h1>
+          <p class="header-subtitle">Barangay Sumilihon Case Docket & Evidence Review </p>
         </div>
-        <button id="logoutBtn" class="logout-btn">Log Out</button>
+        <button type="button" class="logout-btn" id="logoutBtn">Log Out</button>
       </div>
 
       <div class="table-wrapper">
@@ -31,73 +26,79 @@
           <thead>
             <tr>
               <th>Docket No.</th>
-              <th>Filed On</th>
-              <th>Complainant</th>
+              <th>Date Filed</th>
+              <th>Complainant & Gmail</th>
               <th>Respondent</th>
-              <th>Type</th>
-              <th>Status</th>
+              <th>Dispute Type</th>
+              <th>Status (Approve)</th>
               <th>Hearing Date</th>
-              <th>Actions</th>
+              <th>Actions & Evidence</th>
             </tr>
           </thead>
-          <tbody id="caseTableBody"></tbody>
+          <tbody id="caseTableBody">
+            <tr>
+              <td colspan="8" class="cell-message muted">Loading docket records...</td>
+            </tr>
+          </tbody>
         </table>
       </div>
     </div>
   </div>
 
-  <!-- KP Form No. 7 Print Container -->
+  <!-- Printable KP Form No. 7 Summons -->
   <div id="printableSummons">
     <div class="print-header">
-      <p class="print-heading-text">
-        Republic of the Philippines<br>
-        Province of Agusan del Norte<br>
-        City of Butuan<br>
-        <strong>Barangay Sumilihon</strong>
-      </p>
-      <h3 class="print-office-title">OFFICE OF THE LUPON TAGAPAMAYAPA</h3>
-      <h2 class="print-form-title">KP Form No. 7: NOTICE OF HEARING (SUMMONS)</h2>
+      <div class="print-heading-text">
+        Republic of the Philippines<br />
+        Province of Agusan del Norte<br />
+        City of Butuan<br />
+        <strong>BARANGAY SUMILIHON</strong>
+      </div>
+      <div class="print-office-title">OFFICE OF THE LUPONG TAGAPAMAYAPA</div>
+      <div class="print-form-title">KP FORM NO. 7 — SUMMONS</div>
     </div>
 
     <div class="print-parties-row">
       <div>
-        <p><strong>Complainant:</strong> <span id="printComplainant"></span></p>
-        <p><strong>Address:</strong> <span id="printComplainantAddress"></span></p>
-        <p class="print-separator"><em>— against —</em></p>
-        <p class="print-separator"><strong>Respondent:</strong> <span id="printRespondent"></span></p>
-        <p><strong>Address:</strong> <span id="printRespondentAddress"></span></p>
+        <strong id="printComplainant">COMPLAINANT NAME</strong><br />
+        <span id="printComplainantAddress">Address</span><br />
+        <em>Complainant/s</em>
+        <div class="print-separator">— against —</div>
+        <strong id="printRespondent">RESPONDENT NAME</strong><br />
+        <span id="printRespondentAddress">Address</span><br />
+        <em>Respondent/s</em>
       </div>
       <div class="text-right">
-        <p><strong>Barangay Case No.:</strong> <span id="printDocket"></span></p>
-        <p><strong>For:</strong> <span id="printDispute"></span></p>
+        <strong>Barangay Case No.:</strong> <span id="printDocket">KP-2026-0000</span><br />
+        <strong>For:</strong> <span id="printDispute">DISPUTE TYPE</span>
       </div>
     </div>
 
+    <p><strong>TO:</strong> The above-named Respondent/s</p>
     <p class="print-body-text">
-      You are hereby summoned to appear personally before me on the date specified below at the Barangay Hall for the hearing and mediation of the dispute filed against you:
+      You are hereby summoned to appear before me in person, together with your witnesses, on the date and time indicated below, to answer the complaint made before me, copy of which is attached hereto, for mediation/conciliation of your dispute with complainant/s:
     </p>
 
-    <div class="print-schedule-box">
-      Hearing Schedule: <span id="printHearingDate">NOT YET ASSIGNED</span>
+    <div class="print-schedule-box" id="printHearingDate">
+      HEARING SCHEDULE
     </div>
 
     <p class="print-warning-text">
-      Failure to appear may result in the issuance of a Certification to File Action in Court or appropriate non-appearance penalties under Katarungang Pambarangay rules.
+      You are hereby warned that if you refuse or willfully fail to appear in obedience to this summons, you may be barred from filing any counterclaim arising from said complaint, and shall be punished for indirect contempt of court as provided under Section 415 of the Local Government Code (RA 7160).
     </p>
 
     <div class="print-signatures-row">
       <div>
-        <p>_____________________________________</p>
-        <p><strong>Lupon Secretary</strong></p>
+        _______________________________<br />
+        <strong>Barangay Secretary / Lupon Clerk</strong>
       </div>
       <div class="text-right">
-        <p>_____________________________________</p>
-        <p><strong>Punong Barangay / Lupon Chairman</strong></p>
+        _______________________________<br />
+        <strong>Punong Barangay / Lupon Chairman</strong>
       </div>
     </div>
   </div>
 
-  <!-- Application Logic (JavaScript) -->
   <script src="portal.js"></script>
 </body>
 </html>

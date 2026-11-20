@@ -1,48 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LuponResolve | Barangay Dispute Resolution System</title>
-
-  <!-- External Stylesheet -->
-  <link rel="stylesheet" href="index.css">
-
-  <!-- Supabase CDN -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LuponDesk | Barangay Sumilihon Dispute Resolution</title>
+  <link rel="stylesheet" href="index.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
   <header>
-    <a href="index.html" class="brand">⚖️ LuponResolve</a>
-    
+    <a href="index.html" class="brand">⚖️ LuponDesk</a>
     <nav>
-      <a href="filing.html">File Complaint</a>
-      <!-- Link for Officers ONLY -->
-      <a href="portal.html" id="officerPortalLink" style="display: none;">Official Portal</a>
-      <a href="#" id="navGuidelinesLink">Guidelines</a>
+      <button type="button" id="langToggleBtn" class="lang-btn" style="background:#f0fdf4; border:1.5px solid #1b5e20; color:#1b5e20; padding:0.35rem 0.8rem; border-radius:20px; font-weight:700; font-size:0.82rem; cursor:pointer;">
+        🌐 Cebuano
+      </button>
+      <a href="filing.html" id="navFileLink" data-i18n="navFile">File a Complaint</a>
+      <a href="auth.html" id="loginNavLink" data-i18n="navLogin">Portal Access</a>
 
-      <!-- Profile Avatar Button -->
-      <div class="profile-dropdown-wrapper">
-        <button class="profile-btn" id="profileDropdownBtn" type="button">
-          <div class="avatar-circle" id="userAvatar">U</div>
-          <span id="navUserName">Loading...</span>
+      <!-- Logged-in Profile Dropdown -->
+      <div class="profile-dropdown-wrapper" id="profileWrapper" style="display: none;">
+        <button type="button" class="profile-btn" id="profileMenuBtn">
+          <span class="avatar-circle" id="userAvatar">U</span>
+          <span id="userDisplayName">User</span>
           <span class="dropdown-arrow">▼</span>
         </button>
-
-        <div class="dropdown-menu" id="dropdownMenu">
+        <div class="dropdown-menu" id="profileDropdown">
           <div class="dropdown-header">
-            <div class="name" id="dropFullName">User Name</div>
-            <div class="email" id="dropEmail">user@email.com</div>
-            <div class="badge" id="dropRole">Resident</div>
+            <div class="name" id="dropdownFullName">User Name</div>
+            <div class="email" id="dropdownEmail">user@email.com</div>
+            <span class="badge" id="dropdownRole">Resident</span>
           </div>
           <div class="dropdown-items">
-            <button class="dropdown-item" type="button" id="openSettingsBtn">
-              ⚙️ Account Settings
-            </button>
-            <button class="dropdown-item danger" type="button" id="logoutBtn">
-              🚪 Log Out
-            </button>
+            <a href="portal.html" class="dropdown-item" id="officerDashboardLink" style="display: none;">🛡️ Official Portal</a>
+            <button type="button" class="dropdown-item danger" id="logoutBtn" data-i18n="logoutText">🚪 Log Out</button>
           </div>
         </div>
       </div>
@@ -50,134 +41,88 @@
   </header>
 
   <main>
-    <!-- Resident Case Notifications Banner -->
+    <!-- Approval Alert Banner for Logged-in Residents -->
     <div id="residentAlertContainer"></div>
 
-    <section class="hero">
-      <h1>Barangay Dispute & Case Portal</h1>
-      <p>Streamlined complaint filing, mediation scheduling, and record-keeping under Katarungang Pambarangay.</p>
-    </section>
-
-    <!-- Case Status Search Box -->
-    <div class="tracker-box">
-      <input type="text" id="trackInput" placeholder="Enter Docket / Tracking No. (e.g., KP-2026-1024)" />
-      <button type="button" id="trackBtn">Track</button>
+    <div class="hero">
+      <h1 data-i18n="heroTitle">Barangay Sumilihon Online Dispute Resolution</h1>
+      <p data-i18n="heroSubtitle">Fast, fair, and accessible community mediation under the Katarungang Pambarangay Law (RA 7160).</p>
     </div>
 
-    <!-- Live Case Search Results -->
+    <!-- Real-Time Docket Tracker -->
+    <div class="tracker-box">
+      <input type="text" id="docketSearchInput" placeholder="Enter Tracking Docket (e.g., KP-2026-1024)" data-i18n-placeholder="trackerPlaceholder" />
+      <button type="button" id="trackDocketBtn" data-i18n="trackBtn">Track Case</button>
+    </div>
+
     <div id="statusResult"></div>
 
-    <!-- Navigation Cards -->
+    <!-- Action Cards -->
     <div class="grid">
-      <div class="card">
+      <!-- Card 1: File a Complaint (Hidden if Officer) -->
+      <div class="card" id="fileComplaintCard">
         <div>
-          <h2>File a Complaint</h2>
-          <p>Submit an incident report or civil claim for Katarungang Pambarangay mediation review.</p>
+          <h2 data-i18n="card1Title">📝 File a Complaint</h2>
+          <p data-i18n="card1Desc">Answer the preliminary screening and submit an incident report with photo evidence—no account required upfront.</p>
         </div>
-        <a href="filing.html" class="card-btn primary">Start Filing</a>
+        <a href="filing.html" class="card-btn primary" data-i18n="card1Btn">Start Screening & Filing</a>
       </div>
 
-      <!-- Official Portal Card: Hidden for Residents, visible to Officers -->
-      <div class="card" id="officerCard" style="display: none;">
+      <!-- Card 2: Portal Access (Hidden if Resident, switched to Official Desk if Officer) -->
+      <div class="card" id="portalAccessCard">
         <div>
-          <h2>Official Portal</h2>
-          <p>Restricted access for Lupon Secretary to manage docket schedules and print notices.</p>
+          <h2 id="portalCardTitle" data-i18n="card2Title">🔑 Resident & Officer Access</h2>
+          <p id="portalCardDesc" data-i18n="card2Desc">Create your Resident Account once your docket is approved, or log in to the official Lupon desk.</p>
         </div>
-        <a href="portal.html" class="card-btn">Open Portal</a>
+        <a href="auth.html" id="portalCardBtn" class="card-btn" data-i18n="card2Btn">Go to Portal Access</a>
       </div>
 
-      <div class="card">
+      <!-- Card 3: Guidelines -->
+      <div class="card" id="guidelinesCard">
         <div>
-          <h2>KP Conciliation Flow</h2>
-          <p>Review covered cases, amicable settlement procedures, and Data Privacy rights before filing.</p>
+          <h2 data-i18n="card3Title">📖 Katarungang Pambarangay Guide</h2>
+          <p data-i18n="card3Desc">Learn about the 3-stage conciliation process, valid barangay disputes, and required documents.</p>
         </div>
-        <button type="button" id="openGuidelinesBtn" class="card-btn">View Guidelines</button>
+        <button type="button" class="card-btn" id="openGuidelinesBtn" data-i18n="card3Btn">Read Guidelines</button>
       </div>
     </div>
   </main>
 
-  <!-- ACCOUNT SETTINGS MODAL -->
-  <div class="modal-overlay" id="settingsModal">
-    <div class="modal-card">
-      <div class="modal-title-row">
-        <h2>Account Settings</h2>
-        <button class="modal-close" id="closeSettingsBtn">&times;</button>
-      </div>
-      
-      <div class="settings-info-box">
-        <p><strong>Signed in as:</strong> <span id="settingsEmail">user@email.com</span></p>
-        <p><strong>Role:</strong> <span id="settingsRole">Resident</span></p>
-        <p class="mb-0"><strong>Purok/Address:</strong> <span id="settingsPurok">Barangay Sumilihon</span></p>
-      </div>
-
-      <h3 class="modal-section-title">Change Password</h3>
-
-      <form id="changePasswordForm">
-        <div class="form-group">
-          <label for="newPassword">New Password</label>
-          <input type="password" id="newPassword" required minlength="6" placeholder="Enter new password" />
-        </div>
-        <div class="form-group">
-          <label for="confirmNewPassword">Confirm New Password</label>
-          <input type="password" id="confirmNewPassword" required minlength="6" placeholder="Re-type new password" />
-        </div>
-        <button type="submit" class="card-btn primary btn-block" id="savePwdBtn">
-          Save New Password
-        </button>
-      </form>
-    </div>
-  </div>
-
-  <!-- GUIDELINES MODAL -->
+  <!-- Guidelines Modal -->
   <div class="modal-overlay" id="guidelinesModal">
     <div class="guidelines-modal">
       <div class="modal-header">
-        <h2>⚖️ Katarungang Pambarangay Guidelines</h2>
-        <button class="modal-close" id="closeGuidelinesBtn">&times;</button>
+        <h2 data-i18n="guideModalTitle">Katarungang Pambarangay Guidelines (RA 7160)</h2>
+        <button type="button" class="modal-close" id="closeGuidelinesBtn">&times;</button>
       </div>
-
       <div class="guidelines-body">
         <div class="guidelines-section">
-          <h3>📌 Covered Cases Under Lupon Authority</h3>
+          <h3 data-i18n="guideSec1Title">1. Filing & Approval Workflow</h3>
           <ul>
-            <li>Boundary line disputes and property encroachments between neighbors.</li>
-            <li>Unpaid personal loans, financial obligations, or minor collection claims.</li>
-            <li>Community disturbances (excessive noise, unruly pets, neighborhood nuisance).</li>
-            <li>Verbal altercations, slander, oral defamation, or slight physical injuries.</li>
-            <li>Civil disputes between individuals residing in the same city or municipality.</li>
+            <li data-i18n="guideSec1Li1"><strong>Step 1 (Screening):</strong> Complete the Preliminary Jurisdiction Screening to verify if the dispute is within Barangay authority.</li>
+            <li data-i18n="guideSec1Li2"><strong>Step 2 (Report & Evidence):</strong> Submit your complaint details along with optional photo evidence and your Gmail address.</li>
+            <li data-i18n="guideSec1Li3"><strong>Step 3 (Lupon Approval & Account):</strong> Once approved by an officer, use your Tracking Docket Number to register a Resident Account.</li>
           </ul>
         </div>
-
         <div class="guidelines-section">
-          <h3>⛔ Cases Excluded from Barangay Conciliation</h3>
+          <h3 data-i18n="guideSec2Title">2. Three Stages of Conciliation</h3>
           <ul>
-            <li>Offenses punishable by imprisonment exceeding one (1) year or fines over PHP 5,000.</li>
-            <li>Complaints involving public officers relating to official duties.</li>
-            <li>Disputes where parties reside in different provinces or distant municipalities.</li>
-          </ul>
-        </div>
-
-        <div>
-          <h3>🔄 The 3 Stages of Conciliation</h3>
-          <ul>
-            <li><strong>Stage 1 (Mediation by Punong Barangay):</strong> 15-day amicable settlement period.</li>
-            <li><strong>Stage 2 (Pangkat Conciliation):</strong> 3-member panel conciliation within 15 days.</li>
-            <li><strong>Stage 3 (Settlement or CFA):</strong> Formal settlement or Certificate to File Action in Court.</li>
+            <li data-i18n="guideSec2Li1"><strong>Mediation by Punong Barangay:</strong> Initial settlement conference within 15 days.</li>
+            <li data-i18n="guideSec2Li2"><strong>Conciliation by Pangkat Tagapagkasundo:</strong> 3-member panel hearing if mediation fails.</li>
+            <li data-i18n="guideSec2Li3"><strong>Certificate to File Action (CFA):</strong> Issued if no amicable settlement is reached, allowing court filing.</li>
           </ul>
         </div>
       </div>
-
       <div class="guidelines-footer">
-        <button type="button" class="card-btn primary px-md" id="closeGuidelinesFooterBtn">Understood (Close)</button>
+        <button type="button" class="card-btn primary px-md" id="closeGuidelinesFooterBtn" data-i18n="closeBtn">Close</button>
       </div>
     </div>
   </div>
 
   <footer>
-    <p>&copy; 2026 LuponResolve. Compliant with RA 7160 & RA 10173 (Data Privacy Act).</p>
+    &copy; 2026 LuponDesk — Barangay Sumilihon, Butuan City. All rights reserved.
   </footer>
 
-  <!-- Application Logic -->
   <script src="index.js"></script>
 </body>
 </html>

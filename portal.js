@@ -6,43 +6,25 @@ let cachedCases = [];
 const caseTableBody = document.getElementById('caseTableBody');
 
 async function verifyOfficerSession() {
-  console.log("1. Checking auth session...");
-  const { data: { session }, error: sessionErr } = await db.auth.getSession();
-
-  if (sessionErr) {
-    console.error("Session error:", sessionErr);
-    return;
-  }
+  const { data: { session } } = await db.auth.getSession();
 
   if (!session) {
-    console.warn("Walay session nakit-an. Redirecting to auth.html...");
-    alert("Walay active login session. Palihug pag-login una.");
     window.location.href = 'auth.html';
     return;
   }
 
-  console.log("2. Session found! User ID:", session.user.id);
-
-  const { data: profile, error: profileErr } = await db
+  const { data: profile } = await db
     .from('profiles')
     .select('role')
     .eq('id', session.user.id)
     .maybeSingle();
 
-  if (profileErr) {
-    console.error("Profile query error:", profileErr);
-  }
-
-  console.log("3. User profile data:", profile);
-
   if (!profile || profile.role !== 'officer') {
-    console.warn("Role is NOT officer. Actual role:", profile?.role);
     alert('Access Restricted: Only Barangay Officers and Lupon members are permitted.');
     window.location.href = 'index.html';
     return;
   }
 
-  console.log("4. Officer verified! Fetching cases...");
   fetchCases();
 }
 
@@ -55,12 +37,10 @@ async function fetchCases() {
     .order('id', { ascending: false });
 
   if (error) {
-    console.error("Cases fetch error:", error);
     caseTableBody.innerHTML = `<tr><td colspan="8" class="cell-message error">Error: ${error.message}</td></tr>`;
     return;
   }
 
-  console.log("5. Cases loaded:", data);
   cachedCases = data || [];
   renderTable(cachedCases);
 }
@@ -84,16 +64,20 @@ function renderTable(cases) {
   }
 
   cases.forEach((item, index) => {
+    const evidenceButton = item.evidence_url
+      ? `<a href="${item.evidence_url}" target="_blank" class="btn-action" style="text-decoration:none;">Photo</a>`
+      : '';
+
     const row = document.createElement('tr');
     row.innerHTML = `
       <td><strong>${item.docket || '—'}</strong></td>
       <td>${item.created_at ? new Date(item.created_at).toLocaleDateString() : '—'}</td>
-      <td>${item.complainant || '—'}</td>
+      <td>${item.complainant || '—'}<br><small style="color:var(--muted);">${item.complainant_email || ''}</small></td>
       <td>${item.respondent || '—'}</td>
       <td class="capitalize">${item.dispute_type || '—'}</td>
       <td>
-        <select class="status-select" onchange="updateStatus(${item.id}, this.value)">
-          <option value="Under Review" ${item.status === 'Under Review' ? 'selected' : ''}>Under Review</option>
+        <select class="status-select" onchange="updateStatus(${item.id}, this.value, ${index})">
+          <option value="Pending Approval" ${item.status === 'Pending Approval' ? 'selected' : ''}>Pending Approval</option>
           <option value="Accepted / For Hearing" ${item.status === 'Accepted / For Hearing' ? 'selected' : ''}>Accepted / For Hearing</option>
           <option value="Mediation Scheduled" ${item.status === 'Mediation Scheduled' ? 'selected' : ''}>Mediation Scheduled</option>
           <option value="Amicably Settled" ${item.status === 'Amicably Settled' ? 'selected' : ''}>Amicably Settled</option>
@@ -101,10 +85,11 @@ function renderTable(cases) {
         </select>
       </td>
       <td>
-        <input type="date" class="hearing-input" value="${item.hearing_date || ''}" onchange="updateHearing(${item.id}, this.value)" />
+        <input type="date" class="hearing-input" value="${item.hearing_date || ''}" onchange="updateHearing(${item.id}, this.value, ${index})" />
       </td>
       <td>
         <button class="btn-action" type="button" onclick="viewDetails(${index})">Facts</button>
+        ${evidenceButton}
         <button class="btn-action" type="button" onclick="printSummons(${index})">Summons</button>
       </td>
     `;
@@ -112,13 +97,45 @@ function renderTable(cases) {
   });
 }
 
-window.updateStatus = async function(id, newStatus) {
+// Send Gmail Notification when case is Approved
+function notifyComplainantViaGmail(caseItem) {
+  if (!caseItem.complainant_email) return;
+
+  const subject = encodeURIComponent(`LuponResolve: Approved na ang imong Reklamo (${caseItem.docket})`);
+  const body = encodeURIComponent(
+    `Maayong adlaw ${caseItem.complainant},\n\n` +
+    `Kini usa ka opisyal nga pahibalo gikan sa Barangay Sumilihon Lupon Tagapamayapa.\n\n` +
+    `APPROVED na ang imong gisumite nga reklamo ubos sa Docket Number: ${caseItem.docket}.\n` +
+    `Mahimo na ka karon mag-create og Resident Account sa LuponResolve portal gamit kini nga Docket Number aron ma-monitor ang schedule sa imong hearing.\n\n` +
+    `Daghang salamat,\nBarangay Lupon Secretary`
+  );
+
+  // Opens Gmail Compose pre-filled with the complainant's email and approval notice
+  const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(caseItem.complainant_email)}&su=${subject}&body=${body}`;
+  window.open(gmailUrl, '_blank');
+}
+
+window.updateStatus = async function(id, newStatus, index) {
   const { error } = await db.from('cases').update({ status: newStatus }).eq('id', id);
-  if (error) alert('Error updating status: ' + error.message);
+  if (error) {
+    alert('Error updating status: ' + error.message);
+    return;
+  }
+
+  const caseItem = cachedCases[index];
+  caseItem.status = newStatus;
+
+  if (newStatus === 'Accepted / For Hearing') {
+    notifyComplainantViaGmail(caseItem);
+  }
 };
 
-window.updateHearing = async function(id, newDate) {
-  const { error } = await db.from('cases').update({ hearing_date: newDate, status: 'Mediation Scheduled' }).eq('id', id);
+window.updateHearing = async function(id, newDate, index) {
+  const { error } = await db
+    .from('cases')
+    .update({ hearing_date: newDate, status: 'Mediation Scheduled' })
+    .eq('id', id);
+
   if (error) {
     alert('Error updating hearing date: ' + error.message);
   } else {
@@ -128,7 +145,7 @@ window.updateHearing = async function(id, newDate) {
 
 window.viewDetails = function(index) {
   const c = cachedCases[index];
-  alert(`Docket: ${c.docket}\nIncident Date: ${c.incident_date}\n\nFacts/Narrative:\n${c.narrative}`);
+  alert(`Docket: ${c.docket}\nEmail: ${c.complainant_email || 'N/A'}\nIncident Date: ${c.incident_date}\n\nAsaysay/Facts:\n${c.narrative}`);
 };
 
 window.printSummons = function(index) {
@@ -147,13 +164,9 @@ window.printSummons = function(index) {
   window.print();
 };
 
-const logoutBtn = document.getElementById('logoutBtn');
-if (logoutBtn) {
-  logoutBtn.addEventListener('click', async () => {
-    await db.auth.signOut();
-    window.location.href = 'auth.html';
-  });
-}
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+  await db.auth.signOut();
+  window.location.href = 'auth.html';
+});
 
-// Daganon dayon sa pagsugod
 verifyOfficerSession();

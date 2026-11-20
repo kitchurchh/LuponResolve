@@ -1,19 +1,152 @@
 const supabaseUrl = 'https://ivphxduuzemdmkjdgeqy.supabase.co';
 const supabaseKey = 'sb_publishable_Eh44ol3xJHhoxPNOS6Tueg_SzHFTi5u';
-const db = window.supabase.createClient(supabaseUrl, supabaseKey);
+const db = window.supabase ? window.supabase.createClient(supabaseUrl, supabaseKey) : null;
 
-let currentSessionUser = null;
+let currentLang = 'en';
 
-// Check user session & load profile
-async function checkAuthSession() {
+const translations = {
+  en: {
+    toggleBtn: '🌐 Cebuano',
+    navFile: 'File a Complaint',
+    navLogin: 'Portal Access',
+    logoutText: '🚪 Log Out',
+    heroTitle: 'Barangay Sumilihon Online Dispute Resolution',
+    heroSubtitle: 'Fast, fair, and accessible community mediation under the Katarungang Pambarangay Law (RA 7160).',
+    trackerPlaceholder: 'Enter Tracking Docket (e.g., KP-2026-1024)',
+    trackBtn: 'Track Case',
+    card1Title: '📝 File a Complaint',
+    card1Desc: 'Answer the preliminary screening and submit an incident report with photo evidence—no account required upfront.',
+    card1Btn: 'Start Screening & Filing',
+    card2Title: '🔑 Resident & Officer Access',
+    card2Desc: 'Create your Resident Account once your docket is approved, or log in to the official Lupon desk.',
+    card2Btn: 'Go to Portal Access',
+    card3Title: '📖 Katarungang Pambarangay Guide',
+    card3Desc: 'Learn about the 3-stage conciliation process, valid barangay disputes, and required documents.',
+    card3Btn: 'Read Guidelines',
+    guideModalTitle: 'Katarungang Pambarangay Guidelines (RA 7160)',
+    guideSec1Title: '1. Filing & Approval Workflow',
+    guideSec1Li1: '<strong>Step 1 (Screening):</strong> Complete the Preliminary Jurisdiction Screening to verify if the dispute is within Barangay authority.',
+    guideSec1Li2: '<strong>Step 2 (Report & Evidence):</strong> Submit your complaint details along with optional photo evidence and your Gmail address.',
+    guideSec1Li3: '<strong>Step 3 (Lupon Approval & Account):</strong> Once approved by an officer, use your Tracking Docket Number to register a Resident Account.',
+    guideSec2Title: '2. Three Stages of Conciliation',
+    guideSec2Li1: '<strong>Mediation by Punong Barangay:</strong> Initial settlement conference within 15 days.',
+    guideSec2Li2: '<strong>Conciliation by Pangkat Tagapagkasundo:</strong> 3-member panel hearing if mediation fails.',
+    guideSec2Li3: '<strong>Certificate to File Action (CFA):</strong> Issued if no amicable settlement is reached, allowing court filing.',
+    closeBtn: 'Close'
+  },
+  ceb: {
+    toggleBtn: '🌐 English',
+    navFile: 'Magsumite og Reklamo',
+    navLogin: 'Portal Access',
+    logoutText: '🚪 Log Out',
+    heroTitle: 'Barangay Sumilihon Online Dispute Resolution',
+    heroSubtitle: 'Paspas, patas, ug sayon nga paghusay sa komunidad ubos sa Katarungang Pambarangay Law (RA 7160).',
+    trackerPlaceholder: 'Isulat ang Tracking Docket (e.g., KP-2026-1024)',
+    trackBtn: 'Pangitaa ang Kaso',
+    card1Title: '📝 Magsumite og Reklamo',
+    card1Desc: 'Tubaga ang preliminary screening ug isumite ang report uban ang litrato sa ebidensya—dili na kinahanglan og account una.',
+    card1Btn: 'Sugdi ang Screening',
+    card2Title: '🔑 Resident & Officer Access',
+    card2Desc: 'Paghimo og Resident Account kung ma-aprobahan na ang imong docket, o log in sa opisyal nga Lupon desk.',
+    card2Btn: 'Adto sa Portal Access',
+    card3Title: '📖 Giya sa Katarungang Pambarangay',
+    card3Desc: 'Sabta ang 3 ka ang-ang sa paghusay, mga valid nga reklamo sa barangay, ug gikinahanglan nga dokumento.',
+    card3Btn: 'Basaha ang Giya',
+    guideModalTitle: 'Giya sa Katarungang Pambarangay (RA 7160)',
+    guideSec1Title: '1. Proseso sa Pagsumite ug Pag-aproba',
+    guideSec1Li1: '<strong>Unang Lakang (Screening):</strong> Tubaga ang Preliminary Jurisdiction Screening aron masuta kung sakop ba sa Barangay.',
+    guideSec1Li2: '<strong>Ikaduhang Lakang (Report ug Ebidensya):</strong> Isumite ang detalye sa reklamo, picture sa ebidensya, ug imong Gmail.',
+    guideSec1Li3: '<strong>Ikatulong Lakang (Account):</strong> Kung ma-aprobahan na sa opisyal, gamita ang imong Docket Number aron makahimo og Resident Account.',
+    guideSec2Title: '2. Tulo ka Ang-ang sa Paghusay',
+    guideSec2Li1: '<strong>Mediation sa Punong Barangay:</strong> Unang panagtagbo sulod sa 15 ka adlaw.',
+    guideSec2Li2: '<strong>Conciliation sa Pangkat Tagapagkasundo:</strong> Paghusay sa 3 ka miyembro sa Pangkat kung dili magkasinabot sa mediation.',
+    guideSec2Li3: '<strong>Certificate to File Action (CFA):</strong> Ihatag kung walay kasabutan aron madala ang kaso sa korte.',
+    closeBtn: 'Isira'
+  }
+};
+
+function applyLanguage(lang) {
+  currentLang = lang;
+  const dict = translations[lang];
+  document.getElementById('langToggleBtn').innerText = dict.toggleBtn;
+
+  document.querySelectorAll('[data-i18n]').forEach((el) => {
+    const key = el.getAttribute('data-i18n');
+    if (dict[key]) el.innerHTML = dict[key];
+  });
+
+  document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    if (dict[key]) el.placeholder = dict[key];
+  });
+}
+
+document.getElementById('langToggleBtn').addEventListener('click', () => {
+  applyLanguage(currentLang === 'en' ? 'ceb' : 'en');
+});
+
+document.getElementById('trackDocketBtn').addEventListener('click', async () => {
+  const query = document.getElementById('docketSearchInput').value.trim();
+  const resultBox = document.getElementById('statusResult');
+
+  if (!query) {
+    alert(currentLang === 'en' ? 'Please enter a Docket Number.' : 'Palihug isulat ang imong Docket Number.');
+    return;
+  }
+
+  if (!db) {
+    alert('Database connection unavailable.');
+    return;
+  }
+
+  resultBox.style.display = 'block';
+  resultBox.innerHTML = `<p style="color:var(--muted); font-weight:600;">Searching registry for <strong>${query}</strong>...</p>`;
+
+  const { data, error } = await db
+    .from('cases')
+    .select('*')
+    .ilike('docket', query)
+    .maybeSingle();
+
+  if (error || !data) {
+    resultBox.innerHTML = `
+      <p style="color:var(--danger); font-weight:700;">No record found for Docket "${query}".</p>
+      <p style="font-size:0.85rem; color:var(--muted); margin-top:0.25rem;">Please verify your tracking number and try again.</p>
+    `;
+    return;
+  }
+
+  const hearingDisplay = data.hearing_date
+    ? new Date(data.hearing_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+    : (currentLang === 'en' ? 'To be scheduled by Lupon' : 'I-schedule pa sa Lupon');
+
+  resultBox.innerHTML = `
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem; flex-wrap:wrap; gap:0.5rem;">
+      <strong style="font-size:1.1rem; color:var(--primary);">${data.docket}</strong>
+      <span class="status-badge">${data.status}</span>
+    </div>
+    <p style="font-size:0.9rem; margin-bottom:0.35rem;"><strong>Complainant:</strong> ${data.complainant}</p>
+    <p style="font-size:0.9rem; margin-bottom:0.35rem;"><strong>Respondent:</strong> ${data.respondent}</p>
+    <p style="font-size:0.9rem;"><strong>Hearing Schedule:</strong> ${hearingDisplay}</p>
+  `;
+});
+
+async function checkSession() {
+  if (!db) {
+    window.location.href = 'auth.html';
+    return;
+  }
+
   const { data: { session } } = await db.auth.getSession();
 
+  // Kung walay naka-log in, mo-diretso sa split-screen auth.html
   if (!session) {
     window.location.href = 'auth.html';
     return;
   }
 
-  currentSessionUser = session.user;
+  document.getElementById('loginNavLink').style.display = 'none';
+  document.getElementById('profileWrapper').style.display = 'block';
 
   const { data: profile } = await db
     .from('profiles')
@@ -21,246 +154,105 @@ async function checkAuthSession() {
     .eq('id', session.user.id)
     .maybeSingle();
 
-  const fullName = profile?.full_name || session.user.email.split('@')[0];
+  const displayName = profile?.full_name || session.user.email.split('@')[0];
   const role = profile?.role || 'resident';
-  const purok = profile?.purok || 'Barangay Sumilihon';
 
-  document.getElementById('navUserName').innerText = fullName;
-  document.getElementById('userAvatar').innerText = fullName.charAt(0);
-
-  document.getElementById('dropFullName').innerText = fullName;
-  document.getElementById('dropEmail').innerText = session.user.email;
-  document.getElementById('dropRole').innerText = role;
-
-  document.getElementById('settingsEmail').innerText = session.user.email;
-  document.getElementById('settingsRole').innerText = role;
-  document.getElementById('settingsPurok').innerText = purok;
+  document.getElementById('userAvatar').innerText = displayName.charAt(0).toUpperCase();
+  document.getElementById('userDisplayName').innerText = displayName;
+  document.getElementById('dropdownFullName').innerText = displayName;
+  document.getElementById('dropdownEmail').innerText = session.user.email;
+  document.getElementById('dropdownRole').innerText = role;
 
   if (role === 'officer') {
-    document.getElementById('officerPortalLink').style.display = 'inline-block';
-    document.getElementById('officerCard').style.display = 'flex';
+    document.getElementById('officerDashboardLink').style.display = 'flex';
+    
+    const fileCard = document.getElementById('fileComplaintCard');
+    const navFileLink = document.getElementById('navFileLink');
+    if (fileCard) fileCard.style.display = 'none';
+    if (navFileLink) navFileLink.style.display = 'none';
+
+    const portalTitle = document.getElementById('portalCardTitle');
+    const portalDesc = document.getElementById('portalCardDesc');
+    const portalBtn = document.getElementById('portalCardBtn');
+    if (portalTitle) {
+      portalTitle.removeAttribute('data-i18n');
+      portalTitle.innerText = '🛡️ Official Lupon Desk';
+    }
+    if (portalDesc) {
+      portalDesc.removeAttribute('data-i18n');
+      portalDesc.innerText = 'Review pending complaints, inspect evidence photos, approve cases, and schedule mediation hearings.';
+    }
+    if (portalBtn) {
+      portalBtn.removeAttribute('data-i18n');
+      portalBtn.href = 'portal.html';
+      portalBtn.classList.add('primary');
+      portalBtn.innerText = 'Open Lupon Portal';
+    }
   } else {
-    document.getElementById('officerPortalLink').style.display = 'none';
-    document.getElementById('officerCard').style.display = 'none';
-    fetchResidentCaseAlerts(session.user.id);
+    const portalCard = document.getElementById('portalAccessCard');
+    const officerLink = document.getElementById('officerDashboardLink');
+    if (portalCard) portalCard.style.display = 'none';
+    if (officerLink) officerLink.style.display = 'none';
+
+    loadResidentAlerts(session.user.id);
   }
 }
 
-// Fetch case alerts for resident view
-async function fetchResidentCaseAlerts(userId) {
-  const { data: userCases } = await db
+async function loadResidentAlerts(userId) {
+  const { data: cases } = await db
     .from('cases')
     .select('*')
-    .eq('user_id', userId)
-    .order('id', { ascending: false });
+    .eq('user_id', userId);
 
-  const alertContainer = document.getElementById('residentAlertContainer');
+  if (!cases || cases.length === 0) return;
 
-  if (userCases && userCases.length > 0) {
-    let alertsHTML = '';
+  const container = document.getElementById('residentAlertContainer');
+  container.style.display = 'block';
+  container.innerHTML = '';
 
-    userCases.forEach(c => {
-      if (c.status === 'Accepted / For Hearing' || c.status === 'Mediation Scheduled') {
-        alertsHTML += `
-          <div class="alert-banner accepted">
-            <div>
-              <strong>✅ Case Accepted (${c.docket})</strong>
-              <p style="font-size:0.85rem; margin:0.15rem 0 0;">
-                Your complaint regarding "${c.dispute_type}" has been accepted! 
-                Hearing Schedule: <strong>${c.hearing_date ? new Date(c.hearing_date).toLocaleDateString() : 'To be announced'}</strong>
-              </p>
-            </div>
-            <button type="button" class="card-btn primary" style="padding:0.4rem 0.8rem; font-size:0.8rem;" onclick="trackSpecificCase('${c.docket}')">View</button>
-          </div>
-        `;
-      } else if (c.status === 'Repudiated' || c.status === 'Repudiated / Escalated') {
-        alertsHTML += `
-          <div class="alert-banner rejected">
-            <div>
-              <strong>⚠️ Case Not Settled / Escalated (${c.docket})</strong>
-              <p style="font-size:0.85rem; margin:0.15rem 0 0;">
-                Your complaint for "${c.dispute_type}" was repudiated or endorsed for Certificate to File Action (CFA).
-              </p>
-            </div>
-            <button type="button" class="card-btn" style="padding:0.4rem 0.8rem; font-size:0.8rem; border-color:var(--danger); color:var(--danger);" onclick="trackSpecificCase('${c.docket}')">View</button>
-          </div>
-        `;
-      }
-    });
-
-    if (alertsHTML) {
-      alertContainer.innerHTML = alertsHTML;
-      alertContainer.style.display = 'block';
+  cases.forEach((c) => {
+    if (c.status !== 'Pending Approval') {
+      const banner = document.createElement('div');
+      banner.className = 'alert-banner accepted';
+      banner.innerHTML = `
+        <div>
+          <strong>✅ Case Update (${c.docket}):</strong> Status is now <strong>${c.status}</strong>.
+          ${c.hearing_date ? ` Hearing Date: <strong>${c.hearing_date}</strong>` : ''}
+        </div>
+      `;
+      container.appendChild(banner);
     }
-  }
+  });
 }
 
-// Track case via alert shortcut
-window.trackSpecificCase = function(docketNo) {
-  document.getElementById('trackInput').value = docketNo;
-  document.getElementById('trackBtn').click();
-  window.scrollTo({ top: 350, behavior: 'smooth' });
-};
+const profileMenuBtn = document.getElementById('profileMenuBtn');
+const profileDropdown = document.getElementById('profileDropdown');
 
-// Profile Dropdown Handling
-const profileDropdownBtn = document.getElementById('profileDropdownBtn');
-const dropdownMenu = document.getElementById('dropdownMenu');
-
-profileDropdownBtn.addEventListener('click', (e) => {
-  e.stopPropagation();
-  const isVisible = dropdownMenu.style.display === 'block';
-  dropdownMenu.style.display = isVisible ? 'none' : 'block';
-});
-
-window.addEventListener('click', (e) => {
-  if (!dropdownMenu.contains(e.target) && !profileDropdownBtn.contains(e.target)) {
-    dropdownMenu.style.display = 'none';
-  }
-});
-
-// Settings Modal Handling
-const settingsModal = document.getElementById('settingsModal');
-const openSettingsBtn = document.getElementById('openSettingsBtn');
-const closeSettingsBtn = document.getElementById('closeSettingsBtn');
-const changePasswordForm = document.getElementById('changePasswordForm');
-const savePwdBtn = document.getElementById('savePwdBtn');
-
-openSettingsBtn.addEventListener('click', () => {
-  dropdownMenu.style.display = 'none';
-  settingsModal.style.display = 'flex';
-});
-
-closeSettingsBtn.addEventListener('click', () => {
-  settingsModal.style.display = 'none';
-  changePasswordForm.reset();
-});
-
-changePasswordForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const newPwd = document.getElementById('newPassword').value;
-  const confirmPwd = document.getElementById('confirmNewPassword').value;
-
-  if (newPwd !== confirmPwd) {
-    alert('Passwords do not match. Please verify.');
-    return;
-  }
-
-  savePwdBtn.disabled = true;
-  savePwdBtn.innerText = 'Updating password...';
-
-  const { error } = await db.auth.updateUser({
-    password: newPwd
+if (profileMenuBtn) {
+  profileMenuBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    profileDropdown.style.display = profileDropdown.style.display === 'block' ? 'none' : 'block';
   });
+}
 
-  if (error) {
-    alert('Failed to update password: ' + error.message);
-    savePwdBtn.disabled = false;
-    savePwdBtn.innerText = 'Save New Password';
-  } else {
-    alert('Password successfully updated! Please use this password on your next login.');
-    settingsModal.style.display = 'none';
-    changePasswordForm.reset();
-    savePwdBtn.disabled = false;
-    savePwdBtn.innerText = 'Save New Password';
-  }
+window.addEventListener('click', () => {
+  if (profileDropdown) profileDropdown.style.display = 'none';
 });
 
-// Logout
 document.getElementById('logoutBtn').addEventListener('click', async () => {
-  await db.auth.signOut();
+  if (db) await db.auth.signOut();
   window.location.href = 'auth.html';
 });
 
-// Case Tracking Action
-document.getElementById('trackBtn').addEventListener('click', async function() {
-  const input = document.getElementById('trackInput').value.trim();
-  const resultBox = document.getElementById('statusResult');
-
-  if (!input) {
-    alert('Please enter a docket tracking number.');
-    return;
-  }
-
-  resultBox.style.display = 'block';
-  resultBox.innerHTML = '<p style="color:var(--muted); text-align:center;">Searching case records from database...</p>';
-
-  const { data, error } = await db
-    .from('cases')
-    .select('*')
-    .ilike('docket', input)
-    .maybeSingle();
-
-  if (error) {
-    resultBox.innerHTML = `<p style="color:var(--danger); font-weight:600;">Error: ${error.message}</p>`;
-    return;
-  }
-
-  if (data) {
-    let acceptedNotice = '';
-    if (data.status === 'Accepted / For Hearing' || data.status === 'Mediation Scheduled') {
-      acceptedNotice = `
-        <div style="background: #dcfce7; border: 1px solid #86efac; border-radius: 8px; padding: 0.85rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
-          <span style="font-size: 1.5rem;">🎉</span>
-          <div>
-            <strong style="color: #166534; font-size: 0.95rem;">Complaint Formally Accepted!</strong>
-            <p style="color: #15803d; font-size: 0.85rem; margin: 0;">
-              Your filed dispute has been accepted by the Barangay Lupon. Please review your hearing schedule below.
-            </p>
-          </div>
-        </div>
-      `;
-    }
-
-    resultBox.innerHTML = `
-      ${acceptedNotice}
-      <h3 style="color:var(--primary); margin-bottom:0.75rem;">Docket: ${data.docket}</h3>
-      <p style="margin-bottom:0.4rem;"><strong>Status:</strong> <span class="status-badge" style="background:${data.status.includes('Accepted') ? '#dcfce7' : '#dbeafe'}; color:${data.status.includes('Accepted') ? '#15803d' : '#1e40af'};">${data.status}</span></p>
-      <p style="margin-bottom:0.4rem;"><strong>Complainant:</strong> ${data.complainant}</p>
-      <p style="margin-bottom:0.4rem;"><strong>Respondent:</strong> ${data.respondent}</p>
-      <p style="margin-bottom:0.4rem; text-transform: capitalize;"><strong>Dispute Type:</strong> ${data.dispute_type}</p>
-      <p style="margin-bottom:0.4rem;"><strong>Hearing Schedule:</strong> ${data.hearing_date ? new Date(data.hearing_date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : '<em>Not yet scheduled by Lupon</em>'}</p>
-    `;
-  } else {
-    resultBox.innerHTML = `<p style="color:var(--danger); font-weight:600; text-align:center;">No record found for docket "${input}". Please verify the number.</p>`;
-  }
-});
-
-// Trigger tracking on enter key
-document.getElementById('trackInput').addEventListener('keypress', function(e) {
-  if (e.key === 'Enter') {
-    document.getElementById('trackBtn').click();
-  }
-});
-
-// Guidelines Modal Handling
 const guidelinesModal = document.getElementById('guidelinesModal');
-const openGuidelinesBtn = document.getElementById('openGuidelinesBtn');
-const navGuidelinesLink = document.getElementById('navGuidelinesLink');
-const closeGuidelinesBtn = document.getElementById('closeGuidelinesBtn');
-const closeGuidelinesFooterBtn = document.getElementById('closeGuidelinesFooterBtn');
-
-function openModal(e) {
-  if (e) e.preventDefault();
+document.getElementById('openGuidelinesBtn').addEventListener('click', () => {
   guidelinesModal.style.display = 'flex';
-}
-
-function closeModal() {
+});
+document.getElementById('closeGuidelinesBtn').addEventListener('click', () => {
   guidelinesModal.style.display = 'none';
-}
-
-openGuidelinesBtn.addEventListener('click', openModal);
-navGuidelinesLink.addEventListener('click', openModal);
-closeGuidelinesBtn.addEventListener('click', closeModal);
-closeGuidelinesFooterBtn.addEventListener('click', closeModal);
-
-// Backdrop Click to Dismiss Modals
-window.addEventListener('click', function(e) {
-  if (e.target === guidelinesModal) closeModal();
-  if (e.target === settingsModal) {
-    settingsModal.style.display = 'none';
-    changePasswordForm.reset();
-  }
+});
+document.getElementById('closeGuidelinesFooterBtn').addEventListener('click', () => {
+  guidelinesModal.style.display = 'none';
 });
 
-// Initialize session check
-checkAuthSession();
+checkSession();

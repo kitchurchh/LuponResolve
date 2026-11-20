@@ -1,0 +1,19 @@
+{
+    "sqltools.connections": [
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "aws-0-ap-northeast-2.pooler.supabase.com",
+            "port": 5432,
+            "sshOptions": {
+                "port": 22
+            },
+            "driver": "PostgreSQL",
+            "name": "LuponResolve",
+            "group": "postgresql://postgres:[YOUR-DATABASE-PASSWORD]@db.ivphxduuzemdmkjdgeqy.supabase.co:5432/postgres",
+            "database": "postgres",
+            "username": "postgres.ivphxduuzemdmkjdgeqy",
+            "password": "@Nath104902"
+        }
+    ]
+}

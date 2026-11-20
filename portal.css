@@ -1,12 +1,12 @@
 :root {
-  --primary: #0f291e;         /* Deep forest black for headings */
-  --accent: #1b5e20;          /* High-legibility green for buttons/links */
+  --primary: #0f291e;
+  --accent: #1b5e20;
   --accent-hover: #144718;
-  --bg: #1b382b;              /* Dark, glare-free canvas */
-  --card-bg: #ffffff;         /* Pure white dashboard card */
-  --text: #111827;            /* Sharp near-black text */
-  --muted: #4b5563;           /* Legible secondary gray */
-  --border: #d1d5db;          /* Distinct, clear borders */
+  --bg: #1b382b;
+  --card-bg: #ffffff;
+  --text: #111827;
+  --muted: #4b5563;
+  --border: #d1d5db;
   --success: #15803d;
   --warning: #b45309;
   --danger: #b91c1c;
@@ -22,19 +22,20 @@
 body {
   background-color: var(--bg);
   color: var(--text);
-  line-height: 1.6;
-  padding: 2rem 1rem;
+  line-height: 1.5;
+  padding: 1.5rem 1rem;
   min-height: 100vh;
 }
 
 .container {
-  max-width: 1100px;
+  width: 100%;
+  max-width: 1440px;
   margin: 0 auto;
 }
 
 .back-link {
   display: inline-block;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   color: #a7f3d0;
   text-decoration: none;
   font-weight: 700;
@@ -47,21 +48,21 @@ body {
   text-decoration: underline;
 }
 
-/* Dashboard Card */
 .dashboard {
   background: var(--card-bg);
   border: 1px solid #e5e7eb;
   border-top: 5px solid #2e7d32;
   border-radius: 14px;
-  padding: 2rem;
+  padding: 1.5rem;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.35);
+  width: 100%;
 }
 
 .dashboard-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
   padding-bottom: 1rem;
   border-bottom: 2px solid #f3f4f6;
   flex-wrap: wrap;
@@ -69,7 +70,7 @@ body {
 }
 
 .dashboard-header h1 {
-  font-size: 1.65rem;
+  font-size: 1.6rem;
   font-weight: 800;
   color: var(--primary);
   letter-spacing: -0.5px;
@@ -98,23 +99,26 @@ body {
   color: #ffffff;
 }
 
-/* Docket Table */
 .table-wrapper {
-  overflow-x: auto;
+  width: 100%;
+  overflow-x: visible;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 1rem;
-  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  font-size: 0.86rem;
+  table-layout: auto;
 }
 
 th, td {
-  padding: 0.85rem 0.6rem;
+  padding: 0.75rem 0.5rem;
   text-align: left;
   border-bottom: 1.5px solid #f3f4f6;
   vertical-align: middle;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 th {
@@ -122,25 +126,29 @@ th {
   color: #374151;
   font-weight: 800;
   border-bottom: 2px solid var(--border);
-  white-space: nowrap;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
 td strong {
   color: var(--primary);
   font-weight: 700;
+  white-space: nowrap;
 }
 
 select.status-select,
 input.hearing-input {
-  padding: 0.45rem 0.6rem;
+  width: 100%;
+  max-width: 175px;
+  padding: 0.4rem 0.45rem;
   border-radius: 6px;
   border: 1.5px solid var(--border);
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 600;
   color: #111827;
   outline: none;
   background: #f9fafb;
-  transition: border-color 0.2s, background-color 0.2s;
 }
 
 select.status-select:focus,
@@ -150,31 +158,36 @@ input.hearing-input:focus {
   box-shadow: 0 0 0 2px rgba(27, 94, 32, 0.15);
 }
 
+td:last-child {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  align-items: center;
+}
 
 .btn-action {
   background: #f0fdf4;
   border: 1.5px solid var(--accent);
   color: var(--accent);
-  padding: 0.35rem 0.65rem;
+  padding: 0.32rem 0.55rem;
   border-radius: 6px;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 700;
   cursor: pointer;
-  margin-right: 0.4rem;
   transition: all 0.2s;
-  white-space: nowrap; 
-}
-
-
-td:last-child {
   white-space: nowrap;
-  min-width: 150px;
-}
+  text-decoration: none;
 }
 
 .btn-action:hover {
   background: var(--accent);
   color: #ffffff;
+}
+
+@media (max-width: 900px) {
+  .table-wrapper {
+    overflow-x: auto;
+  }
 }
 
 .empty-state {
@@ -211,7 +224,6 @@ td:last-child {
   text-align: right;
 }
 
-/* Printable KP Form No. 7 */
 #printableSummons {
   display: none;
 }

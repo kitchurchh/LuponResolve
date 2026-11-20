@@ -4,112 +4,217 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>File a Complaint | LuponResolve</title>
-
-  <!-- External Stylesheet -->
-  <link rel="stylesheet" href="filling.css" />
-
-  <!-- Supabase CDN -->
+  <link rel="stylesheet" href="filing.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
   <div class="container">
-    <a href="index.html" class="back-link">&larr; Back to Home</a>
-    <h1>Barangay Incident & Dispute Filing</h1>
-    <p class="subtitle">Enter the required details for mediation under Katarungang Pambarangay.</p>
+    <div class="top-bar">
+      <a href="auth.html" class="back-link" data-i18n="backLink">&larr; Back to Portal Access</a>
+      <button type="button" id="langToggleBtn" class="lang-btn">🌐 Translate to Cebuano</button>
+    </div>
 
-    <form id="complaintForm">
-      <!-- Complainant Details -->
-      <fieldset>
-        <legend>1. Complainant Information (Nangreklamo)</legend>
+    <h1 data-i18n="pageTitle">File a Barangay Complaint</h1>
+    <p class="subtitle" data-i18n="pageSubtitle">Please answer the Preliminary Jurisdiction Screening before compiling your report.</p>
+
+    <!-- STEP 1: PRELIMINARY JURISDICTION SCREENING -->
+    <div id="screeningSection">
+      <div class="info-banner">
+        <strong data-i18n="screeningBannerTitle">📌 Preliminary Jurisdiction Screening</strong>
+        <p data-i18n="screeningBannerDesc">These questions help determine whether your complaint falls under the jurisdiction of the Katarungang Pambarangay (RA 7160).</p>
+      </div>
+
+      <div id="screeningBox">
         <div class="form-group">
-          <label for="complainantName">Full Name</label>
+          <label for="q1" data-i18n="q1Label">1. Is one of the parties the government, or a government subdivision or instrumentality? *</label>
+          <select id="q1">
+            <option value="" disabled selected data-i18n="selectOpt">Select an answer</option>
+            <option value="no" data-i18n="optNo">No</option>
+            <option value="yes" data-i18n="optYes">Yes</option>
+            <option value="unsure" data-i18n="optUnsure">Unsure</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="q2" data-i18n="q2Label">2. Does the dispute involve a public officer or employee in relation to their official functions? *</label>
+          <select id="q2">
+            <option value="" disabled selected data-i18n="selectOpt">Select an answer</option>
+            <option value="no" data-i18n="optNo">No</option>
+            <option value="yes" data-i18n="optYes">Yes</option>
+            <option value="unsure" data-i18n="optUnsure">Unsure</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="q3" data-i18n="q3Label">3. Does the offense potentially carry imprisonment exceeding one (1) year or a fine exceeding ₱5,000? *</label>
+          <select id="q3">
+            <option value="" disabled selected data-i18n="selectOpt">Select an answer</option>
+            <option value="no" data-i18n="optNo">No</option>
+            <option value="yes" data-i18n="optYes">Yes</option>
+            <option value="unsure" data-i18n="optUnsure">Unsure</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="q4" data-i18n="q4Label">4. Is there a private offended party? *</label>
+          <select id="q4">
+            <option value="" disabled selected data-i18n="selectOpt">Select an answer</option>
+            <option value="yes" data-i18n="optYes">Yes</option>
+            <option value="no" data-i18n="optNo">No</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="q5" data-i18n="q5Label">5. If the dispute involves real property, are the properties located in different cities or municipalities without agreement to submit to this Lupon? *</label>
+          <select id="q5">
+            <option value="" disabled selected data-i18n="selectOpt">Select an answer</option>
+            <option value="no" data-i18n="optNoSameCity">No (Located in the same city/municipality)</option>
+            <option value="yes" data-i18n="optYesDiffCity">Yes (Different city/municipality with no agreement)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="q6" data-i18n="q6Label">6. Do you and the respondent live in different cities or municipalities with non-adjoining barangays? *</label>
+          <select id="q6">
+            <option value="" disabled selected data-i18n="selectOpt">Select an answer</option>
+            <option value="no" data-i18n="optNoAdjoining">No (Same city/municipality or adjoining barangays)</option>
+            <option value="yes" data-i18n="optYesNonAdjoining">Yes (Different non-adjoining city/municipality)</option>
+          </select>
+        </div>
+
+        <button type="button" id="checkScreeningBtn" class="btn-primary" data-i18n="nextBtn">Next: File Complaint &rarr;</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: COMPILE COMPLAINT REPORT + EVIDENCE UPLOAD -->
+    <form id="complaintForm" class="hidden">
+      <div class="valid-banner">
+        <span data-i18n="validBannerText">✅ <strong>Screening Valid!</strong> You may now compile the full details of your complaint.</span>
+        <button type="button" id="editScreeningBtn" class="btn-link" data-i18n="editScreeningBtn">Edit Screening</button>
+      </div>
+
+      <fieldset>
+        <legend data-i18n="sec1Legend">1. Complainant Information</legend>
+        <div class="form-group">
+          <label for="complainantName" data-i18n="compNameLabel">Full Name *</label>
           <input type="text" id="complainantName" required placeholder="Juan Dela Cruz" />
         </div>
         <div class="grid-2">
           <div class="form-group">
-            <label for="complainantContact">Contact Number</label>
-            <input type="tel" id="complainantContact" required placeholder="09xxxxxxxxx" />
+            <label for="complainantEmail" data-i18n="compEmailLabel">Gmail Address (For Approval Notification) *</label>
+            <input type="email" id="complainantEmail" required placeholder="juan.delacruz@gmail.com" />
           </div>
           <div class="form-group">
-            <label for="complainantPurok">Purok / Sitio Address</label>
-            <input type="text" id="complainantPurok" required placeholder="Purok 3" />
+            <label for="complainantContact" data-i18n="compContactLabel">Contact Number *</label>
+            <input type="tel" id="complainantContact" required placeholder="09xxxxxxxxx" />
           </div>
+        </div>
+        <div class="form-group">
+          <label for="complainantPurok" data-i18n="compPurokLabel">Purok / Barangay *</label>
+          <input type="text" id="complainantPurok" required placeholder="Purok 3, Barangay Sumilihon" />
         </div>
       </fieldset>
 
-      <!-- Respondent Details -->
       <fieldset>
-        <legend>2. Respondent Information (Gireklamo)</legend>
+        <legend data-i18n="sec2Legend">2. Respondent Information</legend>
         <div class="form-group">
-          <label for="respondentName">Full Name</label>
+          <label for="respondentName" data-i18n="respNameLabel">Respondent's Full Name *</label>
           <input type="text" id="respondentName" required placeholder="Full name of person being reported" />
         </div>
         <div class="form-group">
-          <label for="respondentPurok">Known Purok / Address</label>
-          <input type="text" id="respondentPurok" required placeholder="Purok or exact location" />
+          <label for="respondentPurok" data-i18n="respPurokLabel">Known Purok / Address *</label>
+          <input type="text" id="respondentPurok" required placeholder="Purok or exact address" />
         </div>
       </fieldset>
 
-      <!-- Incident Details -->
       <fieldset>
-        <legend>3. Nature of Complaint</legend>
+        <legend data-i18n="sec3Legend">3. Dispute Details</legend>
         <div class="grid-2">
           <div class="form-group">
-            <label for="disputeType">Dispute Type</label>
+            <label for="disputeType" data-i18n="disputeTypeLabel">Type of Dispute *</label>
             <select id="disputeType" required>
-              <option value="" disabled selected>Select category</option>
-              <option value="boundary">Boundary / Property Dispute</option>
-              <option value="debt">Unpaid Debt / Financial Obligation</option>
-              <option value="altercation">Physical / Verbal Altercation</option>
-              <option value="disturbance">Public Disturbance / Noise</option>
-              <option value="other">Other Civil Dispute</option>
+              <option value="" disabled selected data-i18n="selectDisputeOpt">Select dispute category</option>
+              <option value="boundary" data-i18n="dispBoundary">Boundary / Property Dispute</option>
+              <option value="debt" data-i18n="dispDebt">Unpaid Debt / Financial Obligation</option>
+              <option value="altercation" data-i18n="dispAltercation">Physical or Verbal Altercation</option>
+              <option value="disturbance" data-i18n="dispDisturbance">Neighborhood Disturbance / Noise</option>
+              <option value="other" data-i18n="dispOther">Other Civil Dispute</option>
             </select>
           </div>
           <div class="form-group">
-            <label for="incidentDate">Date of Incident</label>
+            <label for="incidentDate" data-i18n="incidentDateLabel">Date of Incident *</label>
             <input type="date" id="incidentDate" required />
           </div>
         </div>
+
         <div class="form-group">
-          <label for="incidentNarrative">Statement of Facts / Summary</label>
-          <textarea id="incidentNarrative" rows="4" required placeholder="Describe what happened clearly..."></textarea>
+          <label for="incidentNarrative" data-i18n="narrativeLabel">Incident Description (Statement of Facts) *</label>
+          <textarea id="incidentNarrative" rows="4" required placeholder="Describe what happened, when it happened, where it happened, and any relevant details..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="evidenceInput" data-i18n="evidenceLabel">Upload Evidence (Picture / Photo) — Optional</label>
+          <div class="upload-box" id="uploadBox">
+            <input type="file" id="evidenceInput" accept="image/*" />
+            <p class="upload-hint" data-i18n="uploadHint">📷 Click to select a photo (JPG, PNG - Max 5MB)</p>
+            <img id="evidencePreview" class="hidden" alt="Evidence Preview" />
+          </div>
         </div>
       </fieldset>
 
-      <!-- Privacy Consent -->
       <div class="consent-box">
         <input type="checkbox" id="privacyConsent" required />
-        <label for="privacyConsent">
-          I confirm that the information provided is accurate and grant consent to process this data strictly for Katarungang Pambarangay proceedings pursuant to RA 10173 (Data Privacy Act).
+        <label for="privacyConsent" data-i18n="consentLabel">
+          I confirm that the information provided is accurate to the best of my knowledge and consent to its use by authorized barangay personnel under RA 10173 (Data Privacy Act) for complaint processing.
         </label>
       </div>
 
-      <button type="submit" id="submitBtn">Submit Complaint</button>
+      <button type="button" id="submitBtn" class="btn-primary" data-i18n="submitBtn">Submit Complaint</button>
     </form>
   </div>
 
-  <!-- Thank You Modal -->
+  <!-- INVALID SCREENING POP-UP MODAL -->
+  <div class="modal-overlay" id="invalidModal">
+    <div class="modal-card">
+      <div class="error-icon">✕</div>
+      <h2 class="modal-title error-text" data-i18n="invalidModalTitle">Complaint Not Valid Based on Screening</h2>
+      <p class="modal-subtitle" id="invalidReasonText">
+        Under the Katarungang Pambarangay Law (RA 7160), this case falls outside the jurisdiction of the Barangay Lupon.
+      </p>
+      <div class="invalid-tips">
+        <strong data-i18n="whereToGoTitle">Where can you seek assistance?</strong>
+        <ul>
+          <li data-i18n="tip1">Nearest <strong>Police Station (PNP)</strong> for an official blotter report.</li>
+          <li data-i18n="tip2"><strong>City Prosecutor's Office</strong> or <strong>Public Attorney's Office (PAO)</strong>.</li>
+        </ul>
+      </div>
+      <button type="button" class="btn-return danger-btn" id="closeInvalidBtn" data-i18n="closeInvalidBtn">I Understand (Close)</button>
+    </div>
+  </div>
+
+  <!-- SUCCESS MODAL -->
   <div class="modal-overlay" id="successModal">
     <div class="modal-card">
       <div class="check-icon">✓</div>
-      <h2 class="modal-title">Thank You for Filing!</h2>
-      <p class="modal-subtitle">Your complaint has been successfully recorded into the Lupon registry.</p>
+      <h2 class="modal-title" data-i18n="successModalTitle">Complaint Submitted Successfully!</h2>
+      <p class="modal-subtitle" data-i18n="successModalDesc">
+        Your report has been received by the Lupon registry. You will be notified via Gmail once approved so you can create your Resident Account.
+      </p>
       
-      <p class="modal-label">Your Tracking Docket:</p>
+      <p class="modal-label" data-i18n="docketLabel">Your Tracking Docket Number:</p>
       <div class="docket-badge" id="modalDocket">KP-2026-0000</div>
       
-      <p class="modal-help">
-        Take a screenshot or record this number to track your case status.
+      <p class="modal-help" data-i18n="docketHelp">
+        Take a screenshot or write down this number. You will need it when registering your Resident Account.
       </p>
 
-      <button type="button" class="btn-return" id="returnHomeBtn">
-        Return to Home (<span id="countdown">3</span>s)
+      <button type="button" class="btn-return" id="returnHomeBtn" data-i18n="returnHomeBtn">
+        Back to Portal Access
       </button>
     </div>
   </div>
 
-  <!-- Application Logic (JavaScript) -->
-  <script src="filling.js"></script>
+  <script src="filing.js"></script>
 </body>
 </html>

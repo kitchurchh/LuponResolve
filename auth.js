@@ -2,23 +2,20 @@ const supabaseUrl = 'https://ivphxduuzemdmkjdgeqy.supabase.co';
 const supabaseKey = 'sb_publishable_Eh44ol3xJHhoxPNOS6Tueg_SzHFTi5u';
 const db = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-// SECRET PIN KNOWN ONLY TO BARANGAY OFFICIALS
 const OFFICER_SECRET_PIN = "SUMILIHON2026";
 
-// Navigation Containers
 const roleSelectionScreen = document.getElementById('roleSelectionScreen');
 const residentActionScreen = document.getElementById('residentActionScreen');
 const officerScreen = document.getElementById('officerScreen');
 const residentRegisterForm = document.getElementById('residentRegisterForm');
 const residentLoginForm = document.getElementById('residentLoginForm');
 
-// Officer Forms & Tabs
 const officerLoginForm = document.getElementById('officerLoginForm');
 const officerRegisterForm = document.getElementById('officerRegisterForm');
 const tabOfficerLoginBtn = document.getElementById('tabOfficerLoginBtn');
 const tabOfficerRegBtn = document.getElementById('tabOfficerRegBtn');
 
-// 1. Role Selection Switching
+// 1. ROLE SELECTION NAVIGATION
 document.getElementById('chooseResidentBtn').addEventListener('click', () => {
   roleSelectionScreen.classList.add('hidden');
   residentActionScreen.classList.remove('hidden');
@@ -39,7 +36,7 @@ document.getElementById('backToRoleBtn2').addEventListener('click', () => {
   roleSelectionScreen.classList.remove('hidden');
 });
 
-// 2. Resident Views Switching
+// 2. RESIDENT ACTION MENU NAVIGATION
 document.getElementById('showResidentRegBtn').addEventListener('click', () => {
   residentActionScreen.classList.add('hidden');
   residentRegisterForm.classList.remove('hidden');
@@ -60,7 +57,7 @@ document.getElementById('backToResidentActionBtn2').addEventListener('click', ()
   residentActionScreen.classList.remove('hidden');
 });
 
-// 3. Officer Tab Switching
+// 3. OFFICER TABS
 tabOfficerLoginBtn.addEventListener('click', () => {
   tabOfficerLoginBtn.classList.add('active');
   tabOfficerRegBtn.classList.remove('active');
@@ -75,7 +72,7 @@ tabOfficerRegBtn.addEventListener('click', () => {
   officerLoginForm.classList.add('hidden');
 });
 
-// 4. OFFICER REGISTRATION (SECURED WITH BARANGAY PIN)
+// 4. OFFICER REGISTRATION (PIN PROTECTED)
 officerRegisterForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const enteredPin = document.getElementById('officerPin').value.trim();
@@ -90,6 +87,7 @@ officerRegisterForm.addEventListener('submit', async (e) => {
   submitBtn.innerText = 'Creating Officer Account...';
 
   const fullName = document.getElementById('offRegName').value.trim();
+  const designation = document.getElementById('offRegDesignation').value.trim();
   const email = document.getElementById('offRegEmail').value.trim();
   const password = document.getElementById('offRegPassword').value;
 
@@ -102,21 +100,23 @@ officerRegisterForm.addEventListener('submit', async (e) => {
     return;
   }
 
-  const { error: profileError } = await db.from('profiles').insert([
+  await db.from('profiles').insert([
     {
       id: authData.user.id,
-      full_name: fullName,
+      full_name: `${fullName} (${designation})`,
       role: 'officer',
       purok: 'Barangay Sumilihon Hall'
     }
   ]);
 
-  if (profileError) {
-    alert("Account created, but profile setup encountered an issue: " + profileError.message);
+  if (!authData.session) {
+    alert("Officer Account created! Please check and confirm your email before logging in.");
+    submitBtn.disabled = false;
+    submitBtn.innerText = 'Verify PIN & Create Account';
+    return;
   }
 
-  alert("Officer Account Authorized! Redirecting to Official Portal...");
-  window.location.href = 'portal.html';
+  window.location.href = 'index.html';
 });
 
 // 5. OFFICER LOGIN
@@ -138,7 +138,6 @@ officerLoginForm.addEventListener('submit', async (e) => {
     return;
   }
 
-  // Verify that the user has an officer role
   const { data: profile } = await db
     .from('profiles')
     .select('role')
@@ -153,41 +152,16 @@ officerLoginForm.addEventListener('submit', async (e) => {
     return;
   }
 
-  window.location.href = 'portal.html';
+  window.location.href = 'index.html';
 });
 
-// 6. RESIDENT REGISTRATION (VERIFIES DOCKET APPROVAL FIRST)
+// 6. RESIDENT REGISTRATION (DIRECT SIGN UP - NO DOCKET REQUIRED)
 residentRegisterForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const submitBtn = document.getElementById('resRegSubmitBtn');
-  const docketNo = document.getElementById('resDocketInput').value.trim();
-
   submitBtn.disabled = true;
-  submitBtn.innerText = 'Checking docket approval in database...';
+  submitBtn.innerText = 'Creating account...';
 
-  // Check if case docket exists
-  const { data: caseRecord, error: caseErr } = await db
-    .from('cases')
-    .select('*')
-    .ilike('docket', docketNo)
-    .maybeSingle();
-
-  if (caseErr || !caseRecord) {
-    alert(`No case record found for Docket "${docketNo}". Please verify your tracking number or file a complaint first.`);
-    submitBtn.disabled = false;
-    submitBtn.innerText = 'Verify Docket & Register';
-    return;
-  }
-
-  // Reject registration if case is not yet accepted/scheduled by Lupon
-  if (caseRecord.status === 'Under Review' || caseRecord.status === 'Pending Approval') {
-    alert(`Your complaint (${docketNo}) is still PENDING APPROVAL. The Barangay Lupon must formally accept or schedule it before you can create your account.`);
-    submitBtn.disabled = false;
-    submitBtn.innerText = 'Verify Docket & Register';
-    return;
-  }
-
-  // Proceed with registration
   const fullName = document.getElementById('resFullName').value.trim();
   const purok = document.getElementById('resPurok').value.trim();
   const email = document.getElementById('resEmail').value.trim();
@@ -198,11 +172,10 @@ residentRegisterForm.addEventListener('submit', async (e) => {
   if (authErr) {
     alert("Resident Registration error: " + authErr.message);
     submitBtn.disabled = false;
-    submitBtn.innerText = 'Verify Docket & Register';
+    submitBtn.innerText = 'Register Account';
     return;
   }
 
-  // Save resident profile
   await db.from('profiles').insert([
     {
       id: authData.user.id,
@@ -212,13 +185,13 @@ residentRegisterForm.addEventListener('submit', async (e) => {
     }
   ]);
 
-  // Connect user_id to the approved case so it shows on their dashboard
-  await db
-    .from('cases')
-    .update({ user_id: authData.user.id })
-    .eq('id', caseRecord.id);
+  if (!authData.session) {
+    alert("Account created! Palihug i-check ug i-confirm una ang imong email sa dili pa mo-log in.");
+    submitBtn.disabled = false;
+    submitBtn.innerText = 'Register Account';
+    return;
+  }
 
-  alert("Account verified and registered successfully! Directing you to Home...");
   window.location.href = 'index.html';
 });
 

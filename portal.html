@@ -3,98 +3,84 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Official Lupon Portal | LuponDesk</title>
+  <title>Official Lupon Desk | LuponResolve</title>
   <link rel="stylesheet" href="portal.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-  <div class="container">
-    <a href="index.html" class="back-link">&larr; Back to Home</a>
+  <header class="topbar">
+    <div class="brand">⚖️ LuponResolve <span class="badge">Officer Desk</span></div>
+    <div class="topbar-actions">
+      <span id="officerNameDisplay" class="officer-name">Loading...</span>
+      <a href="index.html" class="btn-home">🏠 Home</a>
+      <button type="button" id="logoutBtn" class="btn-logout">🚪 Log Out</button>
+    </div>
+  </header>
 
-    <div class="dashboard">
-      <div class="dashboard-header">
-        <div>
-          <h1>🛡️ Official Lupon Desk</h1>
-          <p class="header-subtitle">Barangay Sumilihon Case Docket & Evidence Review </p>
+  <main class="container">
+    <div class="page-header">
+      <div>
+        <h1>Docket Management &amp; Mediation Desk</h1>
+        <p>Review incoming complaints, inspect evidence, and schedule barangay hearings.</p>
+      </div>
+      <div class="filter-bar">
+        <input type="text" id="searchInput" placeholder="Search docket or name..." />
+        <select id="statusFilter">
+          <option value="All">All Statuses</option>
+          <option value="Pending Approval">Pending Approval</option>
+          <option value="Approved / For Mediation">Approved / For Mediation</option>
+          <option value="Conciliation (Pangkat)">Conciliation (Pangkat)</option>
+          <option value="Settled">Settled</option>
+          <option value="CFA Issued">CFA Issued</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table id="casesTable">
+        <thead>
+          <tr>
+            <th>Docket No.</th>
+            <th>Complainant &amp; Gmail</th>
+            <th>Respondent</th>
+            <th>Dispute Type</th>
+            <th>Status</th>
+            <th>Hearing Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="casesTableBody">
+          <tr>
+            <td colspan="7" class="loading-cell">Loading docket records...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- CASE DETAILS MODAL -->
+  <div class="modal-overlay" id="caseDetailsModal" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Case Details</h3>
+        <button type="button" class="close-modal-btn" id="closeCaseModalBtn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Docket:</strong> <span id="detailDocket"></span></p>
+        <p><strong>Email:</strong> <span id="detailEmail"></span></p>
+        <p><strong>Incident Date:</strong> <span id="detailDate"></span></p>
+        <div class="facts-box">
+          <strong>Asaysay / Facts:</strong>
+          <p id="detailFacts"></p>
         </div>
-        <button type="button" class="logout-btn" id="logoutBtn">Log Out</button>
+        <div id="detailEvidenceBox" class="evidence-box" style="display: none;">
+          <strong>Attached Evidence:</strong>
+          <a id="detailEvidenceLink" href="#" target="_blank">View Full Image</a>
+        </div>
       </div>
-
-      <div class="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>Docket No.</th>
-              <th>Date Filed</th>
-              <th>Complainant & Gmail</th>
-              <th>Respondent</th>
-              <th>Dispute Type</th>
-              <th>Status (Approve)</th>
-              <th>Hearing Date</th>
-              <th>Actions & Evidence</th>
-            </tr>
-          </thead>
-          <tbody id="caseTableBody">
-            <tr>
-              <td colspan="8" class="cell-message muted">Loading docket records...</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- Printable KP Form No. 7 Summons -->
-  <div id="printableSummons">
-    <div class="print-header">
-      <div class="print-heading-text">
-        Republic of the Philippines<br />
-        Province of Agusan del Norte<br />
-        City of Butuan<br />
-        <strong>BARANGAY SUMILIHON</strong>
-      </div>
-      <div class="print-office-title">OFFICE OF THE LUPONG TAGAPAMAYAPA</div>
-      <div class="print-form-title">KP FORM NO. 7 — SUMMONS</div>
-    </div>
-
-    <div class="print-parties-row">
-      <div>
-        <strong id="printComplainant">COMPLAINANT NAME</strong><br />
-        <span id="printComplainantAddress">Address</span><br />
-        <em>Complainant/s</em>
-        <div class="print-separator">— against —</div>
-        <strong id="printRespondent">RESPONDENT NAME</strong><br />
-        <span id="printRespondentAddress">Address</span><br />
-        <em>Respondent/s</em>
-      </div>
-      <div class="text-right">
-        <strong>Barangay Case No.:</strong> <span id="printDocket">KP-2026-0000</span><br />
-        <strong>For:</strong> <span id="printDispute">DISPUTE TYPE</span>
-      </div>
-    </div>
-
-    <p><strong>TO:</strong> The above-named Respondent/s</p>
-    <p class="print-body-text">
-      You are hereby summoned to appear before me in person, together with your witnesses, on the date and time indicated below, to answer the complaint made before me, copy of which is attached hereto, for mediation/conciliation of your dispute with complainant/s:
-    </p>
-
-    <div class="print-schedule-box" id="printHearingDate">
-      HEARING SCHEDULE
-    </div>
-
-    <p class="print-warning-text">
-      You are hereby warned that if you refuse or willfully fail to appear in obedience to this summons, you may be barred from filing any counterclaim arising from said complaint, and shall be punished for indirect contempt of court as provided under Section 415 of the Local Government Code (RA 7160).
-    </p>
-
-    <div class="print-signatures-row">
-      <div>
-        _______________________________<br />
-        <strong>Barangay Secretary / Lupon Clerk</strong>
-      </div>
-      <div class="text-right">
-        _______________________________<br />
-        <strong>Punong Barangay / Lupon Chairman</strong>
+      <div class="modal-footer">
+        <button type="button" class="btn-close" id="okCaseModalBtn">Close</button>
       </div>
     </div>
   </div>

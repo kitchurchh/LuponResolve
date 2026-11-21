@@ -4,367 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Portal Access | LuponResolve</title>
+  <link rel="stylesheet" href="auth.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    :root {
-      --primary: #0f291e;
-      --accent: #1b5e20;
-      --accent-hover: #144718;
-      --top-border: #2e7d32;
-      --bg: #173327;
-      --card-bg: #ffffff;
-      --text: #1f2937;
-      --muted: #4b5563;
-      --border: #e5e7eb;
-      --amber: #f5b041;
-      --danger: #b91c1c;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      padding: 2rem 1.5rem;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* Split Two-Column Grid */
-    .split-layout {
-      width: 100%;
-      max-width: 1120px;
-      display: grid;
-      grid-template-columns: 1.35fr 1fr;
-      gap: 1.75rem;
-      align-items: stretch;
-    }
-
-    /* LEFT COLUMN */
-    .left-column {
-      display: flex;
-      flex-direction: column;
-      gap: 1.25rem;
-    }
-
-    .info-card,
-    .hero-card {
-      background: var(--card-bg);
-      border-top: 5px solid var(--top-border);
-      border-radius: 14px;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.35);
-    }
-
-    /* Top Info Card */
-    .info-card {
-      padding: 1.75rem 2.25rem;
-      text-align: center;
-    }
-
-    .eyebrow {
-      display: block;
-      font-size: 0.72rem;
-      font-weight: 800;
-      letter-spacing: 0.8px;
-      color: var(--muted);
-      text-transform: uppercase;
-      margin-bottom: 0.5rem;
-    }
-
-    .info-card h2 {
-      font-size: 1.35rem;
-      font-weight: 800;
-      color: #111827;
-      margin-bottom: 0.65rem;
-    }
-
-    .info-card p {
-      font-size: 0.9rem;
-      color: var(--muted);
-      line-height: 1.55;
-      max-width: 520px;
-      margin: 0 auto;
-    }
-
-    /* Bottom Hero Card */
-    .hero-card {
-      flex: 1;
-      padding: 2.75rem 2.5rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .hero-card h1 {
-      font-size: 3.1rem;
-      font-weight: 800;
-      line-height: 1.1;
-      color: #1f2937;
-      letter-spacing: -1px;
-      margin-bottom: 2rem;
-    }
-
-    .highlight-amber {
-      color: var(--amber);
-    }
-
-    .pillars {
-      font-size: 0.88rem;
-      font-weight: 600;
-      color: var(--muted);
-    }
-
-    /* RIGHT COLUMN: Auth Card */
-    .auth-card {
-      background: var(--card-bg);
-      border-top: 5px solid var(--top-border);
-      border-radius: 14px;
-      padding: 2rem 2rem 2.25rem;
-      width: 100%;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.35);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .brand {
-      text-align: center;
-      font-size: 1.55rem;
-      font-weight: 800;
-      color: var(--primary);
-      margin-bottom: 0.25rem;
-    }
-
-    p.subtitle {
-      text-align: center;
-      color: var(--muted);
-      font-size: 0.86rem;
-      font-weight: 500;
-      margin-bottom: 1.75rem;
-    }
-
-    .section-instruct {
-      text-align: center;
-      font-weight: 700;
-      font-size: 0.95rem;
-      margin-bottom: 1.15rem;
-      color: var(--primary);
-    }
-
-    /* Role Selector Tiles */
-    .role-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 0.9rem;
-    }
-
-    .role-card-btn {
-      background: #fafafa;
-      border: 1.5px solid #e5e7eb;
-      border-radius: 10px;
-      padding: 1.15rem 1.2rem;
-      text-align: left;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-      transition: all 0.2s;
-    }
-
-    .role-card-btn:hover {
-      border-color: var(--accent);
-      background: #f0fdf4;
-      transform: translateY(-2px);
-    }
-
-    .role-icon {
-      font-size: 1.4rem;
-      margin-bottom: 0.25rem;
-    }
-
-    .role-card-btn strong {
-      color: var(--primary);
-      font-size: 0.98rem;
-      font-weight: 800;
-    }
-
-    .role-card-btn small {
-      color: var(--muted);
-      font-size: 0.8rem;
-      font-weight: 500;
-      line-height: 1.35;
-    }
-
-    /* Panels, Titles & Navs */
-    .back-text-btn {
-      background: none;
-      border: none;
-      color: var(--accent);
-      font-weight: 700;
-      font-size: 0.84rem;
-      cursor: pointer;
-      padding: 0;
-      margin-bottom: 0.5rem;
-      text-decoration: none;
-      text-align: left;
-    }
-
-    .back-text-btn:hover {
-      text-decoration: underline;
-    }
-
-    .panel-heading {
-      color: var(--primary);
-      font-size: 1.15rem;
-      font-weight: 800;
-      margin: 0.75rem 0 0.4rem;
-    }
-
-    .panel-subtext {
-      font-size: 0.85rem;
-      color: var(--muted);
-      font-weight: 500;
-      margin-bottom: 1.25rem;
-      line-height: 1.4;
-    }
-
-    .primary-action-btn {
-      margin-bottom: 0.75rem;
-    }
-
-    /* Tab Bar */
-    .tab-bar {
-      display: flex;
-      border-bottom: 2px solid #e5e7eb;
-      margin: 1rem 0 1.25rem;
-    }
-
-    .tab-btn {
-      flex: 1;
-      padding: 0.75rem;
-      border: none;
-      background: none;
-      font-weight: 700;
-      font-size: 0.92rem;
-      color: var(--muted);
-      cursor: pointer;
-      border-bottom: 3px solid transparent;
-      transition: all 0.2s;
-    }
-
-    .tab-btn.active {
-      color: var(--accent);
-      border-color: var(--accent);
-    }
-
-    /* Form Styles */
-    .form-group {
-      margin-bottom: 1.1rem;
-      text-align: left;
-    }
-
-    label {
-      display: block;
-      font-size: 0.86rem;
-      font-weight: 700;
-      color: #1f2937;
-      margin-bottom: 0.35rem;
-    }
-
-    input,
-    select {
-      width: 100%;
-      padding: 0.78rem;
-      border: 1.5px solid #d1d5db;
-      border-radius: 8px;
-      font-size: 0.92rem;
-      color: #111827;
-      outline: none;
-      background: #f9fafb;
-    }
-
-    input:focus,
-    select:focus {
-      border-color: var(--accent);
-      background: #ffffff;
-      box-shadow: 0 0 0 3px rgba(27, 94, 32, 0.15);
-    }
-
-    .field-hint {
-      display: block;
-      margin-top: 0.25rem;
-      color: var(--muted);
-      font-size: 0.75rem;
-      font-weight: 500;
-    }
-
-    /* Button Variants */
-    .btn {
-      width: 100%;
-      background: var(--accent);
-      color: #ffffff;
-      border: none;
-      padding: 0.85rem;
-      border-radius: 8px;
-      font-weight: 700;
-      font-size: 0.95rem;
-      cursor: pointer;
-      margin-top: 0.5rem;
-      transition: background 0.2s;
-    }
-
-    .btn:hover {
-      background: var(--accent-hover);
-    }
-
-    .btn.secondary {
-      background: #f3f4f6;
-      color: var(--primary);
-      border: 1.5px solid #d1d5db;
-      margin-bottom: 0.75rem;
-    }
-
-    .btn.secondary:hover {
-      background: #e5e7eb;
-    }
-
-    .btn.text-btn {
-      background: transparent;
-      color: var(--accent);
-      border: none;
-      font-size: 0.88rem;
-      font-weight: 700;
-      margin-top: 0.25rem;
-    }
-
-    .btn.text-btn:hover {
-      text-decoration: underline;
-      background: transparent;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    /* Responsive Stacking on Mobile/Tablet */
-    @media (max-width: 860px) {
-      .split-layout {
-        grid-template-columns: 1fr;
-        max-width: 480px;
-      }
-
-      .hero-card h1 {
-        font-size: 2.25rem;
-      }
-    }
-  </style>
 </head>
 <body>
 
@@ -372,8 +13,6 @@
     
     <!-- LEFT COLUMN: Info & Hero Cards -->
     <div class="left-column">
-      
-      <!-- Top Info Card -->
       <div class="info-card">
         <span class="eyebrow">ABOUT LUPONRESOLVE</span>
         <h2>Making the process easier to follow.</h2>
@@ -382,7 +21,6 @@
         </p>
       </div>
 
-      <!-- Bottom Hero Card -->
       <div class="hero-card">
         <h1>
           Resolve disputes.<br />
@@ -391,7 +29,6 @@
         </h1>
         <p class="pillars">Resident-centered &bull; Organized &bull; Accessible</p>
       </div>
-
     </div>
 
     <!-- RIGHT COLUMN: Interactive Auth & Role Card -->
@@ -407,7 +44,7 @@
           <button type="button" class="role-card-btn" id="chooseResidentBtn">
             <span class="role-icon">📝</span>
             <strong>I am a Resident</strong>
-            <small>File an incident report or register using an approved docket</small>
+            <small>File an incident report or manage your resident account</small>
           </button>
 
           <button type="button" class="role-card-btn" id="chooseOfficerBtn">
@@ -423,15 +60,15 @@
         <button type="button" class="back-text-btn" id="backToRoleBtn1">&larr; Back to role selection</button>
         <h3 class="panel-heading">Resident Services</h3>
         <p class="panel-subtext">
-          New complaints must be filed first for Lupon review before an account can be registered.
+          You can file a new complaint right away or create a Resident Account to track your cases.
         </p>
 
         <button type="button" class="btn primary-action-btn" onclick="window.location.href='filing.html'">
-          📄 File a New Complaint First
+          📄 File a New Complaint
         </button>
 
         <button type="button" class="btn secondary" id="showResidentRegBtn">
-          🔑 My Case is Approved (Create Account)
+          🔑 Create Resident Account
         </button>
 
         <button type="button" class="btn text-btn" id="showResidentLoginBtn">
@@ -448,7 +85,6 @@
           <button class="tab-btn" id="tabOfficerRegBtn" type="button">Officer Register</button>
         </div>
 
-        <!-- Officer Login Form -->
         <form id="officerLoginForm">
           <div class="form-group">
             <label for="offEmail">Officer Email</label>
@@ -461,7 +97,6 @@
           <button type="submit" class="btn" id="offLoginSubmitBtn">Log In as Officer</button>
         </form>
 
-        <!-- Officer Register Form (PIN Protected) -->
         <form id="officerRegisterForm" class="hidden">
           <div class="form-group">
             <label for="officerPin">Barangay Security Access PIN</label>
@@ -469,8 +104,12 @@
             <small class="field-hint">Authorized barangay personnel only.</small>
           </div>
           <div class="form-group">
-            <label for="offRegName">Full Name &amp; Designation</label>
-            <input type="text" id="offRegName" required placeholder="e.g. Juan Perez (Lupon Secretary)" />
+            <label for="offRegName">Full Name</label>
+            <input type="text" id="offRegName" required placeholder="e.g. Juan Perez" />
+          </div>
+          <div class="form-group">
+            <label for="offRegDesignation">Officer Designation / Position</label>
+            <input type="text" id="offRegDesignation" required placeholder="e.g. Lupon Secretary, Punong Barangay" />
           </div>
           <div class="form-group">
             <label for="offRegEmail">Official Email</label>
@@ -484,18 +123,14 @@
         </form>
       </div>
 
-      <!-- STEP 3A: Resident Registration Form (Requires Approved Docket) -->
+      <!-- STEP 3A: Resident Registration Form -->
       <form id="residentRegisterForm" class="hidden">
         <button type="button" class="back-text-btn" id="backToResidentActionBtn">&larr; Back to resident options</button>
         <h3 class="panel-heading">Create Resident Account</h3>
         <p class="panel-subtext">
-          Enter your approved complaint docket number to link your case and register.
+          Fill in your details below to register your Resident Account.
         </p>
 
-        <div class="form-group">
-          <label for="resDocketInput">Approved Docket Number</label>
-          <input type="text" id="resDocketInput" required placeholder="e.g. KP-2026-1024" />
-        </div>
         <div class="form-group">
           <label for="resFullName">Full Name</label>
           <input type="text" id="resFullName" required placeholder="Juan Dela Cruz" />
@@ -512,7 +147,7 @@
           <label for="resPassword">Password</label>
           <input type="password" id="resPassword" required minlength="6" placeholder="Minimum 6 characters" />
         </div>
-        <button type="submit" class="btn" id="resRegSubmitBtn">Verify Docket &amp; Register</button>
+        <button type="submit" class="btn" id="resRegSubmitBtn">Register Account</button>
       </form>
 
       <!-- STEP 3B: Resident Normal Login Form -->

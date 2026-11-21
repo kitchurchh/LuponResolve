@@ -28,15 +28,17 @@ body {
   min-height: 100vh;
 }
 
-/* Header */
+/* Sticky Header */
 header {
+  position: sticky;
+  top: 0;
+  z-index: 900;
   background: var(--card-bg);
   border-bottom: 2px solid var(--border);
   padding: 0.85rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: relative;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 

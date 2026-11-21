@@ -2,10 +2,9 @@ const supabaseUrl = 'https://ivphxduuzemdmkjdgeqy.supabase.co';
 const supabaseKey = 'sb_publishable_Eh44ol3xJHhoxPNOS6Tueg_SzHFTi5u';
 const db = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-let cachedCases = [];
-const caseTableBody = document.getElementById('caseTableBody');
+let allCases = [];
 
-async function verifyOfficerSession() {
+async function initPortal() {
   const { data: { session } } = await db.auth.getSession();
 
   if (!session) {
@@ -15,158 +14,138 @@ async function verifyOfficerSession() {
 
   const { data: profile } = await db
     .from('profiles')
-    .select('role')
+    .select('*')
     .eq('id', session.user.id)
     .maybeSingle();
 
   if (!profile || profile.role !== 'officer') {
-    alert('Access Restricted: Only Barangay Officers and Lupon members are permitted.');
     window.location.href = 'index.html';
     return;
   }
 
-  fetchCases();
+  document.getElementById('officerNameDisplay').innerText = profile.full_name || session.user.email;
+  loadCases();
 }
 
-async function fetchCases() {
-  caseTableBody.innerHTML = `<tr><td colspan="8" class="cell-message muted">Checking database for cases...</td></tr>`;
-
+async function loadCases() {
   const { data, error } = await db
     .from('cases')
     .select('*')
-    .order('id', { ascending: false });
+    .order('created_at', { ascending: false });
 
   if (error) {
-    caseTableBody.innerHTML = `<tr><td colspan="8" class="cell-message error">Error: ${error.message}</td></tr>`;
-    return;
-  }
-
-  cachedCases = data || [];
-  renderTable(cachedCases);
-}
-
-function renderTable(cases) {
-  caseTableBody.innerHTML = '';
-
-  if (!cases || cases.length === 0) {
-    caseTableBody.innerHTML = `
-      <tr>
-        <td colspan="8">
-          <div class="empty-state">
-            <div class="empty-state-icon">📋</div>
-            <strong>No complaints filed yet.</strong>
-            <p style="font-size: 0.85rem; margin-top: 0.25rem;">When residents submit complaints through the filing form, they will appear here automatically.</p>
-          </div>
-        </td>
-      </tr>
+    document.getElementById('casesTableBody').innerHTML = `
+      <tr><td colspan="7" class="loading-cell" style="color:var(--danger);">Error loading cases: ${error.message}</td></tr>
     `;
     return;
   }
 
-  cases.forEach((item, index) => {
-    const evidenceButton = item.evidence_url
-      ? `<a href="${item.evidence_url}" target="_blank" class="btn-action" style="text-decoration:none;">Photo</a>`
-      : '';
+  allCases = data || [];
+  renderCases(allCases);
+}
 
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td><strong>${item.docket || '—'}</strong></td>
-      <td>${item.created_at ? new Date(item.created_at).toLocaleDateString() : '—'}</td>
-      <td>${item.complainant || '—'}<br><small style="color:var(--muted);">${item.complainant_email || ''}</small></td>
-      <td>${item.respondent || '—'}</td>
-      <td class="capitalize">${item.dispute_type || '—'}</td>
+function renderCases(cases) {
+  const tbody = document.getElementById('casesTableBody');
+  tbody.innerHTML = '';
+
+  if (cases.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" class="loading-cell">No case records found.</td></tr>`;
+    return;
+  }
+
+  cases.forEach((c) => {
+    const tr = document.createElement('tr');
+
+    tr.innerHTML = `
+      <td class="docket-text">${c.docket}</td>
       <td>
-        <select class="status-select" onchange="updateStatus(${item.id}, this.value, ${index})">
-          <option value="Pending Approval" ${item.status === 'Pending Approval' ? 'selected' : ''}>Pending Approval</option>
-          <option value="Accepted / For Hearing" ${item.status === 'Accepted / For Hearing' ? 'selected' : ''}>Accepted / For Hearing</option>
-          <option value="Mediation Scheduled" ${item.status === 'Mediation Scheduled' ? 'selected' : ''}>Mediation Scheduled</option>
-          <option value="Amicably Settled" ${item.status === 'Amicably Settled' ? 'selected' : ''}>Amicably Settled</option>
-          <option value="Repudiated / Escalated" ${item.status === 'Repudiated / Escalated' ? 'selected' : ''}>Repudiated / Escalated</option>
+        <strong>${c.complainant}</strong>
+        <span class="sub-email">${c.complainant_email || 'No email'}</span>
+      </td>
+      <td>${c.respondent}</td>
+      <td style="text-transform: capitalize;">${c.dispute_type || 'Other'}</td>
+      <td>
+        <select class="status-select" data-id="${c.id}">
+          <option value="Pending Approval" ${c.status === 'Pending Approval' ? 'selected' : ''}>Pending Approval</option>
+          <option value="Approved / For Mediation" ${c.status === 'Approved / For Mediation' ? 'selected' : ''}>Approved / For Mediation</option>
+          <option value="Conciliation (Pangkat)" ${c.status === 'Conciliation (Pangkat)' ? 'selected' : ''}>Conciliation (Pangkat)</option>
+          <option value="Settled" ${c.status === 'Settled' ? 'selected' : ''}>Settled</option>
+          <option value="CFA Issued" ${c.status === 'CFA Issued' ? 'selected' : ''}>CFA Issued</option>
         </select>
       </td>
       <td>
-        <input type="date" class="hearing-input" value="${item.hearing_date || ''}" onchange="updateHearing(${item.id}, this.value, ${index})" />
+        <input type="date" class="date-input" data-id="${c.id}" value="${c.hearing_date || ''}" />
       </td>
       <td>
-        <button class="btn-action" type="button" onclick="viewDetails(${index})">Facts</button>
-        ${evidenceButton}
-        <button class="btn-action" type="button" onclick="printSummons(${index})">Summons</button>
+        <button type="button" class="btn-view">View Details</button>
       </td>
     `;
-    caseTableBody.appendChild(row);
+
+    tr.querySelector('.status-select').addEventListener('change', async (e) => {
+      await db.from('cases').update({ status: e.target.value }).eq('id', c.id);
+    });
+
+    tr.querySelector('.date-input').addEventListener('change', async (e) => {
+      await db.from('cases').update({ hearing_date: e.target.value || null }).eq('id', c.id);
+    });
+
+    tr.querySelector('.btn-view').addEventListener('click', () => {
+      openCaseDetailsModal(c);
+    });
+
+    tbody.appendChild(tr);
   });
 }
 
-// Send Gmail Notification when case is Approved
-function notifyComplainantViaGmail(caseItem) {
-  if (!caseItem.complainant_email) return;
+function openCaseDetailsModal(c) {
+  document.getElementById('detailDocket').innerText = c.docket;
+  document.getElementById('detailEmail').innerText = c.complainant_email || 'N/A';
+  document.getElementById('detailDate').innerText = c.incident_date || 'N/A';
+  document.getElementById('detailFacts').innerText = c.narrative || 'No details provided.';
 
-  const subject = encodeURIComponent(`LuponResolve: Approved na ang imong Reklamo (${caseItem.docket})`);
-  const body = encodeURIComponent(
-    `Maayong adlaw ${caseItem.complainant},\n\n` +
-    `Kini usa ka opisyal nga pahibalo gikan sa Barangay Sumilihon Lupon Tagapamayapa.\n\n` +
-    `APPROVED na ang imong gisumite nga reklamo ubos sa Docket Number: ${caseItem.docket}.\n` +
-    `Mahimo na ka karon mag-create og Resident Account sa LuponResolve portal gamit kini nga Docket Number aron ma-monitor ang schedule sa imong hearing.\n\n` +
-    `Daghang salamat,\nBarangay Lupon Secretary`
-  );
+  const evidenceBox = document.getElementById('detailEvidenceBox');
+  const evidenceLink = document.getElementById('detailEvidenceLink');
+  if (c.evidence_url) {
+    evidenceBox.style.display = 'block';
+    evidenceLink.href = c.evidence_url;
+  } else {
+    evidenceBox.style.display = 'none';
+  }
 
-  // Opens Gmail Compose pre-filled with the complainant's email and approval notice
-  const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(caseItem.complainant_email)}&su=${subject}&body=${body}`;
-  window.open(gmailUrl, '_blank');
+  document.getElementById('caseDetailsModal').style.display = 'flex';
 }
 
-window.updateStatus = async function(id, newStatus, index) {
-  const { error } = await db.from('cases').update({ status: newStatus }).eq('id', id);
-  if (error) {
-    alert('Error updating status: ' + error.message);
-    return;
-  }
+document.getElementById('closeCaseModalBtn').addEventListener('click', () => {
+  document.getElementById('caseDetailsModal').style.display = 'none';
+});
 
-  const caseItem = cachedCases[index];
-  caseItem.status = newStatus;
+document.getElementById('okCaseModalBtn').addEventListener('click', () => {
+  document.getElementById('caseDetailsModal').style.display = 'none';
+});
 
-  if (newStatus === 'Accepted / For Hearing') {
-    notifyComplainantViaGmail(caseItem);
-  }
-};
+function applyFilters() {
+  const query = document.getElementById('searchInput').value.toLowerCase();
+  const status = document.getElementById('statusFilter').value;
 
-window.updateHearing = async function(id, newDate, index) {
-  const { error } = await db
-    .from('cases')
-    .update({ hearing_date: newDate, status: 'Mediation Scheduled' })
-    .eq('id', id);
+  const filtered = allCases.filter((c) => {
+    const matchesSearch =
+      (c.docket && c.docket.toLowerCase().includes(query)) ||
+      (c.complainant && c.complainant.toLowerCase().includes(query)) ||
+      (c.respondent && c.respondent.toLowerCase().includes(query));
 
-  if (error) {
-    alert('Error updating hearing date: ' + error.message);
-  } else {
-    fetchCases();
-  }
-};
+    const matchesStatus = status === 'All' || c.status === status;
+    return matchesSearch && matchesStatus;
+  });
 
-window.viewDetails = function(index) {
-  const c = cachedCases[index];
-  alert(`Docket: ${c.docket}\nEmail: ${c.complainant_email || 'N/A'}\nIncident Date: ${c.incident_date}\n\nAsaysay/Facts:\n${c.narrative}`);
-};
+  renderCases(filtered);
+}
 
-window.printSummons = function(index) {
-  const c = cachedCases[index];
-
-  document.getElementById('printComplainant').innerText = c.complainant || '';
-  document.getElementById('printComplainantAddress').innerText = c.complainant_purok || 'Sumilihon';
-  document.getElementById('printRespondent').innerText = c.respondent || '';
-  document.getElementById('printRespondentAddress').innerText = c.respondent_purok || 'Sumilihon';
-  document.getElementById('printDocket').innerText = c.docket || '';
-  document.getElementById('printDispute').innerText = (c.dispute_type || '').toUpperCase();
-  document.getElementById('printHearingDate').innerText = c.hearing_date
-    ? new Date(c.hearing_date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
-    : 'NOT YET ASSIGNED';
-
-  window.print();
-};
+document.getElementById('searchInput').addEventListener('input', applyFilters);
+document.getElementById('statusFilter').addEventListener('change', applyFilters);
 
 document.getElementById('logoutBtn').addEventListener('click', async () => {
   await db.auth.signOut();
   window.location.href = 'auth.html';
 });
 
-verifyOfficerSession();
+initPortal();

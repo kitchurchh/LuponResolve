@@ -15,6 +15,26 @@ const officerRegisterForm = document.getElementById('officerRegisterForm');
 const tabOfficerLoginBtn = document.getElementById('tabOfficerLoginBtn');
 const tabOfficerRegBtn = document.getElementById('tabOfficerRegBtn');
 
+// Helper for Custom Alert (with safe fallback to standard alert)
+function showCustomAlert(title, message, icon = '✅') {
+  const modal = document.getElementById('customAlertModal');
+  if (modal) {
+    document.getElementById('customAlertTitle').innerText = title;
+    document.getElementById('customAlertMessage').innerText = message;
+    document.getElementById('customAlertIcon').innerText = icon;
+    modal.classList.remove('hidden');
+  } else {
+    alert(`${title}\n\n${message}`);
+  }
+}
+
+const customAlertBtn = document.getElementById('customAlertBtn');
+if (customAlertBtn) {
+  customAlertBtn.addEventListener('click', () => {
+    document.getElementById('customAlertModal').classList.add('hidden');
+  });
+}
+
 // 1. ROLE SELECTION NAVIGATION
 document.getElementById('chooseResidentBtn').addEventListener('click', () => {
   roleSelectionScreen.classList.add('hidden');
@@ -72,13 +92,17 @@ tabOfficerRegBtn.addEventListener('click', () => {
   officerLoginForm.classList.add('hidden');
 });
 
-// 4. OFFICER REGISTRATION (PIN PROTECTED)
+// 4. OFFICER REGISTRATION (PIN PROTECTED + GMAIL CONFIRMATION)
 officerRegisterForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const enteredPin = document.getElementById('officerPin').value.trim();
 
   if (enteredPin !== OFFICER_SECRET_PIN) {
-    alert("INVALID SECURITY PIN! Only verified barangay officials are authorized to create an officer account.");
+    showCustomAlert(
+      "Invalid Security PIN",
+      "Only verified barangay officials are authorized to create an officer account.",
+      "⚠️"
+    );
     return;
   }
 
@@ -91,26 +115,38 @@ officerRegisterForm.addEventListener('submit', async (e) => {
   const email = document.getElementById('offRegEmail').value.trim();
   const password = document.getElementById('offRegPassword').value;
 
-  const { data: authData, error: authError } = await db.auth.signUp({ email, password });
+  const { data: authData, error: authError } = await db.auth.signUp({
+    email,
+    password,
+    options: {
+      emailRedirectTo: window.location.origin + '/auth.html'
+    }
+  });
 
   if (authError) {
-    alert("Officer Registration failed: " + authError.message);
+    showCustomAlert("Registration Failed", authError.message, "⚠️");
     submitBtn.disabled = false;
     submitBtn.innerText = 'Verify PIN & Create Account';
     return;
   }
 
-  await db.from('profiles').insert([
-    {
-      id: authData.user.id,
-      full_name: `${fullName} (${designation})`,
-      role: 'officer',
-      purok: 'Barangay Sumilihon Hall'
-    }
-  ]);
+  if (authData.user) {
+    await db.from('profiles').insert([
+      {
+        id: authData.user.id,
+        full_name: `${fullName} (${designation})`,
+        role: 'officer',
+        purok: 'Barangay Sumilihon Hall'
+      }
+    ]);
+  }
 
   if (!authData.session) {
-    alert("Officer Account created! Please check and confirm your email before logging in.");
+    showCustomAlert(
+      "Check Your Email",
+      "Officer Account created! Palihug i-check ug i-confirm una ang imong email sa dili pa mo-log in.",
+      "📩"
+    );
     submitBtn.disabled = false;
     submitBtn.innerText = 'Verify PIN & Create Account';
     return;
@@ -132,7 +168,15 @@ officerLoginForm.addEventListener('submit', async (e) => {
   const { data, error } = await db.auth.signInWithPassword({ email, password });
 
   if (error) {
-    alert("Officer Login failed: " + error.message);
+    if (error.message.toLowerCase().includes('email not confirmed')) {
+      showCustomAlert(
+        "Email Not Confirmed",
+        "Palihug i-confirm usa ang link nga gipadala sa imong email sa dili pa mo-log in.",
+        "📩"
+      );
+    } else {
+      showCustomAlert("Officer Login Failed", error.message, "⚠️");
+    }
     submitBtn.disabled = false;
     submitBtn.innerText = 'Log In as Officer';
     return;
@@ -145,7 +189,11 @@ officerLoginForm.addEventListener('submit', async (e) => {
     .maybeSingle();
 
   if (!profile || profile.role !== 'officer') {
-    alert("Access Restricted: This account does not have Barangay Officer permissions.");
+    showCustomAlert(
+      "Access Restricted",
+      "This account does not have Barangay Officer permissions.",
+      "🚫"
+    );
     await db.auth.signOut();
     submitBtn.disabled = false;
     submitBtn.innerText = 'Log In as Officer';
@@ -155,7 +203,7 @@ officerLoginForm.addEventListener('submit', async (e) => {
   window.location.href = 'index.html';
 });
 
-// 6. RESIDENT REGISTRATION (DIRECT SIGN UP - NO DOCKET REQUIRED)
+// 6. RESIDENT REGISTRATION (GMAIL ONLY + EMAIL CONFIRMATION)
 residentRegisterForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const submitBtn = document.getElementById('resRegSubmitBtn');
@@ -167,26 +215,50 @@ residentRegisterForm.addEventListener('submit', async (e) => {
   const email = document.getElementById('resEmail').value.trim();
   const password = document.getElementById('resPassword').value;
 
-  const { data: authData, error: authErr } = await db.auth.signUp({ email, password });
-
-  if (authErr) {
-    alert("Resident Registration error: " + authErr.message);
+  // Require real @gmail.com address
+  if (!email.toLowerCase().endsWith('@gmail.com')) {
+    showCustomAlert(
+      "Invalid Email",
+      "Palihug gamita ang imong tinuod nga @gmail.com address.",
+      "⚠️"
+    );
     submitBtn.disabled = false;
     submitBtn.innerText = 'Register Account';
     return;
   }
 
-  await db.from('profiles').insert([
-    {
-      id: authData.user.id,
-      full_name: fullName,
-      purok: purok,
-      role: 'resident'
+  const { data: authData, error: authErr } = await db.auth.signUp({
+    email,
+    password,
+    options: {
+      emailRedirectTo: window.location.origin + '/auth.html'
     }
-  ]);
+  });
+
+  if (authErr) {
+    showCustomAlert("Registration Error", authErr.message, "⚠️");
+    submitBtn.disabled = false;
+    submitBtn.innerText = 'Register Account';
+    return;
+  }
+
+  if (authData.user) {
+    await db.from('profiles').insert([
+      {
+        id: authData.user.id,
+        full_name: fullName,
+        purok: purok,
+        role: 'resident'
+      }
+    ]);
+  }
 
   if (!authData.session) {
-    alert("Account created! Palihug i-check ug i-confirm una ang imong email sa dili pa mo-log in.");
+    showCustomAlert(
+      "Check Your Gmail",
+      "Account created! Palihug i-check ug i-confirm una ang imong Gmail sa dili pa mo-log in.",
+      "📩"
+    );
     submitBtn.disabled = false;
     submitBtn.innerText = 'Register Account';
     return;
@@ -208,7 +280,15 @@ residentLoginForm.addEventListener('submit', async (e) => {
   const { error } = await db.auth.signInWithPassword({ email, password });
 
   if (error) {
-    alert("Login failed: " + error.message);
+    if (error.message.toLowerCase().includes('email not confirmed')) {
+      showCustomAlert(
+        "Gmail Not Confirmed",
+        "Palihug i-confirm usa ang link nga gipadala sa imong Gmail sa dili pa mo-log in.",
+        "📩"
+      );
+    } else {
+      showCustomAlert("Login Failed", error.message, "⚠️");
+    }
     submitBtn.disabled = false;
     submitBtn.innerText = 'Log In';
     return;

@@ -82,11 +82,36 @@ function renderCases(cases) {
     `;
 
     tr.querySelector('.status-select').addEventListener('change', async (e) => {
-      await db.from('cases').update({ status: e.target.value }).eq('id', c.id);
+      const newStatus = e.target.value;
+      c.status = newStatus;
+
+      const { error } = await db.from('cases').update({ status: newStatus }).eq('id', c.id);
+
+      if (error) {
+        alert('Failed to update status: ' + error.message);
+        return;
+      }
+
+      // Open Gmail Web compose tab pre-filled when approved
+      if (newStatus === 'Approved / For Mediation' && c.complainant_email) {
+        const subject = encodeURIComponent(`LuponResolve Case Update: ${c.docket}`);
+        const body = encodeURIComponent(
+          `Maayong adlaw ${c.complainant},\n\n` +
+          `Ang imong reklamo (Docket No: ${c.docket}) kay APPROVED / FOR MEDIATION na.\n` +
+          `Hearing Date: ${c.hearing_date || 'To be scheduled'}\n\n` +
+          `Daghang salamat,\nBarangay Sumilihon Lupon Tagapamayapa`
+        );
+        window.open(
+          `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(c.complainant_email)}&su=${subject}&body=${body}`,
+          '_blank'
+        );
+      }
     });
 
     tr.querySelector('.date-input').addEventListener('change', async (e) => {
-      await db.from('cases').update({ hearing_date: e.target.value || null }).eq('id', c.id);
+      const newDate = e.target.value || null;
+      c.hearing_date = newDate;
+      await db.from('cases').update({ hearing_date: newDate }).eq('id', c.id);
     });
 
     tr.querySelector('.btn-view').addEventListener('click', () => {

@@ -147,7 +147,7 @@ async function checkSession() {
 
   document.getElementById('loginNavLink').style.display = 'none';
   document.getElementById('profileWrapper').style.display = 'block';
-
+  
   const { data: profile } = await db
     .from('profiles')
     .select('*')

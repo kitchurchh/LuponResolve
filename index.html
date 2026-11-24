@@ -15,7 +15,6 @@
       <button type="button" id="langToggleBtn" class="lang-btn" style="background:#f0fdf4; border:1.5px solid #1b5e20; color:#1b5e20; padding:0.35rem 0.8rem; border-radius:20px; font-weight:700; font-size:0.82rem; cursor:pointer;">
         🌐 Cebuano
       </button>
-      <a href="filing.html" id="navFileLink" data-i18n="navFile">File a Complaint</a>
       <a href="auth.html" id="loginNavLink" data-i18n="navLogin">Portal Access</a>
 
       <!-- Logged-in Profile Dropdown -->
@@ -59,25 +58,16 @@
 
     <!-- Action Cards -->
     <div class="grid">
-      <!-- Card 1: File a Complaint (Hidden if Officer) -->
-      <div class="card" id="fileComplaintCard">
+      <!-- Card 1: Official Lupon Desk -->
+      <div class="card" id="officialDeskCard">
         <div>
-          <h2 data-i18n="card1Title">📝 File a Complaint</h2>
-          <p data-i18n="card1Desc">Answer the preliminary screening and submit an incident report with photo evidence—no account required upfront.</p>
+          <h2>🛡️ Official Lupon Desk</h2>
+          <p>Review pending complaints, inspect evidence photos, approve cases, and schedule mediation hearings.</p>
         </div>
-        <a href="filing.html" class="card-btn primary" data-i18n="card1Btn">Start Screening & Filing</a>
+        <a href="portal.html" class="card-btn primary">Open Lupon Portal</a>
       </div>
 
-      <!-- Card 2: Portal Access (Hidden if Resident, switched to Official Desk if Officer) -->
-      <div class="card" id="portalAccessCard">
-        <div>
-          <h2 id="portalCardTitle" data-i18n="card2Title">🔑 Resident & Officer Access</h2>
-          <p id="portalCardDesc" data-i18n="card2Desc">Create your Resident Account once your docket is approved, or log in to the official Lupon desk.</p>
-        </div>
-        <a href="auth.html" id="portalCardBtn" class="card-btn" data-i18n="card2Btn">Go to Portal Access</a>
-      </div>
-
-      <!-- Card 3: Guidelines -->
+      <!-- Card 2: Guidelines -->
       <div class="card" id="guidelinesCard">
         <div>
           <h2 data-i18n="card3Title">📖 Katarungang Pambarangay Guide</h2>
@@ -119,8 +109,6 @@
     </div>
   </div>
 
- </main>
-
   <footer>
     <p><strong>Barangay Sumilihon Lupon Tagapamayapa</strong></p>
     <p>Barangay Sumilihon Hall, Butuan City, Agusan del Norte</p>
@@ -129,10 +117,6 @@
       &copy; 2026 LuponResolve. Compliant with RA 7160 &amp; RA 10173.
     </p>
   </footer>
-
-  <script src="index.js"></script>
-</body>
-</html>
 
   <script src="index.js"></script>
 </body>

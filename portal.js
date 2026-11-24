@@ -19,7 +19,7 @@ async function initPortal() {
     .maybeSingle();
 
   if (!profile || profile.role !== 'officer') {
-    window.location.href = 'index.html';
+    window.location.href = 'resident.html';
     return;
   }
 
@@ -92,7 +92,6 @@ function renderCases(cases) {
         return;
       }
 
-      // Open Gmail Web compose tab pre-filled when approved
       if (newStatus === 'Approved / For Mediation' && c.complainant_email) {
         const subject = encodeURIComponent(`LuponResolve Case Update: ${c.docket}`);
         const body = encodeURIComponent(

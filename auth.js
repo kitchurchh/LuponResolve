@@ -15,7 +15,6 @@ const officerRegisterForm = document.getElementById('officerRegisterForm');
 const tabOfficerLoginBtn = document.getElementById('tabOfficerLoginBtn');
 const tabOfficerRegBtn = document.getElementById('tabOfficerRegBtn');
 
-// Helper for Custom Alert (with safe fallback to standard alert)
 function showCustomAlert(title, message, icon = '✅') {
   const modal = document.getElementById('customAlertModal');
   if (modal) {
@@ -92,7 +91,7 @@ tabOfficerRegBtn.addEventListener('click', () => {
   officerLoginForm.classList.add('hidden');
 });
 
-// 4. OFFICER REGISTRATION (PIN PROTECTED + GMAIL CONFIRMATION)
+// 4. OFFICER REGISTRATION (PIN PROTECTED + EMAIL CONFIRMATION)
 officerRegisterForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const enteredPin = document.getElementById('officerPin').value.trim();
@@ -119,7 +118,7 @@ officerRegisterForm.addEventListener('submit', async (e) => {
     email,
     password,
     options: {
-      emailRedirectTo: window.location.origin + '/auth.html'
+      emailRedirectTo: new URL('auth.html', window.location.href).href
     }
   });
 
@@ -144,7 +143,7 @@ officerRegisterForm.addEventListener('submit', async (e) => {
   if (!authData.session) {
     showCustomAlert(
       "Check Your Email",
-      "Officer Account created! Palihug i-check ug i-confirm una ang imong email sa dili pa mo-log in.",
+      "Officer Account created! Please check and confirm your email first before logging in.",
       "📩"
     );
     submitBtn.disabled = false;
@@ -155,7 +154,7 @@ officerRegisterForm.addEventListener('submit', async (e) => {
   window.location.href = 'index.html';
 });
 
-// 5. OFFICER LOGIN
+// 5. OFFICER LOGIN (OFFICER ROLE ONLY)
 officerLoginForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const submitBtn = document.getElementById('offLoginSubmitBtn');
@@ -171,7 +170,7 @@ officerLoginForm.addEventListener('submit', async (e) => {
     if (error.message.toLowerCase().includes('email not confirmed')) {
       showCustomAlert(
         "Email Not Confirmed",
-        "Palihug i-confirm usa ang link nga gipadala sa imong email sa dili pa mo-log in.",
+        "Please confirm the verification link sent to your email before logging in.",
         "📩"
       );
     } else {
@@ -191,7 +190,7 @@ officerLoginForm.addEventListener('submit', async (e) => {
   if (!profile || profile.role !== 'officer') {
     showCustomAlert(
       "Access Restricted",
-      "This account does not have Barangay Officer permissions.",
+      "This account does not have Barangay Officer permissions. Please use the Resident Login.",
       "🚫"
     );
     await db.auth.signOut();
@@ -215,11 +214,10 @@ residentRegisterForm.addEventListener('submit', async (e) => {
   const email = document.getElementById('resEmail').value.trim();
   const password = document.getElementById('resPassword').value;
 
-  // Require real @gmail.com address
   if (!email.toLowerCase().endsWith('@gmail.com')) {
     showCustomAlert(
       "Invalid Email",
-      "Palihug gamita ang imong tinuod nga @gmail.com address.",
+      "Please use a valid @gmail.com address.",
       "⚠️"
     );
     submitBtn.disabled = false;
@@ -231,7 +229,7 @@ residentRegisterForm.addEventListener('submit', async (e) => {
     email,
     password,
     options: {
-      emailRedirectTo: window.location.origin + '/auth.html'
+      emailRedirectTo: new URL('auth.html', window.location.href).href
     }
   });
 
@@ -256,7 +254,7 @@ residentRegisterForm.addEventListener('submit', async (e) => {
   if (!authData.session) {
     showCustomAlert(
       "Check Your Gmail",
-      "Account created! Palihug i-check ug i-confirm una ang imong Gmail sa dili pa mo-log in.",
+      "Account created! Please check and confirm your Gmail first before logging in.",
       "📩"
     );
     submitBtn.disabled = false;
@@ -264,10 +262,10 @@ residentRegisterForm.addEventListener('submit', async (e) => {
     return;
   }
 
-  window.location.href = 'index.html';
+  window.location.href = 'resident.html';
 });
 
-// 7. RESIDENT LOGIN
+// 7. RESIDENT LOGIN (RESIDENT ROLE ONLY)
 residentLoginForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const submitBtn = document.getElementById('resLoginSubmitBtn');
@@ -277,13 +275,13 @@ residentLoginForm.addEventListener('submit', async (e) => {
   const email = document.getElementById('resLoginEmail').value.trim();
   const password = document.getElementById('resLoginPassword').value;
 
-  const { error } = await db.auth.signInWithPassword({ email, password });
+  const { data, error } = await db.auth.signInWithPassword({ email, password });
 
   if (error) {
     if (error.message.toLowerCase().includes('email not confirmed')) {
       showCustomAlert(
         "Gmail Not Confirmed",
-        "Palihug i-confirm usa ang link nga gipadala sa imong Gmail sa dili pa mo-log in.",
+        "Please confirm the verification link sent to your Gmail before logging in.",
         "📩"
       );
     } else {
@@ -294,5 +292,23 @@ residentLoginForm.addEventListener('submit', async (e) => {
     return;
   }
 
-  window.location.href = 'index.html';
+  const { data: profile } = await db
+    .from('profiles')
+    .select('role')
+    .eq('id', data.user.id)
+    .maybeSingle();
+
+  if (!profile || profile.role !== 'resident') {
+    showCustomAlert(
+      "Access Restricted",
+      "This account is not registered as a Resident. Please use the Officer Login.",
+      "🚫"
+    );
+    await db.auth.signOut();
+    submitBtn.disabled = false;
+    submitBtn.innerText = 'Log In';
+    return;
+  }
+
+  window.location.href = 'resident.html';
 });

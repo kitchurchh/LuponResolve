@@ -140,7 +140,7 @@ const translations = {
 
 function updateBackDestinations() {
   const dict = translations[currentLang];
-  const targetUrl = isLoggedIn ? 'index.html' : 'auth.html';
+  const targetUrl = isLoggedIn ? 'resident.html' : 'auth.html';
   const backLinkEl = document.querySelector('.back-link');
   const returnBtnEl = document.getElementById('returnHomeBtn');
 
@@ -359,7 +359,7 @@ document.getElementById('submitBtn').addEventListener('click', async function ()
   }
 });
 
-// Redirects to index.html if logged in, or auth.html if guest
+// Redirects to resident.html if logged in, or auth.html if guest
 document.getElementById('returnHomeBtn').addEventListener('click', function () {
-  window.location.href = isLoggedIn ? 'index.html' : 'auth.html';
+  window.location.href = isLoggedIn ? 'resident.html' : 'auth.html';
 });
